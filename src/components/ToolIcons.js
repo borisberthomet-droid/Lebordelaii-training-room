@@ -52,3 +52,17 @@ export function LeakfinderIcon({ size = 24 }) {
     </svg>
   );
 }
+
+// Pile de jetons (stack) surmontée d'un anneau en dégradé (le bounty posé dessus) —
+// évoque la valeur du KO empilée sur le stack, distinct des autres marques.
+export function PkoRpIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="PKO — KO & RP">
+      <Grad id="pko-grad" />
+      <ellipse cx="16" cy="24" rx="10" ry="3.2" stroke="var(--border)" strokeWidth="2" fill="none" />
+      <ellipse cx="16" cy="19" rx="10" ry="3.2" stroke="var(--border)" strokeWidth="2" fill="none" />
+      <ellipse cx="16" cy="14" rx="10" ry="3.2" stroke="url(#pko-grad)" strokeWidth="2.25" fill="none" />
+      <circle cx="16" cy="7" r="3.6" stroke="url(#pko-grad)" strokeWidth="2.25" fill="#121413" />
+    </svg>
+  );
+}

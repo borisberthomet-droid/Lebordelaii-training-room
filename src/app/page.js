@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SiteLogo from "@/components/SiteLogo";
 import Logo from "@/components/Logo";
-import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon } from "@/components/ToolIcons";
+import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon } from "@/components/ToolIcons";
 import LogoutButton from "./logout-button";
 
 const TOOLS = [
@@ -25,6 +25,13 @@ const TOOLS = [
     Icon: () => <LeakAnalyzerIcon size={24} />,
     label: "Leak Analyzer",
     desc: "Analyse une hand history et détecte les écarts vs la stratégie CFR",
+    inDev: true,
+  },
+  {
+    href: "/pko-rp",
+    Icon: () => <PkoRpIcon size={24} />,
+    label: "PKO — KO & RP",
+    desc: "Colle une hand history : valeur des KO en blinds et RP de chaque joueur",
     inDev: true,
   },
   {
