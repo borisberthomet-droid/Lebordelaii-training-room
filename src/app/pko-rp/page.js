@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { parseWinamaxHH, buildHHReplay } from "@/lib/poker/hhParser";
+import { parseWinamaxHH, buildHHReplay, decomposeBuyIn } from "@/lib/poker/hhParser";
 import { computeSeatRP } from "@/lib/poker/rpFromHH";
 import { isHRCExport, computeHRCStats } from "@/lib/poker/hrcJson";
 import { isSharkScopeExport, parseSharkScopeTournament } from "@/lib/poker/sharkscopeJson";
@@ -37,6 +37,28 @@ function parseBBFromLevelText(levelText) {
   if (isNaN(val)) return null;
   if (m[2]) val *= 1000;
   return val;
+}
+
+// Retrouve le tournoi de la bibliothèque correspondant au nom détecté dans une HH — matching
+// approximatif (sous-chaîne, normalisé) car les noms complets Winamax ("GRAVITY - ROAD TO
+// WINAMAX SERIES 1000 €") ne correspondent jamais mot pour mot au nom court du tournoi
+// ("GRAVITY"). En cas d'ambiguïté (ex: "HIGHROLLER" trop générique), on départage par buy-in.
+function findLibraryMatch(tournName, buyInText) {
+  if (!tournName) return null;
+  const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const target = norm(tournName);
+  const candidates = sharkscopeLibrary.filter((t) => {
+    const name = norm(t.name);
+    return name && (target.includes(name) || name.includes(target));
+  });
+  if (candidates.length <= 1) return candidates[0] || null;
+  const buyIn = decomposeBuyIn(buyInText);
+  if (!buyIn) return candidates[0];
+  return candidates.reduce((best, c) => {
+    const diff = Math.abs(c.stake + c.rake - buyIn.total);
+    const bestDiff = Math.abs(best.stake + best.rake - buyIn.total);
+    return diff < bestDiff ? c : best;
+  });
 }
 
 function fileToBase64(file) {
@@ -123,7 +145,19 @@ export default function PkoRpPage() {
       setError('Impossible d\'identifier le héros dans cette main (pas de "Dealt to").');
       return;
     }
-    const cv = parseFloat(chipValue);
+
+    // Retrouve automatiquement le tournoi dans la bibliothèque à partir du nom détecté dans la
+    // HH — pas besoin de cliquer dessus manuellement si on l'a déjà collecté via SharkScope.
+    const match = findLibraryMatch(parsed.tournName, parsed.buyIn);
+    if (match) {
+      setSharkscopeTournament(match);
+      setLibraryId(match.id);
+      if (match.startingStack > 0 && match.stake > 0) {
+        setChipValue(String(match.stake / match.startingStack));
+      }
+    }
+
+    const cv = parseFloat(match?.startingStack > 0 ? match.stake / match.startingStack : chipValue);
     const avg = parseFloat(avgStackBB);
     const heroStackBB = hero.stackBB;
 
