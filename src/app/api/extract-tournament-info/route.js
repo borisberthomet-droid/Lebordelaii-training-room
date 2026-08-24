@@ -21,6 +21,7 @@ const EXTRACTION_TOOL = {
       knockoutType: { type: 'string', description: 'Type de knockout affiché, ex: "Random bounties"' },
       playersRegistered: { type: 'number', description: 'Nombre de joueurs actuellement inscrits/en jeu' },
       playersMax: { type: 'number', description: 'Nombre max de joueurs (ou total du field si visible)' },
+      averageStackChips: { type: 'number', description: '"Average Stack" affiché dans le bandeau du haut, en jetons' },
       currentLevel: { type: 'string', description: 'Niveau de blindes actuel affiché, ex: "500-1k +120"' },
       estimatedPrizepool: { type: 'number', description: 'Prizepool estimé annoncé, en euros' },
       currentPrizepool: { type: 'number', description: 'Prizepool actuel affiché (le gros chiffre en euros), en euros' },

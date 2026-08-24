@@ -24,6 +24,19 @@ function parseBountyEuro(bountyStr) {
 
 const pct = (v) => (v == null ? "—" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`);
 
+// "500-1k +120" / "3.50k-7k +800" -> la BB en jetons (nombre après le "-", avant l'ante)
+function parseBBFromLevelText(levelText) {
+  if (!levelText) return null;
+  const bbPart = String(levelText).split("-")[1];
+  if (!bbPart) return null;
+  const m = bbPart.match(/([\d.]+)(k)?/);
+  if (!m) return null;
+  let val = parseFloat(m[1]);
+  if (isNaN(val)) return null;
+  if (m[2]) val *= 1000;
+  return val;
+}
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -120,7 +133,17 @@ export default function PkoRpPage() {
       });
       const data = await res.json();
       if (!res.ok) { setExtractError(data.error || "Erreur inconnue"); return; }
-      setExtractResult(data.extracted);
+      const ex = data.extracted;
+      setExtractResult(ex);
+
+      // Applique automatiquement ce qui peut l'être aux champs du calcul RP en dessous.
+      if (ex.buyInStaking > 0 && ex.startingStackChips > 0) {
+        setChipValue(String(ex.buyInStaking / ex.startingStackChips));
+      }
+      const bb = parseBBFromLevelText(ex.currentLevel);
+      if (ex.averageStackChips > 0 && bb > 0) {
+        setAvgStackBB(String(Math.round((ex.averageStackChips / bb) * 10) / 10));
+      }
     } catch (e) {
       setExtractError(e.message);
     } finally {
@@ -155,13 +178,9 @@ export default function PkoRpPage() {
       <div style={{ background: "var(--panel)", border: "1px dashed var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
           <span style={{ fontSize: 13, fontWeight: 600 }}>Extraction depuis screenshots</span>
-          <span style={{
-            fontSize: 10, fontWeight: 600, color: "#E8C547", background: "rgba(232,197,71,0.12)",
-            border: "1px solid rgba(232,197,71,0.3)", borderRadius: 999, padding: "2px 8px",
-          }}>Test — sortie brute non branchée au calcul RP</span>
         </div>
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10 }}>
-          Screenshots des panneaux INFO / PAYOUT du client Winamax — vérifions d&apos;abord ce que l&apos;extraction donne avant de la brancher au tableau ci-dessous.
+          Screenshots des panneaux INFO / PAYOUT du client Winamax — la valeur du jeton et le stack moyen ci-dessous seront pré-remplis automatiquement.
         </div>
         <input type="file" accept="image/*" multiple onChange={(e) => handleFiles(e.target.files)} style={{ fontSize: 12, marginBottom: 10 }} />
         {shots.length > 0 && (
@@ -185,6 +204,14 @@ export default function PkoRpPage() {
           {extracting ? "Extraction…" : "Extraire"}
         </button>
         {extractError && <div style={{ fontSize: 12, color: "#E0645A", marginTop: 10 }}>{extractError}</div>}
+        {extractResult && (
+          <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 600, marginTop: 10 }}>
+            ✓ {extractResult.tournamentName || "Structure"} — valeur du jeton
+            {extractResult.buyInStaking > 0 && extractResult.startingStackChips > 0
+              ? ` (${(extractResult.buyInStaking / extractResult.startingStackChips).toFixed(4)}€)` : ""}
+            {" "}et stack moyen appliqués au formulaire ci-dessous.
+          </div>
+        )}
         {extractResult && (
           <pre style={{
             marginTop: 12, padding: 12, background: "var(--panel-2)", border: "1px solid var(--border)",
