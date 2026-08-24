@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { parseWinamaxHH, buildHHReplay } from "@/lib/poker/hhParser";
 import { computeSeatRP } from "@/lib/poker/rpFromHH";
+import { isHRCExport, computeHRCStats } from "@/lib/poker/hrcJson";
 import { PkoRpIcon } from "@/components/ToolIcons";
 
 const inputStyle = {
@@ -24,26 +25,44 @@ function parseBountyEuro(bountyStr) {
 const pct = (v) => (v == null ? "—" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`);
 
 export default function PkoRpPage() {
-  const [hhText, setHhText] = useState("");
+  const [input, setInput] = useState("");
   const [avgStackBB, setAvgStackBB] = useState("");
   const [fieldLeft, setFieldLeft] = useState(50);
   const [chipValue, setChipValue] = useState("");
-  const [rows, setRows] = useState(null);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [parsedType, setParsedType] = useState(null); // "winamax" | "hrc" | null
+  const [winamaxRows, setWinamaxRows] = useState(null);
+  const [hrcStats, setHrcStats] = useState(null);
   const [error, setError] = useState("");
 
   const handleAnalyze = () => {
     setError("");
-    setRows(null);
-    if (!hhText.trim()) { setError("Colle une hand history d'abord."); return; }
-    const parsed = parseWinamaxHH(hhText);
-    const bb = buildHHReplay(hhText).bb;
+    setWinamaxRows(null);
+    setHrcStats(null);
+    setParsedType(null);
+    if (!input.trim()) { setError("Colle une hand history ou un export JSON d'abord."); return; }
+
+    let json = null;
+    try { json = JSON.parse(input); } catch { /* pas du JSON, on tente le format texte Winamax */ }
+
+    if (json && isHRCExport(json)) {
+      const stats = computeHRCStats(json);
+      if (!stats.players.length) { setError("Export HRC reconnu mais aucun joueur à la table."); return; }
+      setParsedType("hrc");
+      setHrcStats(stats);
+      setHeroIndex(0);
+      return;
+    }
+
+    const parsed = parseWinamaxHH(input);
+    const bb = buildHHReplay(input).bb;
     if (!parsed.seatsBase?.length || !bb) {
-      setError("Hand history non reconnue — vérifie qu'il s'agit bien d'un export Winamax complet.");
+      setError("Format non reconnu — colle soit une hand history Winamax complète, soit un export JSON HRC.");
       return;
     }
     const hero = parsed.seatsBase.find((s) => s.role === "hero");
     if (!hero) {
-      setError("Impossible d'identifier le héros dans cette main (pas de \"Dealt to\").");
+      setError('Impossible d\'identifier le héros dans cette main (pas de "Dealt to").');
       return;
     }
     const cv = parseFloat(chipValue);
@@ -53,16 +72,27 @@ export default function PkoRpPage() {
     const built = parsed.seatsBase.map((seat) => {
       const bountyEuro = parseBountyEuro(seat.bounty);
       const bountyBB = cv > 0 ? bountyEuro / (cv * bb) : null;
-      if (seat.role === "hero") {
-        return { ...seat, bountyEuro, bountyBB, isHero: true };
-      }
+      if (seat.role === "hero") return { ...seat, bountyEuro, bountyBB, isHero: true };
       const rp = avg > 0 && bountyBB != null
         ? computeSeatRP({ villainStackBB: seat.stackBB, villainBountyBB: bountyBB, heroStackBB, avgStackBB: avg, fieldLeftPct: fieldLeft })
         : null;
       return { ...seat, bountyEuro, bountyBB, isHero: false, rp };
     });
-    setRows(built);
+    setParsedType("winamax");
+    setWinamaxRows(built);
   };
+
+  const hrcRows = useMemo(() => {
+    if (!hrcStats) return null;
+    const avg = hrcStats.avgStackBB;
+    const hero = hrcStats.players[heroIndex];
+    if (!hero) return null;
+    return hrcStats.players.map((p, i) => {
+      if (i === heroIndex) return { ...p, isHero: true, seatLabel: `Siège ${i + 1}` };
+      const rp = computeSeatRP({ villainStackBB: p.stackBB, villainBountyBB: p.koBB, heroStackBB: hero.stackBB, avgStackBB: avg, fieldLeftPct: fieldLeft });
+      return { ...p, isHero: false, seatLabel: `Siège ${i + 1}`, rp };
+    });
+  }, [hrcStats, heroIndex, fieldLeft]);
 
   return (
     <div style={{ minHeight: "100vh", padding: 20, maxWidth: 900, margin: "0 auto" }}>
@@ -71,37 +101,58 @@ export default function PkoRpPage() {
           <PkoRpIcon size={22} />
           <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>PKO — KO &amp; RP</span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
-          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Depuis une hand history</span>
+          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Depuis une hand history ou un export HRC</span>
         </div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>Hand history Winamax (texte complet)</div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
+          Hand history Winamax (texte complet) OU export JSON HRC — collé ici, le format est détecté automatiquement
+        </div>
         <textarea
-          value={hhText} onChange={(e) => setHhText(e.target.value)} rows={6}
+          value={input} onChange={(e) => setInput(e.target.value)} rows={6}
           style={{ ...inputStyle, fontFamily: "var(--font-ibm-plex-mono), monospace", marginBottom: 14 }}
         />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 14 }}>
-          <div>
-            <label style={labelStyle}>Stack moyen (BB)</label>
-            <input type="number" min={0} value={avgStackBB} onChange={(e) => setAvgStackBB(e.target.value)} style={inputStyle} placeholder="ex: 40" />
-          </div>
           <div>
             <label style={labelStyle}>% Field Left</label>
             <select value={fieldLeft} onChange={(e) => setFieldLeft(e.target.value === "TF" ? "TF" : Number(e.target.value))} style={inputStyle}>
               {FL_OPTIONS.map((v) => <option key={v} value={v}>{v === "TF" ? "Table finale" : `${v}%`}</option>)}
             </select>
           </div>
-          <div>
-            <label style={labelStyle}>Valeur d&apos;un jeton (€)</label>
-            <input type="number" min={0} step="0.0001" value={chipValue} onChange={(e) => setChipValue(e.target.value)} style={inputStyle} placeholder="ex: 0.0005" />
+          {parsedType !== "hrc" && (
+            <>
+              <div>
+                <label style={labelStyle}>Stack moyen (BB)</label>
+                <input type="number" min={0} value={avgStackBB} onChange={(e) => setAvgStackBB(e.target.value)} style={inputStyle} placeholder="ex: 40" />
+              </div>
+              <div>
+                <label style={labelStyle}>Valeur d&apos;un jeton (€)</label>
+                <input type="number" min={0} step="0.0001" value={chipValue} onChange={(e) => setChipValue(e.target.value)} style={inputStyle} placeholder="ex: 0.0005" />
+              </div>
+            </>
+          )}
+          {parsedType === "hrc" && hrcStats && (
+            <div>
+              <label style={labelStyle}>Ton siège</label>
+              <select value={heroIndex} onChange={(e) => setHeroIndex(Number(e.target.value))} style={inputStyle}>
+                {hrcStats.players.map((_, i) => <option key={i} value={i}>Siège {i + 1}</option>)}
+              </select>
+            </div>
+          )}
+        </div>
+        {parsedType !== "hrc" && (
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14 }}>
+            Format hand history texte : la valeur d&apos;un jeton et le stack moyen ne sont pas dans la HH — indique-les à la main. Un export JSON HRC calcule tout automatiquement (structure de payout incluse).
           </div>
-        </div>
-        <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14 }}>
-          La valeur d&apos;un jeton (prizepool restant ÷ total des jetons en jeu) n&apos;est pas dans la hand history — indique-la pour convertir les bounties € en BB. Sans elle, les ratios KO/stack et le RP ne peuvent pas être calculés (le tableau restera limité aux stacks).
-        </div>
+        )}
+        {parsedType === "hrc" && hrcStats && (
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14 }}>
+            Export HRC détecté — {hrcStats.nbTotal} joueurs restants, {hrcStats.totalChips.toFixed(1)} jetons (BB) en jeu, {hrcStats.remainingTotalPrizes.toFixed(2)}€ de prizepool restant ({hrcStats.bountyType === "KO" ? "Mystery KO" : "PKO, facteur ×" + hrcStats.progressiveFactor}). Stack moyen et valeur des KO calculés automatiquement.
+          </div>
+        )}
 
         <button onClick={handleAnalyze} style={{
           padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
@@ -113,7 +164,7 @@ export default function PkoRpPage() {
         {error && <div style={{ fontSize: 12, color: "#E0645A", marginTop: 12 }}>{error}</div>}
       </div>
 
-      {rows && (
+      {(winamaxRows || hrcRows) && (
         <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 20, overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 720 }}>
             <thead>
@@ -130,25 +181,31 @@ export default function PkoRpPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.position} style={{ borderTop: "1px solid var(--border)", background: r.isHero ? "rgba(52,211,153,0.06)" : "transparent" }}>
-                  <td style={{ padding: "8px" }}>{r.position}{r.isHero ? " (Héros)" : ""}</td>
-                  <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.stackBB || "—"}</td>
-                  <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.bountyEuro ? `${r.bountyEuro}€` : "—"}</td>
-                  <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.bountyBB != null ? r.bountyBB.toFixed(1) : "—"}</td>
-                  {r.isHero ? (
-                    <td colSpan={5} style={{ padding: "8px", color: "var(--text-muted)" }}>— référence —</td>
-                  ) : (
-                    <>
-                      <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp?.ratio != null ? r.rp.ratio.toFixed(2) : "—"}</td>
-                      <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp ? pct(r.rp.bonus) : "—"}</td>
-                      <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp ? pct(r.rp.base) : "—"} <span style={{ color: "var(--text-muted)" }}>({r.rp?.category || "—"})</span></td>
-                      <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp ? pct(r.rp.clAdvantage) : "—"} <span style={{ color: "var(--text-muted)" }}>({r.rp?.clCategory || "—"})</span></td>
-                      <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace", fontWeight: 700, color: "var(--accent)" }}>{r.rp ? pct(r.rp.total) : "—"}</td>
-                    </>
-                  )}
-                </tr>
-              ))}
+              {(winamaxRows || hrcRows).map((r, i) => {
+                const label = parsedType === "hrc" ? r.seatLabel : r.position;
+                const stackBB = parsedType === "hrc" ? r.stackBB.toFixed(1) : r.stackBB;
+                const bountyBB = parsedType === "hrc" ? r.koBB : r.bountyBB;
+                const bountyEuro = r.bountyEuro;
+                return (
+                  <tr key={i} style={{ borderTop: "1px solid var(--border)", background: r.isHero ? "rgba(52,211,153,0.06)" : "transparent" }}>
+                    <td style={{ padding: "8px" }}>{label}{r.isHero ? " (Héros)" : ""}</td>
+                    <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{stackBB || "—"}</td>
+                    <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{bountyEuro ? `${bountyEuro}€` : "—"}</td>
+                    <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{bountyBB != null ? bountyBB.toFixed(1) : "—"}</td>
+                    {r.isHero ? (
+                      <td colSpan={5} style={{ padding: "8px", color: "var(--text-muted)" }}>— référence —</td>
+                    ) : (
+                      <>
+                        <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp?.ratio != null ? r.rp.ratio.toFixed(2) : "—"}</td>
+                        <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp ? pct(r.rp.bonus) : "—"}</td>
+                        <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp ? pct(r.rp.base) : "—"} <span style={{ color: "var(--text-muted)" }}>({r.rp?.category || "—"})</span></td>
+                        <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{r.rp ? pct(r.rp.clAdvantage) : "—"} <span style={{ color: "var(--text-muted)" }}>({r.rp?.clCategory || "—"})</span></td>
+                        <td style={{ padding: "8px", fontFamily: "var(--font-ibm-plex-mono), monospace", fontWeight: 700, color: "var(--accent)" }}>{r.rp ? pct(r.rp.total) : "—"}</td>
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
