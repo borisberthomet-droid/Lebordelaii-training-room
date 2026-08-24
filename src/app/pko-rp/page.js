@@ -24,7 +24,20 @@ function parseBountyEuro(bountyStr) {
 
 const pct = (v) => (v == null ? "—" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`);
 
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function PkoRpPage() {
+  const [shots, setShots] = useState([]); // [{ file, previewUrl, mediaType, base64 }]
+  const [extracting, setExtracting] = useState(false);
+  const [extractResult, setExtractResult] = useState(null);
+  const [extractError, setExtractError] = useState("");
   const [input, setInput] = useState("");
   const [avgStackBB, setAvgStackBB] = useState("");
   const [fieldLeft, setFieldLeft] = useState(50);
@@ -82,6 +95,39 @@ export default function PkoRpPage() {
     setWinamaxRows(built);
   };
 
+  const handleFiles = async (fileList) => {
+    const files = Array.from(fileList || []);
+    const withData = await Promise.all(files.map(async (file) => ({
+      file, previewUrl: URL.createObjectURL(file), mediaType: file.type, base64: await fileToBase64(file),
+    })));
+    setShots((prev) => [...prev, ...withData]);
+    setExtractResult(null);
+    setExtractError("");
+  };
+
+  const removeShot = (i) => setShots((prev) => prev.filter((_, idx) => idx !== i));
+
+  const handleExtract = async () => {
+    if (!shots.length) { setExtractError("Ajoute au moins un screenshot d'abord."); return; }
+    setExtracting(true);
+    setExtractError("");
+    setExtractResult(null);
+    try {
+      const res = await fetch("/api/extract-tournament-info", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ images: shots.map((s) => ({ mediaType: s.mediaType, base64: s.base64 })) }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setExtractError(data.error || "Erreur inconnue"); return; }
+      setExtractResult(data.extracted);
+    } catch (e) {
+      setExtractError(e.message);
+    } finally {
+      setExtracting(false);
+    }
+  };
+
   const hrcRows = useMemo(() => {
     if (!hrcStats) return null;
     const avg = hrcStats.avgStackBB;
@@ -104,6 +150,49 @@ export default function PkoRpPage() {
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Depuis une hand history ou un export HRC</span>
         </div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
+      </div>
+
+      <div style={{ background: "var(--panel)", border: "1px dashed var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 600 }}>Extraction depuis screenshots</span>
+          <span style={{
+            fontSize: 10, fontWeight: 600, color: "#E8C547", background: "rgba(232,197,71,0.12)",
+            border: "1px solid rgba(232,197,71,0.3)", borderRadius: 999, padding: "2px 8px",
+          }}>Test — sortie brute non branchée au calcul RP</span>
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10 }}>
+          Screenshots des panneaux INFO / PAYOUT du client Winamax — vérifions d&apos;abord ce que l&apos;extraction donne avant de la brancher au tableau ci-dessous.
+        </div>
+        <input type="file" accept="image/*" multiple onChange={(e) => handleFiles(e.target.files)} style={{ fontSize: 12, marginBottom: 10 }} />
+        {shots.length > 0 && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+            {shots.map((s, i) => (
+              <div key={i} style={{ position: "relative" }}>
+                <img src={s.previewUrl} alt="" style={{ height: 70, borderRadius: 6, border: "1px solid var(--border)" }} />
+                <button onClick={() => removeShot(i)} style={{
+                  position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%",
+                  background: "#E0645A", color: "#fff", border: "none", fontSize: 11, cursor: "pointer", lineHeight: 1,
+                }}>×</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <button onClick={handleExtract} disabled={extracting} style={{
+          padding: "8px 16px", background: "var(--panel-2)", color: "var(--text)",
+          border: "1px solid var(--border)", borderRadius: 8, fontSize: 12, cursor: "pointer",
+          opacity: extracting ? 0.6 : 1,
+        }}>
+          {extracting ? "Extraction…" : "Extraire"}
+        </button>
+        {extractError && <div style={{ fontSize: 12, color: "#E0645A", marginTop: 10 }}>{extractError}</div>}
+        {extractResult && (
+          <pre style={{
+            marginTop: 12, padding: 12, background: "var(--panel-2)", border: "1px solid var(--border)",
+            borderRadius: 8, fontSize: 11, overflowX: "auto", fontFamily: "var(--font-ibm-plex-mono), monospace",
+          }}>
+            {JSON.stringify(extractResult, null, 2)}
+          </pre>
+        )}
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>
