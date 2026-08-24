@@ -359,9 +359,13 @@ export default function PkoRpPage() {
         </div>
         {parsedType !== "hrc" && parsedType !== "sharkscope" && (
           <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14 }}>
-            Format hand history texte : la valeur d&apos;un jeton et le stack moyen ne sont pas dans la HH — indique-les à la main
-            {knownStartingStack > 0 ? ` (stack de départ connu : ${knownStartingStack} jetons, via un screenshot extrait plus haut).` : "."}
-            {" "}Un export JSON HRC calcule tout automatiquement (structure de payout incluse).
+            Format hand history texte : le stack moyen du field n&apos;est pas dans la HH — indique-le à la main.
+            {" "}Valeur du jeton
+            {sharkscopeTournament?.startingStack > 0
+              ? ` calculée automatiquement (stack de départ ${sharkscopeTournament.startingStack} jetons, via la bibliothèque : ${sharkscopeTournament.name}).`
+              : knownStartingStack > 0
+                ? ` calculée automatiquement (stack de départ ${knownStartingStack} jetons, via un screenshot extrait plus haut).`
+                : " à indiquer à la main, sauf si le tournoi est reconnu via la bibliothèque ci-dessus ou un screenshot INFO."}
           </div>
         )}
         {parsedType === "hrc" && hrcStats && (
@@ -377,9 +381,11 @@ export default function PkoRpPage() {
             <div style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
               {sharkscopeTournament.totalEntrants} entrants + {sharkscopeTournament.reEntries} recaves · Guarantee {sharkscopeTournament.guarantee}€ · Prizepool réel {sharkscopeTournament.prizePool}€ · Buy-in {sharkscopeTournament.stake}€ + {sharkscopeTournament.rake}€ rake · {sharkscopeTournament.payoutTable.length} places payées
               <br />
-              {knownStartingStack > 0
-                ? `Valeur du jeton appliquée automatiquement (stack de départ ${knownStartingStack} connu via un screenshot).`
-                : "Extrait d'abord un screenshot du panneau INFO (ci-dessus) pour connaître le stack de départ et calculer la valeur du jeton."}
+              {sharkscopeTournament.startingStack > 0
+                ? `Valeur du jeton appliquée automatiquement (stack de départ ${sharkscopeTournament.startingStack} jetons, connu dans la bibliothèque).`
+                : knownStartingStack > 0
+                  ? `Valeur du jeton appliquée automatiquement (stack de départ ${knownStartingStack} connu via un screenshot).`
+                  : "Extrait un screenshot du panneau INFO (ci-dessus) pour connaître le stack de départ et calculer la valeur du jeton."}
               {" "}{(winamaxRows || hrcRows)
                 ? "Grille RP calculée ci-dessous."
                 : "Colle ensuite une hand history de ce tournoi pour obtenir la grille RP — cet export ne contient pas les stacks des joueurs, seulement la structure de payout réelle."}

@@ -1110,7 +1110,8 @@
         "prizeBountyComponent": 750,
         "playerName": "Kokosmelk"
       }
-    ]
+    ],
+    "startingStack": 20000
   },
   {
     "id": "1095534073",
@@ -3009,7 +3010,8 @@
         "prizeBountyComponent": 10,
         "playerName": "Klit Kat"
       }
-    ]
+    ],
+    "startingStack": 20000
   },
   {
     "id": "1050216146",
@@ -3360,7 +3362,8 @@
         "prizeBountyComponent": 25,
         "playerName": "Cherviachek"
       }
-    ]
+    ],
+    "startingStack": 20000
   },
   {
     "id": "1085481374",
@@ -3513,7 +3516,8 @@
         "prizeBountyComponent": 21.4,
         "playerName": "Bilouuuu695"
       }
-    ]
+    ],
+    "startingStack": 20000
   },
   {
     "id": "1085468785",
@@ -4080,6 +4084,7 @@
         "prizeBountyComponent": 10,
         "playerName": "<UNKNOWN>"
       }
-    ]
+    ],
+    "startingStack": 20000
   }
 ]
