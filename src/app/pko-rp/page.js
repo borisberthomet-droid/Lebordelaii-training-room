@@ -244,6 +244,42 @@ export default function PkoRpPage() {
     });
   }, [hrcStats, heroIndex, fieldLeft]);
 
+  // Le RP n'est pas une propriété d'un joueur — c'est une valeur propre à CHAQUE confrontation
+  // (qui pousse / qui peut caller). La matrice calcule le RP pour toutes les paires de sièges,
+  // pas seulement héros-vs-adversaires, pour retrouver ce que fait Trident Lab.
+  const matrixSeats = useMemo(() => {
+    if (parsedType === "hrc" && hrcStats) {
+      return hrcStats.players.map((p, i) => ({ key: i, label: `Siège ${i + 1}`, stackBB: p.stackBB, bountyBB: p.koBB }));
+    }
+    if (parsedType === "winamax" && winamaxRows) {
+      return winamaxRows.map((r, i) => ({ key: i, label: r.position, name: r.name, stackBB: r.stackBB, bountyBB: r.bountyBB }));
+    }
+    return null;
+  }, [parsedType, hrcStats, winamaxRows]);
+
+  const matrixAvg = parsedType === "hrc" ? hrcStats?.avgStackBB : parseFloat(avgStackBB);
+
+  const rpMatrix = useMemo(() => {
+    if (!matrixSeats || !(matrixAvg > 0)) return null;
+    return matrixSeats.map((rowSeat) =>
+      matrixSeats.map((colSeat) => {
+        if (rowSeat.key === colSeat.key) return null;
+        if (colSeat.bountyBB == null || rowSeat.stackBB == null || colSeat.stackBB == null) return null;
+        return computeSeatRP({
+          villainStackBB: colSeat.stackBB, villainBountyBB: colSeat.bountyBB,
+          heroStackBB: rowSeat.stackBB, avgStackBB: matrixAvg, fieldLeftPct: fieldLeft,
+        });
+      })
+    );
+  }, [matrixSeats, matrixAvg, fieldLeft]);
+
+  function rpCellStyle(total) {
+    if (total == null) return { background: "var(--panel-2)", color: "var(--text-muted)" };
+    const magnitude = Math.min(Math.abs(total) / 0.25, 1);
+    const rgb = total >= 0 ? "224,101,90" : "52,211,153";
+    return { background: `rgba(${rgb}, ${(0.15 + magnitude * 0.55).toFixed(2)})`, color: "#fff" };
+  }
+
   return (
     <div style={{ minHeight: "100vh", padding: 20, maxWidth: 900, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
@@ -459,6 +495,50 @@ export default function PkoRpPage() {
                   </tr>
                 );
               })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {rpMatrix && (
+        <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 20, overflowX: "auto", marginTop: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Matrice RP (tous vs tous)</div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>
+            Le RP est propre à chaque confrontation, pas à un joueur — chaque case donne le RP si le siège en ligne pousse et que celui en colonne a la possibilité de caller.
+          </div>
+          <table style={{ borderCollapse: "collapse", fontSize: 11 }}>
+            <thead>
+              <tr>
+                <th style={{ padding: "6px 8px", textAlign: "left", color: "var(--text-muted)" }}>Pousse ↓ / Peut caller →</th>
+                {matrixSeats.map((c) => (
+                  <th key={c.key} style={{ padding: "6px 8px", textAlign: "center", color: "var(--text-muted)", minWidth: 76 }}>
+                    <div style={{ fontWeight: 700, color: "var(--text)" }}>{c.label}</div>
+                    {c.name && <div style={{ fontSize: 9 }}>{c.name}</div>}
+                    <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{c.stackBB} BB</div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {matrixSeats.map((rowSeat, i) => (
+                <tr key={rowSeat.key} style={{ borderTop: "1px solid var(--border)" }}>
+                  <th style={{ padding: "6px 8px", textAlign: "left" }}>
+                    <div style={{ fontWeight: 700 }}>{rowSeat.label}</div>
+                    {rowSeat.name && <div style={{ fontSize: 9, color: "var(--text-muted)" }}>{rowSeat.name}</div>}
+                    <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--text-muted)" }}>{rowSeat.stackBB} BB</div>
+                  </th>
+                  {matrixSeats.map((colSeat, j) => {
+                    const cell = rpMatrix[i][j];
+                    if (i === j) return <td key={colSeat.key} style={{ padding: "6px 8px", textAlign: "center", background: "var(--panel-2)" }}>—</td>;
+                    return (
+                      <td key={colSeat.key} style={{ padding: "6px 8px", textAlign: "center", ...rpCellStyle(cell?.total) }}>
+                        <div style={{ fontWeight: 700 }}>{cell ? pct(cell.total) : "—"}</div>
+                        <div style={{ fontSize: 9, opacity: 0.85 }}>{cell?.ratio != null ? `KO/S ${cell.ratio.toFixed(2)}` : ""}</div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
