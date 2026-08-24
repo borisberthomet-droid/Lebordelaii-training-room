@@ -5,7 +5,7 @@ import Link from "next/link";
 import { parseWinamaxHH, buildHHReplay, decomposeBuyIn } from "@/lib/poker/hhParser";
 import { computeSeatRP } from "@/lib/poker/rpFromHH";
 import { isHRCExport, computeHRCStats } from "@/lib/poker/hrcJson";
-import { isSharkScopeExport, parseSharkScopeTournament } from "@/lib/poker/sharkscopeJson";
+import { isSharkScopeExport, parseSharkScopeTournament, estimatePlayersRemaining, chipValueAt } from "@/lib/poker/sharkscopeJson";
 import { PkoRpIcon } from "@/components/ToolIcons";
 import sharkscopeLibrary from "@/data/sharkscopeLibrary.json";
 
@@ -17,6 +17,12 @@ const inputStyle = {
 const labelStyle = { fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 };
 
 const FL_OPTIONS = [75, 50, 25, "TF"];
+
+// PKO/SKO standard 50/50 : seule la moitié du bounty affiché part réellement en cash immédiat
+// à l'élimination, l'autre moitié est roulée sur le stack du tueur — donc n'existe pas encore
+// comme valeur "gagnée". Voir Feuil1 de Boris : "le bounty = la partie que tu gagnes sans la
+// partie qui va sur ta tête".
+const PROGRESSIVE_FACTOR = 0.5;
 
 function parseBountyEuro(bountyStr) {
   if (!bountyStr) return 0;
@@ -149,21 +155,29 @@ export default function PkoRpPage() {
     // Retrouve automatiquement le tournoi dans la bibliothèque à partir du nom détecté dans la
     // HH — pas besoin de cliquer dessus manuellement si on l'a déjà collecté via SharkScope.
     const match = findLibraryMatch(parsed.tournName, parsed.buyIn);
+    let cv = parseFloat(chipValue); // repli : valeur constante saisie à la main
     if (match) {
       setSharkscopeTournament(match);
       setLibraryId(match.id);
-      if (match.startingStack > 0 && match.stake > 0) {
-        setChipValue(String(match.stake / match.startingStack));
+      if (match.startingStack > 0) {
+        // Valeur du jeton à CE stade du tournoi (prizepool restant / jetons en jeu), pas la
+        // valeur de départ — un jeton ne vaut pas la même chose au niveau 1 et proche des ITM.
+        const playersRemaining = estimatePlayersRemaining(match, fieldLeft);
+        const stageChipValue = chipValueAt(match, playersRemaining);
+        if (stageChipValue > 0) {
+          cv = stageChipValue;
+          setChipValue(String(stageChipValue));
+        }
       }
     }
 
-    const cv = parseFloat(match?.startingStack > 0 ? match.stake / match.startingStack : chipValue);
     const avg = parseFloat(avgStackBB);
     const heroStackBB = hero.stackBB;
 
     const built = parsed.seatsBase.map((seat) => {
       const bountyEuro = parseBountyEuro(seat.bounty);
-      const bountyBB = cv > 0 ? bountyEuro / (cv * bb) : null;
+      // Seule la moitié du bounty affiché est du cash immédiat (PROGRESSIVE_FACTOR) — voir Feuil1.
+      const bountyBB = cv > 0 ? (bountyEuro * PROGRESSIVE_FACTOR) / (cv * bb) : null;
       if (seat.role === "hero") return { ...seat, bountyEuro, bountyBB, isHero: true };
       const rp = avg > 0 && bountyBB != null
         ? computeSeatRP({ villainStackBB: seat.stackBB, villainBountyBB: bountyBB, heroStackBB, avgStackBB: avg, fieldLeftPct: fieldLeft })
