@@ -1,0 +1,4085 @@
+[
+  {
+    "id": "1084067463",
+    "name": "#28 - W SERIES - HIGHROLLER 500 K - SPACE KO - DAY 3",
+    "currency": "EUR",
+    "totalEntrants": 328,
+    "reEntries": 223,
+    "tickets": 0,
+    "guarantee": 500000,
+    "prizePool": 523450,
+    "stake": 950,
+    "rake": 50,
+    "playersPerTable": 6,
+    "payoutTable": [
+      {
+        "position": 1,
+        "prizeEuro": 72570.06,
+        "prizeBountyComponent": 34798.05,
+        "playerName": "SmilleThHero"
+      },
+      {
+        "position": 2,
+        "prizeEuro": 44783.67,
+        "prizeBountyComponent": 7012.11,
+        "playerName": "Luis Wouldo"
+      },
+      {
+        "position": 3,
+        "prizeEuro": 27075.04,
+        "prizeBountyComponent": 1894,
+        "playerName": "xorxinho88"
+      },
+      {
+        "position": 4,
+        "prizeEuro": 16501.84,
+        "prizeBountyComponent": 657.41,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 5,
+        "prizeEuro": 12673.99,
+        "prizeBountyComponent": 815.2,
+        "playerName": "RondinDuVN"
+      },
+      {
+        "position": 6,
+        "prizeEuro": 12486.45,
+        "prizeBountyComponent": 4054.92,
+        "playerName": "PalmBeachPit"
+      },
+      {
+        "position": 7,
+        "prizeEuro": 8812.72,
+        "prizeBountyComponent": 2670,
+        "playerName": "TokenDumTrip"
+      },
+      {
+        "position": 8,
+        "prizeEuro": 5038.45,
+        "prizeBountyComponent": 450,
+        "playerName": "P. Richard"
+      },
+      {
+        "position": 9,
+        "prizeEuro": 11596.28,
+        "prizeBountyComponent": 7007.83,
+        "playerName": "ZdnekZizka69"
+      },
+      {
+        "position": 10,
+        "prizeEuro": 5771.43,
+        "prizeBountyComponent": 2255,
+        "playerName": "AieJacques"
+      },
+      {
+        "position": 11,
+        "prizeEuro": 6303.48,
+        "prizeBountyComponent": 2787.05,
+        "playerName": "ObsiTrap"
+      },
+      {
+        "position": 12,
+        "prizeEuro": 3876.29,
+        "prizeBountyComponent": 1109.6,
+        "playerName": "R. Surcouf"
+      },
+      {
+        "position": 13,
+        "prizeEuro": 4306.69,
+        "prizeBountyComponent": 1540,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 14,
+        "prizeEuro": 4396.69,
+        "prizeBountyComponent": 1630,
+        "playerName": "Mc-courgette"
+      },
+      {
+        "position": 15,
+        "prizeEuro": 4376.41,
+        "prizeBountyComponent": 2140,
+        "playerName": "unico user"
+      },
+      {
+        "position": 16,
+        "prizeEuro": 1943,
+        "prizeBountyComponent": 1943,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 17,
+        "prizeEuro": 1000,
+        "prizeBountyComponent": 0,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 18,
+        "prizeEuro": 2630.41,
+        "prizeBountyComponent": 394,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 19,
+        "prizeEuro": 3192.41,
+        "prizeBountyComponent": 956,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 20,
+        "prizeEuro": 3231.41,
+        "prizeBountyComponent": 995,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 21,
+        "prizeEuro": 3278.66,
+        "prizeBountyComponent": 1420,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 22,
+        "prizeEuro": 3483.66,
+        "prizeBountyComponent": 1625,
+        "playerName": "Gobbzilla"
+      },
+      {
+        "position": 23,
+        "prizeEuro": 3842.66,
+        "prizeBountyComponent": 1984,
+        "playerName": "GT0_Ski"
+      },
+      {
+        "position": 24,
+        "prizeEuro": 2408.66,
+        "prizeBountyComponent": 550,
+        "playerName": "oscesa"
+      },
+      {
+        "position": 25,
+        "prizeEuro": 3402.66,
+        "prizeBountyComponent": 1544,
+        "playerName": "-Supasym-"
+      },
+      {
+        "position": 26,
+        "prizeEuro": 4872.81,
+        "prizeBountyComponent": 3014.15,
+        "playerName": "IMakeUDance"
+      },
+      {
+        "position": 27,
+        "prizeEuro": 2889.45,
+        "prizeBountyComponent": 1300,
+        "playerName": "AsFantome"
+      },
+      {
+        "position": 28,
+        "prizeEuro": 3639.45,
+        "prizeBountyComponent": 2050,
+        "playerName": "Contra-Legem"
+      },
+      {
+        "position": 29,
+        "prizeEuro": 2714.45,
+        "prizeBountyComponent": 1125,
+        "playerName": "Don Piparone"
+      },
+      {
+        "position": 30,
+        "prizeEuro": 4317.45,
+        "prizeBountyComponent": 2728,
+        "playerName": "SYLAASS"
+      },
+      {
+        "position": 31,
+        "prizeEuro": 5712.2,
+        "prizeBountyComponent": 4122.75,
+        "playerName": ". ..   . ."
+      },
+      {
+        "position": 32,
+        "prizeEuro": 5869.45,
+        "prizeBountyComponent": 4280,
+        "playerName": "bmbn73"
+      },
+      {
+        "position": 33,
+        "prizeEuro": 3799.79,
+        "prizeBountyComponent": 2400,
+        "playerName": "Ted  Lasso"
+      },
+      {
+        "position": 34,
+        "prizeEuro": 5117.29,
+        "prizeBountyComponent": 3717.5,
+        "playerName": "ET PANN"
+      },
+      {
+        "position": 35,
+        "prizeEuro": 2249.79,
+        "prizeBountyComponent": 850,
+        "playerName": "Capt Americo"
+      },
+      {
+        "position": 36,
+        "prizeEuro": 2049.79,
+        "prizeBountyComponent": 650,
+        "playerName": "JB Pano"
+      },
+      {
+        "position": 37,
+        "prizeEuro": 4079.79,
+        "prizeBountyComponent": 2680,
+        "playerName": "puang manee"
+      },
+      {
+        "position": 38,
+        "prizeEuro": 7354.79,
+        "prizeBountyComponent": 5955,
+        "playerName": "EV&F0cUs"
+      },
+      {
+        "position": 39,
+        "prizeEuro": 2251.67,
+        "prizeBountyComponent": 981,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 40,
+        "prizeEuro": 1770.67,
+        "prizeBountyComponent": 500,
+        "playerName": "Jossperger"
+      },
+      {
+        "position": 41,
+        "prizeEuro": 2740.67,
+        "prizeBountyComponent": 1470,
+        "playerName": "SemperAnter"
+      },
+      {
+        "position": 42,
+        "prizeEuro": 1490.67,
+        "prizeBountyComponent": 220,
+        "playerName": "Jesuisimmort"
+      },
+      {
+        "position": 43,
+        "prizeEuro": 1720.67,
+        "prizeBountyComponent": 450,
+        "playerName": "muchoquqo"
+      },
+      {
+        "position": 44,
+        "prizeEuro": 1520.67,
+        "prizeBountyComponent": 250,
+        "playerName": "2.Many.Outs"
+      },
+      {
+        "position": 45,
+        "prizeEuro": 1190.04,
+        "prizeBountyComponent": 0,
+        "playerName": "MecdelaCalle"
+      },
+      {
+        "position": 46,
+        "prizeEuro": 1460.04,
+        "prizeBountyComponent": 270,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 47,
+        "prizeEuro": 2140.04,
+        "prizeBountyComponent": 950,
+        "playerName": "QuietRange"
+      },
+      {
+        "position": 48,
+        "prizeEuro": 2490.04,
+        "prizeBountyComponent": 1300,
+        "playerName": "TomasBaldaso"
+      },
+      {
+        "position": 49,
+        "prizeEuro": 1440.04,
+        "prizeBountyComponent": 250,
+        "playerName": "Zappzarapp"
+      },
+      {
+        "position": 50,
+        "prizeEuro": 1560.04,
+        "prizeBountyComponent": 370,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 51,
+        "prizeEuro": 3190.04,
+        "prizeBountyComponent": 2000,
+        "playerName": "Gerridae"
+      },
+      {
+        "position": 52,
+        "prizeEuro": 1510.04,
+        "prizeBountyComponent": 320,
+        "playerName": "amorfatii"
+      },
+      {
+        "position": 53,
+        "prizeEuro": 1790.04,
+        "prizeBountyComponent": 600,
+        "playerName": "DON LUIGI 69"
+      },
+      {
+        "position": 54,
+        "prizeEuro": 4802.54,
+        "prizeBountyComponent": 3612.5,
+        "playerName": "R0ck_Lee"
+      },
+      {
+        "position": 55,
+        "prizeEuro": 1190.04,
+        "prizeBountyComponent": 0,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 56,
+        "prizeEuro": 1440.04,
+        "prizeBountyComponent": 250,
+        "playerName": "SpieWSplaX"
+      },
+      {
+        "position": 57,
+        "prizeEuro": 1133.37,
+        "prizeBountyComponent": 0,
+        "playerName": "Zezinho63"
+      },
+      {
+        "position": 58,
+        "prizeEuro": 1133.37,
+        "prizeBountyComponent": 0,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 59,
+        "prizeEuro": 1133.37,
+        "prizeBountyComponent": 0,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 60,
+        "prizeEuro": 1133.37,
+        "prizeBountyComponent": 0,
+        "playerName": "R.NADAL23"
+      },
+      {
+        "position": 61,
+        "prizeEuro": 1233.37,
+        "prizeBountyComponent": 100,
+        "playerName": "PinkyPr0mise"
+      },
+      {
+        "position": 62,
+        "prizeEuro": 3508.37,
+        "prizeBountyComponent": 2375,
+        "playerName": "bxsh1do"
+      },
+      {
+        "position": 63,
+        "prizeEuro": 1983.37,
+        "prizeBountyComponent": 850,
+        "playerName": "cryptodaddy"
+      },
+      {
+        "position": 64,
+        "prizeEuro": 2413.33,
+        "prizeBountyComponent": 1279.96,
+        "playerName": "Emeu-dodu854"
+      },
+      {
+        "position": 65,
+        "prizeEuro": 1483.37,
+        "prizeBountyComponent": 350,
+        "playerName": "mAlAxAmAx"
+      },
+      {
+        "position": 66,
+        "prizeEuro": 1233.37,
+        "prizeBountyComponent": 100,
+        "playerName": "RSG22"
+      },
+      {
+        "position": 67,
+        "prizeEuro": 4528.37,
+        "prizeBountyComponent": 3395,
+        "playerName": "EruditoMucho"
+      },
+      {
+        "position": 68,
+        "prizeEuro": 1133.37,
+        "prizeBountyComponent": 0,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 69,
+        "prizeEuro": 2233.37,
+        "prizeBountyComponent": 1100,
+        "playerName": "J.Hood"
+      },
+      {
+        "position": 70,
+        "prizeEuro": 2247.37,
+        "prizeBountyComponent": 1114,
+        "playerName": "Uebal"
+      },
+      {
+        "position": 71,
+        "prizeEuro": 1233.37,
+        "prizeBountyComponent": 100,
+        "playerName": "Duc de Dan"
+      },
+      {
+        "position": 83,
+        "prizeEuro": 328.8,
+        "prizeBountyComponent": 328.8,
+        "playerName": "Lechapotier"
+      },
+      {
+        "position": 84,
+        "prizeEuro": 200,
+        "prizeBountyComponent": 200,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 85,
+        "prizeEuro": 470,
+        "prizeBountyComponent": 470,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 86,
+        "prizeEuro": 1174.8,
+        "prizeBountyComponent": 1174.8,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 88,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "ICMWHO_"
+      },
+      {
+        "position": 91,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "tsukinami"
+      },
+      {
+        "position": 92,
+        "prizeEuro": 700,
+        "prizeBountyComponent": 700,
+        "playerName": "mrbusiness69"
+      },
+      {
+        "position": 93,
+        "prizeEuro": 1145,
+        "prizeBountyComponent": 1145,
+        "playerName": "Trostyan"
+      },
+      {
+        "position": 96,
+        "prizeEuro": 200,
+        "prizeBountyComponent": 200,
+        "playerName": "Akcabay"
+      },
+      {
+        "position": 97,
+        "prizeEuro": 1350,
+        "prizeBountyComponent": 1350,
+        "playerName": "Pepareg"
+      },
+      {
+        "position": 99,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "Uebaskov"
+      },
+      {
+        "position": 100,
+        "prizeEuro": 1585,
+        "prizeBountyComponent": 1585,
+        "playerName": "RoyalKata"
+      },
+      {
+        "position": 102,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Muggggy"
+      },
+      {
+        "position": 104,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 105,
+        "prizeEuro": 750,
+        "prizeBountyComponent": 750,
+        "playerName": "WhenLamboXD"
+      },
+      {
+        "position": 106,
+        "prizeEuro": 1800,
+        "prizeBountyComponent": 1800,
+        "playerName": "19-07-26"
+      },
+      {
+        "position": 109,
+        "prizeEuro": 700,
+        "prizeBountyComponent": 700,
+        "playerName": "gualaguala"
+      },
+      {
+        "position": 111,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "Need a hug."
+      },
+      {
+        "position": 114,
+        "prizeEuro": 3420,
+        "prizeBountyComponent": 3420,
+        "playerName": "OIivier Pine"
+      },
+      {
+        "position": 117,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 124,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "reidogambol"
+      },
+      {
+        "position": 126,
+        "prizeEuro": 575,
+        "prizeBountyComponent": 575,
+        "playerName": "Orazz"
+      },
+      {
+        "position": 137,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "ValkAir"
+      },
+      {
+        "position": 138,
+        "prizeEuro": 900,
+        "prizeBountyComponent": 900,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 139,
+        "prizeEuro": 300,
+        "prizeBountyComponent": 300,
+        "playerName": "fiduZe"
+      },
+      {
+        "position": 141,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 143,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 144,
+        "prizeEuro": 550,
+        "prizeBountyComponent": 550,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 160,
+        "prizeEuro": 650,
+        "prizeBountyComponent": 650,
+        "playerName": "MushrOmQueen"
+      },
+      {
+        "position": 161,
+        "prizeEuro": 144,
+        "prizeBountyComponent": 144,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 163,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Muck_Range"
+      },
+      {
+        "position": 164,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Seau d.eau"
+      },
+      {
+        "position": 166,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "tu ris toi"
+      },
+      {
+        "position": 168,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 169,
+        "prizeEuro": 850,
+        "prizeBountyComponent": 850,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 170,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Joker06330"
+      },
+      {
+        "position": 171,
+        "prizeEuro": 124,
+        "prizeBountyComponent": 124,
+        "playerName": "PetitMichel3"
+      },
+      {
+        "position": 172,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 173,
+        "prizeEuro": 120,
+        "prizeBountyComponent": 120,
+        "playerName": "FearInoculum"
+      },
+      {
+        "position": 175,
+        "prizeEuro": 150,
+        "prizeBountyComponent": 150,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 180,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "Flotov16"
+      },
+      {
+        "position": 182,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 193,
+        "prizeEuro": 775,
+        "prizeBountyComponent": 775,
+        "playerName": "PouPouChou"
+      },
+      {
+        "position": 196,
+        "prizeEuro": 750,
+        "prizeBountyComponent": 750,
+        "playerName": "Rename4Win"
+      },
+      {
+        "position": 197,
+        "prizeEuro": 1100,
+        "prizeBountyComponent": 1100,
+        "playerName": "Historique."
+      },
+      {
+        "position": 198,
+        "prizeEuro": 400,
+        "prizeBountyComponent": 400,
+        "playerName": "Eric.Modin"
+      },
+      {
+        "position": 199,
+        "prizeEuro": 1100,
+        "prizeBountyComponent": 1100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 201,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 202,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 206,
+        "prizeEuro": 200,
+        "prizeBountyComponent": 200,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 208,
+        "prizeEuro": 800,
+        "prizeBountyComponent": 800,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 209,
+        "prizeEuro": 150,
+        "prizeBountyComponent": 150,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 210,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 211,
+        "prizeEuro": 1645.76,
+        "prizeBountyComponent": 1645.76,
+        "playerName": "Telegram"
+      },
+      {
+        "position": 212,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "Alouate13005"
+      },
+      {
+        "position": 214,
+        "prizeEuro": 1600,
+        "prizeBountyComponent": 1600,
+        "playerName": "Jam SHRED115"
+      },
+      {
+        "position": 215,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 219,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "Kill-joe03"
+      },
+      {
+        "position": 222,
+        "prizeEuro": 800,
+        "prizeBountyComponent": 800,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 224,
+        "prizeEuro": 950,
+        "prizeBountyComponent": 950,
+        "playerName": "festif-23198"
+      },
+      {
+        "position": 225,
+        "prizeEuro": 220,
+        "prizeBountyComponent": 220,
+        "playerName": "AstroEspoir"
+      },
+      {
+        "position": 226,
+        "prizeEuro": 1050,
+        "prizeBountyComponent": 1050,
+        "playerName": "Daridorexant"
+      },
+      {
+        "position": 227,
+        "prizeEuro": 775,
+        "prizeBountyComponent": 775,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 228,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "DrB0skonovic"
+      },
+      {
+        "position": 229,
+        "prizeEuro": 600,
+        "prizeBountyComponent": 600,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 230,
+        "prizeEuro": 600,
+        "prizeBountyComponent": 600,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 231,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "7aPuissance"
+      },
+      {
+        "position": 232,
+        "prizeEuro": 120,
+        "prizeBountyComponent": 120,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 234,
+        "prizeEuro": 1600,
+        "prizeBountyComponent": 1600,
+        "playerName": "TheThunder"
+      },
+      {
+        "position": 236,
+        "prizeEuro": 370,
+        "prizeBountyComponent": 370,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 237,
+        "prizeEuro": 950,
+        "prizeBountyComponent": 950,
+        "playerName": "Truzman show"
+      },
+      {
+        "position": 238,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 240,
+        "prizeEuro": 390,
+        "prizeBountyComponent": 390,
+        "playerName": "Ric095"
+      },
+      {
+        "position": 241,
+        "prizeEuro": 2400,
+        "prizeBountyComponent": 2400,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 242,
+        "prizeEuro": 2440,
+        "prizeBountyComponent": 2440,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 243,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "TroyMcNamara"
+      },
+      {
+        "position": 244,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "LEBLANC_"
+      },
+      {
+        "position": 245,
+        "prizeEuro": 750,
+        "prizeBountyComponent": 750,
+        "playerName": "Ashi-Garami"
+      },
+      {
+        "position": 246,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Igotrobbed"
+      },
+      {
+        "position": 247,
+        "prizeEuro": 800,
+        "prizeBountyComponent": 800,
+        "playerName": "Adzael"
+      },
+      {
+        "position": 248,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Cygnets"
+      },
+      {
+        "position": 251,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "yOMejorEnSKO"
+      },
+      {
+        "position": 252,
+        "prizeEuro": 1250,
+        "prizeBountyComponent": 1250,
+        "playerName": "Lebordelaii"
+      },
+      {
+        "position": 253,
+        "prizeEuro": 1250,
+        "prizeBountyComponent": 1250,
+        "playerName": "3-BetBoy"
+      },
+      {
+        "position": 254,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "Road2BKK"
+      },
+      {
+        "position": 255,
+        "prizeEuro": 820,
+        "prizeBountyComponent": 820,
+        "playerName": "Soacabecinha"
+      },
+      {
+        "position": 256,
+        "prizeEuro": 900,
+        "prizeBountyComponent": 900,
+        "playerName": "Sunny_guy"
+      },
+      {
+        "position": 257,
+        "prizeEuro": 720,
+        "prizeBountyComponent": 720,
+        "playerName": "Miao Yao."
+      },
+      {
+        "position": 258,
+        "prizeEuro": 1000,
+        "prizeBountyComponent": 1000,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 259,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Elan.Prude25"
+      },
+      {
+        "position": 260,
+        "prizeEuro": 600,
+        "prizeBountyComponent": 600,
+        "playerName": "No_Give_up_"
+      },
+      {
+        "position": 269,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "coVid1964"
+      },
+      {
+        "position": 271,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "Pataflard18"
+      },
+      {
+        "position": 275,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 276,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Nurburgringo"
+      },
+      {
+        "position": 286,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "SirCallsALot"
+      },
+      {
+        "position": 293,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 295,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 297,
+        "prizeEuro": 750,
+        "prizeBountyComponent": 750,
+        "playerName": "Lubinfingers"
+      },
+      {
+        "position": 299,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 301,
+        "prizeEuro": 200,
+        "prizeBountyComponent": 200,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 303,
+        "prizeEuro": 370,
+        "prizeBountyComponent": 370,
+        "playerName": "Beu_Teu"
+      },
+      {
+        "position": 304,
+        "prizeEuro": 300,
+        "prizeBountyComponent": 300,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 305,
+        "prizeEuro": 300,
+        "prizeBountyComponent": 300,
+        "playerName": "JossTheBoss9"
+      },
+      {
+        "position": 306,
+        "prizeEuro": 500,
+        "prizeBountyComponent": 500,
+        "playerName": "John Hammond"
+      },
+      {
+        "position": 310,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "Brebiou_man"
+      },
+      {
+        "position": 312,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "papaoutes"
+      },
+      {
+        "position": 317,
+        "prizeEuro": 350,
+        "prizeBountyComponent": 350,
+        "playerName": "N0 SE BUENO"
+      },
+      {
+        "position": 318,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "maladiosa"
+      },
+      {
+        "position": 322,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 323,
+        "prizeEuro": 250,
+        "prizeBountyComponent": 250,
+        "playerName": "E4h5c4f7"
+      },
+      {
+        "position": 324,
+        "prizeEuro": 750,
+        "prizeBountyComponent": 750,
+        "playerName": "Kokosmelk"
+      }
+    ]
+  },
+  {
+    "id": "1095534073",
+    "name": "SPACE SUNDAY - INTERSTELLAR",
+    "currency": "EUR",
+    "totalEntrants": 656,
+    "reEntries": 167,
+    "tickets": 4,
+    "guarantee": 70000,
+    "prizePool": 74070,
+    "stake": 90,
+    "rake": 10,
+    "playersPerTable": 6,
+    "payoutTable": [
+      {
+        "position": 1,
+        "prizeEuro": 8127.75,
+        "prizeBountyComponent": 3775.12,
+        "playerName": "LilyLouLie11"
+      },
+      {
+        "position": 2,
+        "prizeEuro": 5516.92,
+        "prizeBountyComponent": 1164.83,
+        "playerName": "PayeEtPleurs"
+      },
+      {
+        "position": 3,
+        "prizeEuro": 4275,
+        "prizeBountyComponent": 1275.27,
+        "playerName": "ObsiTrap"
+      },
+      {
+        "position": 4,
+        "prizeEuro": 2856.77,
+        "prizeBountyComponent": 752.85,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 5,
+        "prizeEuro": 1879.02,
+        "prizeBountyComponent": 377.01,
+        "playerName": "shreddder"
+      },
+      {
+        "position": 6,
+        "prizeEuro": 1499.42,
+        "prizeBountyComponent": 407.6,
+        "playerName": "IWannabeee"
+      },
+      {
+        "position": 7,
+        "prizeEuro": 922.37,
+        "prizeBountyComponent": 114,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 8,
+        "prizeEuro": 1114.9,
+        "prizeBountyComponent": 505.09,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 9,
+        "prizeEuro": 713.21,
+        "prizeBountyComponent": 103.4,
+        "playerName": "Draw1ngdad"
+      },
+      {
+        "position": 10,
+        "prizeEuro": 835.57,
+        "prizeBountyComponent": 366.68,
+        "playerName": "Cygnets"
+      },
+      {
+        "position": 11,
+        "prizeEuro": 521.59,
+        "prizeBountyComponent": 52.7,
+        "playerName": "ViteVite85"
+      },
+      {
+        "position": 12,
+        "prizeEuro": 1203.17,
+        "prizeBountyComponent": 835.56,
+        "playerName": "VillainRaise"
+      },
+      {
+        "position": 13,
+        "prizeEuro": 1925.67,
+        "prizeBountyComponent": 1558.06,
+        "playerName": "Rokossovsky"
+      },
+      {
+        "position": 14,
+        "prizeEuro": 472.61,
+        "prizeBountyComponent": 105,
+        "playerName": "Mimie Matilt"
+      },
+      {
+        "position": 15,
+        "prizeEuro": 1095.23,
+        "prizeBountyComponent": 801.25,
+        "playerName": "K.Everdeen"
+      },
+      {
+        "position": 16,
+        "prizeEuro": 577.4,
+        "prizeBountyComponent": 283.42,
+        "playerName": "P. Richard"
+      },
+      {
+        "position": 17,
+        "prizeEuro": 574.48,
+        "prizeBountyComponent": 280.5,
+        "playerName": "blueballs67"
+      },
+      {
+        "position": 18,
+        "prizeEuro": 829.3,
+        "prizeBountyComponent": 589.4,
+        "playerName": "Tata Ch0nine"
+      },
+      {
+        "position": 19,
+        "prizeEuro": 595.5,
+        "prizeBountyComponent": 355.6,
+        "playerName": "Pr.Foloeil"
+      },
+      {
+        "position": 20,
+        "prizeEuro": 299.9,
+        "prizeBountyComponent": 60,
+        "playerName": "88CZ88"
+      },
+      {
+        "position": 21,
+        "prizeEuro": 314.9,
+        "prizeBountyComponent": 75,
+        "playerName": "A2detreboles"
+      },
+      {
+        "position": 22,
+        "prizeEuro": 484.7,
+        "prizeBountyComponent": 244.8,
+        "playerName": "Grenou1lle6"
+      },
+      {
+        "position": 23,
+        "prizeEuro": 354.7,
+        "prizeBountyComponent": 114.8,
+        "playerName": "New DeaI"
+      },
+      {
+        "position": 24,
+        "prizeEuro": 413.35,
+        "prizeBountyComponent": 213.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 25,
+        "prizeEuro": 276.35,
+        "prizeBountyComponent": 76.5,
+        "playerName": "Tomey-"
+      },
+      {
+        "position": 26,
+        "prizeEuro": 252.65,
+        "prizeBountyComponent": 52.8,
+        "playerName": "Pen1aphobia"
+      },
+      {
+        "position": 27,
+        "prizeEuro": 199.85,
+        "prizeBountyComponent": 0,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 28,
+        "prizeEuro": 568.98,
+        "prizeBountyComponent": 369.13,
+        "playerName": "KrokodeaI"
+      },
+      {
+        "position": 29,
+        "prizeEuro": 282.73,
+        "prizeBountyComponent": 82.88,
+        "playerName": "Allaniche."
+      },
+      {
+        "position": 30,
+        "prizeEuro": 297.52,
+        "prizeBountyComponent": 127.48,
+        "playerName": "Loose21x"
+      },
+      {
+        "position": 31,
+        "prizeEuro": 648.34,
+        "prizeBountyComponent": 478.3,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 32,
+        "prizeEuro": 384.04,
+        "prizeBountyComponent": 214,
+        "playerName": "Nuggets fouu"
+      },
+      {
+        "position": 33,
+        "prizeEuro": 895.94,
+        "prizeBountyComponent": 725.9,
+        "playerName": "maladiosa"
+      },
+      {
+        "position": 34,
+        "prizeEuro": 205.04,
+        "prizeBountyComponent": 35,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 35,
+        "prizeEuro": 976.18,
+        "prizeBountyComponent": 806.14,
+        "playerName": "g54321s"
+      },
+      {
+        "position": 36,
+        "prizeEuro": 212.83,
+        "prizeBountyComponent": 65,
+        "playerName": "Sonik4"
+      },
+      {
+        "position": 37,
+        "prizeEuro": 424.83,
+        "prizeBountyComponent": 277,
+        "playerName": "C.ALCARAZZ"
+      },
+      {
+        "position": 38,
+        "prizeEuro": 291.33,
+        "prizeBountyComponent": 143.5,
+        "playerName": "Tchu PR0tect"
+      },
+      {
+        "position": 39,
+        "prizeEuro": 327.83,
+        "prizeBountyComponent": 180,
+        "playerName": "BugsBunnit"
+      },
+      {
+        "position": 40,
+        "prizeEuro": 297.83,
+        "prizeBountyComponent": 150,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 41,
+        "prizeEuro": 176.03,
+        "prizeBountyComponent": 28.2,
+        "playerName": "FuckTheZero"
+      },
+      {
+        "position": 42,
+        "prizeEuro": 358.97,
+        "prizeBountyComponent": 227.6,
+        "playerName": "TATUM O"
+      },
+      {
+        "position": 43,
+        "prizeEuro": 250.25,
+        "prizeBountyComponent": 118.88,
+        "playerName": "GalacticFISH"
+      },
+      {
+        "position": 44,
+        "prizeEuro": 151.37,
+        "prizeBountyComponent": 20,
+        "playerName": "daddy pig"
+      },
+      {
+        "position": 45,
+        "prizeEuro": 222.37,
+        "prizeBountyComponent": 91,
+        "playerName": "Spot2Scoop"
+      },
+      {
+        "position": 46,
+        "prizeEuro": 203.37,
+        "prizeBountyComponent": 72,
+        "playerName": "LimaCoin"
+      },
+      {
+        "position": 47,
+        "prizeEuro": 150.57,
+        "prizeBountyComponent": 19.2,
+        "playerName": "Pascooool"
+      },
+      {
+        "position": 48,
+        "prizeEuro": 220.37,
+        "prizeBountyComponent": 89,
+        "playerName": "R Kolo Muani"
+      },
+      {
+        "position": 49,
+        "prizeEuro": 277.32,
+        "prizeBountyComponent": 145.95,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 50,
+        "prizeEuro": 218.85,
+        "prizeBountyComponent": 87.48,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 51,
+        "prizeEuro": 170.37,
+        "prizeBountyComponent": 39,
+        "playerName": "PurrfectCaos"
+      },
+      {
+        "position": 52,
+        "prizeEuro": 222.37,
+        "prizeBountyComponent": 91,
+        "playerName": "Biedronka"
+      },
+      {
+        "position": 53,
+        "prizeEuro": 165.37,
+        "prizeBountyComponent": 34,
+        "playerName": "MushrOmQueen"
+      },
+      {
+        "position": 54,
+        "prizeEuro": 129.41,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 55,
+        "prizeEuro": 144.41,
+        "prizeBountyComponent": 25,
+        "playerName": "Kipish"
+      },
+      {
+        "position": 56,
+        "prizeEuro": 269.41,
+        "prizeBountyComponent": 150,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 57,
+        "prizeEuro": 189.41,
+        "prizeBountyComponent": 70,
+        "playerName": "PoolPlayer09"
+      },
+      {
+        "position": 58,
+        "prizeEuro": 217.41,
+        "prizeBountyComponent": 98,
+        "playerName": "Slava Snus1k"
+      },
+      {
+        "position": 59,
+        "prizeEuro": 139.41,
+        "prizeBountyComponent": 20,
+        "playerName": "Jusnon"
+      },
+      {
+        "position": 60,
+        "prizeEuro": 284.41,
+        "prizeBountyComponent": 165,
+        "playerName": "Chez Tina"
+      },
+      {
+        "position": 61,
+        "prizeEuro": 167.41,
+        "prizeBountyComponent": 48,
+        "playerName": "VENGAAA_CONO"
+      },
+      {
+        "position": 62,
+        "prizeEuro": 181.41,
+        "prizeBountyComponent": 62,
+        "playerName": "2026IMBACK"
+      },
+      {
+        "position": 63,
+        "prizeEuro": 243.41,
+        "prizeBountyComponent": 124,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 64,
+        "prizeEuro": 174.41,
+        "prizeBountyComponent": 55,
+        "playerName": "ZolaBen"
+      },
+      {
+        "position": 65,
+        "prizeEuro": 333.91,
+        "prizeBountyComponent": 214.5,
+        "playerName": "U.Nielsen."
+      },
+      {
+        "position": 66,
+        "prizeEuro": 136.46,
+        "prizeBountyComponent": 25.4,
+        "playerName": "chopedsuprem"
+      },
+      {
+        "position": 67,
+        "prizeEuro": 131.06,
+        "prizeBountyComponent": 20,
+        "playerName": "BozhePomozhy"
+      },
+      {
+        "position": 68,
+        "prizeEuro": 141.06,
+        "prizeBountyComponent": 30,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 69,
+        "prizeEuro": 270.06,
+        "prizeBountyComponent": 159,
+        "playerName": "ClementWin4x"
+      },
+      {
+        "position": 70,
+        "prizeEuro": 268.56,
+        "prizeBountyComponent": 157.5,
+        "playerName": "effervescnc"
+      },
+      {
+        "position": 71,
+        "prizeEuro": 163.06,
+        "prizeBountyComponent": 52,
+        "playerName": "JustThe2ofus"
+      },
+      {
+        "position": 72,
+        "prizeEuro": 185.06,
+        "prizeBountyComponent": 74,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 73,
+        "prizeEuro": 318.46,
+        "prizeBountyComponent": 207.4,
+        "playerName": "Beu_Teu"
+      },
+      {
+        "position": 74,
+        "prizeEuro": 111.06,
+        "prizeBountyComponent": 0,
+        "playerName": "Ritonawin"
+      },
+      {
+        "position": 75,
+        "prizeEuro": 401.56,
+        "prizeBountyComponent": 290.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 76,
+        "prizeEuro": 133.06,
+        "prizeBountyComponent": 22,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 77,
+        "prizeEuro": 183.06,
+        "prizeBountyComponent": 72,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 78,
+        "prizeEuro": 190.77,
+        "prizeBountyComponent": 85,
+        "playerName": "DreamBig26"
+      },
+      {
+        "position": 79,
+        "prizeEuro": 235.17,
+        "prizeBountyComponent": 129.4,
+        "playerName": "ET PANN"
+      },
+      {
+        "position": 80,
+        "prizeEuro": 248.77,
+        "prizeBountyComponent": 143,
+        "playerName": "OGODD"
+      },
+      {
+        "position": 81,
+        "prizeEuro": 283.27,
+        "prizeBountyComponent": 177.5,
+        "playerName": "RosePanthers"
+      },
+      {
+        "position": 82,
+        "prizeEuro": 105.77,
+        "prizeBountyComponent": 0,
+        "playerName": "Emergens"
+      },
+      {
+        "position": 83,
+        "prizeEuro": 233.77,
+        "prizeBountyComponent": 128,
+        "playerName": "pom1dore"
+      },
+      {
+        "position": 84,
+        "prizeEuro": 140.77,
+        "prizeBountyComponent": 35,
+        "playerName": "ZdnekZizka69"
+      },
+      {
+        "position": 85,
+        "prizeEuro": 330.77,
+        "prizeBountyComponent": 225,
+        "playerName": "cosmonaute."
+      },
+      {
+        "position": 86,
+        "prizeEuro": 256.17,
+        "prizeBountyComponent": 150.4,
+        "playerName": "brazilinoooo"
+      },
+      {
+        "position": 87,
+        "prizeEuro": 125.77,
+        "prizeBountyComponent": 20,
+        "playerName": "OinKOinK"
+      },
+      {
+        "position": 88,
+        "prizeEuro": 240.77,
+        "prizeBountyComponent": 135,
+        "playerName": "Srav Pes"
+      },
+      {
+        "position": 89,
+        "prizeEuro": 175.77,
+        "prizeBountyComponent": 70,
+        "playerName": "UlyDalaBala1"
+      },
+      {
+        "position": 90,
+        "prizeEuro": 219.73,
+        "prizeBountyComponent": 119,
+        "playerName": "Iloveasie"
+      },
+      {
+        "position": 91,
+        "prizeEuro": 260.43,
+        "prizeBountyComponent": 159.7,
+        "playerName": "Its a Joke77"
+      },
+      {
+        "position": 92,
+        "prizeEuro": 520.73,
+        "prizeBountyComponent": 420,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 93,
+        "prizeEuro": 308.23,
+        "prizeBountyComponent": 207.5,
+        "playerName": "moneymakerPL"
+      },
+      {
+        "position": 94,
+        "prizeEuro": 235.73,
+        "prizeBountyComponent": 135,
+        "playerName": "VienMonGoret"
+      },
+      {
+        "position": 95,
+        "prizeEuro": 138.23,
+        "prizeBountyComponent": 37.5,
+        "playerName": "InsolentCock"
+      },
+      {
+        "position": 96,
+        "prizeEuro": 313.73,
+        "prizeBountyComponent": 213,
+        "playerName": "B__B"
+      },
+      {
+        "position": 97,
+        "prizeEuro": 180.73,
+        "prizeBountyComponent": 80,
+        "playerName": "Anti himself"
+      },
+      {
+        "position": 98,
+        "prizeEuro": 100.73,
+        "prizeBountyComponent": 0,
+        "playerName": "skjold3d"
+      },
+      {
+        "position": 99,
+        "prizeEuro": 146.73,
+        "prizeBountyComponent": 46,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 100,
+        "prizeEuro": 155.73,
+        "prizeBountyComponent": 55,
+        "playerName": "unconquer3d"
+      },
+      {
+        "position": 101,
+        "prizeEuro": 225.23,
+        "prizeBountyComponent": 124.5,
+        "playerName": "Lechapotier"
+      },
+      {
+        "position": 102,
+        "prizeEuro": 2625.73,
+        "prizeBountyComponent": 2525,
+        "playerName": "BobLeDiscus"
+      },
+      {
+        "position": 103,
+        "prizeEuro": 219.73,
+        "prizeBountyComponent": 119,
+        "playerName": "Daridorexant"
+      },
+      {
+        "position": 104,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "namasteha"
+      },
+      {
+        "position": 105,
+        "prizeEuro": 127.4,
+        "prizeBountyComponent": 127.4,
+        "playerName": "KUSKIIIKKKKK"
+      },
+      {
+        "position": 106,
+        "prizeEuro": 85,
+        "prizeBountyComponent": 85,
+        "playerName": "SilentBless"
+      },
+      {
+        "position": 107,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Fuerte_Loco"
+      },
+      {
+        "position": 108,
+        "prizeEuro": 40,
+        "prizeBountyComponent": 40,
+        "playerName": "Maybelater"
+      },
+      {
+        "position": 109,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "red berry"
+      },
+      {
+        "position": 110,
+        "prizeEuro": 135,
+        "prizeBountyComponent": 135,
+        "playerName": "EloiMusgao"
+      },
+      {
+        "position": 111,
+        "prizeEuro": 338.5,
+        "prizeBountyComponent": 338.5,
+        "playerName": "sk1t4inho"
+      },
+      {
+        "position": 112,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Aggr8lav"
+      },
+      {
+        "position": 113,
+        "prizeEuro": 77.5,
+        "prizeBountyComponent": 77.5,
+        "playerName": "Reg ou Zgg"
+      },
+      {
+        "position": 114,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "GrinderBuen0"
+      },
+      {
+        "position": 115,
+        "prizeEuro": 221,
+        "prizeBountyComponent": 221,
+        "playerName": "Brebiou_man"
+      },
+      {
+        "position": 116,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "DTrumpp"
+      },
+      {
+        "position": 117,
+        "prizeEuro": 55,
+        "prizeBountyComponent": 55,
+        "playerName": "Ale4Jact4Est"
+      },
+      {
+        "position": 118,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "RondinDuVN"
+      },
+      {
+        "position": 120,
+        "prizeEuro": 34.4,
+        "prizeBountyComponent": 34.4,
+        "playerName": "thinvalium"
+      },
+      {
+        "position": 121,
+        "prizeEuro": 45,
+        "prizeBountyComponent": 45,
+        "playerName": "lpjl1825"
+      },
+      {
+        "position": 122,
+        "prizeEuro": 210,
+        "prizeBountyComponent": 210,
+        "playerName": "Huntrx"
+      },
+      {
+        "position": 123,
+        "prizeEuro": 33,
+        "prizeBountyComponent": 33,
+        "playerName": "poker roi"
+      },
+      {
+        "position": 124,
+        "prizeEuro": 22,
+        "prizeBountyComponent": 22,
+        "playerName": "KapTowka"
+      },
+      {
+        "position": 126,
+        "prizeEuro": 36,
+        "prizeBountyComponent": 36,
+        "playerName": "Th3G0ldenBoy"
+      },
+      {
+        "position": 127,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Caio Pensano"
+      },
+      {
+        "position": 128,
+        "prizeEuro": 165,
+        "prizeBountyComponent": 165,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 129,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 130,
+        "prizeEuro": 15,
+        "prizeBountyComponent": 15,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 131,
+        "prizeEuro": 22,
+        "prizeBountyComponent": 22,
+        "playerName": "-Supasym-"
+      },
+      {
+        "position": 132,
+        "prizeEuro": 14,
+        "prizeBountyComponent": 14,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 133,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "AstroEspoir"
+      },
+      {
+        "position": 135,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "down streak"
+      },
+      {
+        "position": 136,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Synthonesia"
+      },
+      {
+        "position": 138,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "Riien&ADiire"
+      },
+      {
+        "position": 139,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "True Alpha"
+      },
+      {
+        "position": 140,
+        "prizeEuro": 1107,
+        "prizeBountyComponent": 1107,
+        "playerName": "Nosaka Yuuma"
+      },
+      {
+        "position": 141,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Anghkooey1"
+      },
+      {
+        "position": 142,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Lustitia Dei"
+      },
+      {
+        "position": 143,
+        "prizeEuro": 85,
+        "prizeBountyComponent": 85,
+        "playerName": "DrB0skonovic"
+      },
+      {
+        "position": 145,
+        "prizeEuro": 13,
+        "prizeBountyComponent": 13,
+        "playerName": "riba962"
+      },
+      {
+        "position": 147,
+        "prizeEuro": 15,
+        "prizeBountyComponent": 15,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 148,
+        "prizeEuro": 95,
+        "prizeBountyComponent": 95,
+        "playerName": "Haniovski45"
+      },
+      {
+        "position": 149,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "fran302bet"
+      },
+      {
+        "position": 150,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "NoMythoParis"
+      },
+      {
+        "position": 151,
+        "prizeEuro": 92.5,
+        "prizeBountyComponent": 92.5,
+        "playerName": "Nuts4me"
+      },
+      {
+        "position": 152,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "K A I S E R"
+      },
+      {
+        "position": 153,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Giuliaaaa"
+      },
+      {
+        "position": 154,
+        "prizeEuro": 52,
+        "prizeBountyComponent": 52,
+        "playerName": "NyZio_Nc"
+      },
+      {
+        "position": 155,
+        "prizeEuro": 5,
+        "prizeBountyComponent": 5,
+        "playerName": "Palax11"
+      },
+      {
+        "position": 156,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "Mour1ce"
+      },
+      {
+        "position": 157,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Royal S"
+      },
+      {
+        "position": 159,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "Igotrobbed"
+      },
+      {
+        "position": 160,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "WeFlipYouRip"
+      },
+      {
+        "position": 161,
+        "prizeEuro": 150,
+        "prizeBountyComponent": 150,
+        "playerName": "LeFullDuBus"
+      },
+      {
+        "position": 163,
+        "prizeEuro": 30,
+        "prizeBountyComponent": 30,
+        "playerName": "LouvreLimp"
+      },
+      {
+        "position": 164,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "DAI-COBRA"
+      },
+      {
+        "position": 165,
+        "prizeEuro": 40,
+        "prizeBountyComponent": 40,
+        "playerName": "bxsh1do"
+      },
+      {
+        "position": 166,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Alpine River"
+      },
+      {
+        "position": 168,
+        "prizeEuro": 157,
+        "prizeBountyComponent": 157,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 169,
+        "prizeEuro": 27,
+        "prizeBountyComponent": 27,
+        "playerName": "lobabi29"
+      },
+      {
+        "position": 170,
+        "prizeEuro": 80,
+        "prizeBountyComponent": 80,
+        "playerName": "fRminTrukiy0"
+      },
+      {
+        "position": 171,
+        "prizeEuro": 62,
+        "prizeBountyComponent": 62,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 173,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Chanceux113"
+      },
+      {
+        "position": 174,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "enlegeeende"
+      },
+      {
+        "position": 175,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "JLShAArKK"
+      },
+      {
+        "position": 176,
+        "prizeEuro": 85,
+        "prizeBountyComponent": 85,
+        "playerName": "GRarMenBusto"
+      },
+      {
+        "position": 177,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Gangbaangbob"
+      },
+      {
+        "position": 179,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "1984Au"
+      },
+      {
+        "position": 180,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "M.Caicedo"
+      },
+      {
+        "position": 181,
+        "prizeEuro": 70,
+        "prizeBountyComponent": 70,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 183,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "CrystalClear"
+      },
+      {
+        "position": 184,
+        "prizeEuro": 87,
+        "prizeBountyComponent": 87,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 186,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "TheRuler"
+      },
+      {
+        "position": 188,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "zuRaik_01"
+      },
+      {
+        "position": 189,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "37MttMaven"
+      },
+      {
+        "position": 190,
+        "prizeEuro": 80,
+        "prizeBountyComponent": 80,
+        "playerName": "C Poletti"
+      },
+      {
+        "position": 191,
+        "prizeEuro": 40,
+        "prizeBountyComponent": 40,
+        "playerName": "SFromDaKrany"
+      },
+      {
+        "position": 192,
+        "prizeEuro": 85,
+        "prizeBountyComponent": 85,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 193,
+        "prizeEuro": 100,
+        "prizeBountyComponent": 100,
+        "playerName": "NadAlcaraZzz"
+      },
+      {
+        "position": 194,
+        "prizeEuro": 57,
+        "prizeBountyComponent": 57,
+        "playerName": "Antonidze777"
+      },
+      {
+        "position": 195,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "poker891891"
+      },
+      {
+        "position": 196,
+        "prizeEuro": 55,
+        "prizeBountyComponent": 55,
+        "playerName": "WinaWinner26"
+      },
+      {
+        "position": 197,
+        "prizeEuro": 161,
+        "prizeBountyComponent": 161,
+        "playerName": "QuEMoLBitO"
+      },
+      {
+        "position": 198,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "V. Gilligan"
+      },
+      {
+        "position": 199,
+        "prizeEuro": 55,
+        "prizeBountyComponent": 55,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 200,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Bonzo7"
+      },
+      {
+        "position": 201,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "HoldCenter"
+      },
+      {
+        "position": 202,
+        "prizeEuro": 74,
+        "prizeBountyComponent": 74,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 203,
+        "prizeEuro": 22.4,
+        "prizeBountyComponent": 22.4,
+        "playerName": "Corazon1964"
+      },
+      {
+        "position": 204,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "ICMisforpoor"
+      },
+      {
+        "position": 205,
+        "prizeEuro": 135,
+        "prizeBountyComponent": 135,
+        "playerName": "Thermostat 8"
+      },
+      {
+        "position": 206,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "RaphaelDiasB"
+      },
+      {
+        "position": 207,
+        "prizeEuro": 130,
+        "prizeBountyComponent": 130,
+        "playerName": "MrLembergian"
+      },
+      {
+        "position": 208,
+        "prizeEuro": 45,
+        "prizeBountyComponent": 45,
+        "playerName": "DuCoBu ."
+      },
+      {
+        "position": 212,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 213,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "igrauzaebu"
+      },
+      {
+        "position": 214,
+        "prizeEuro": 12,
+        "prizeBountyComponent": 12,
+        "playerName": "1ights0ut"
+      },
+      {
+        "position": 215,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "ShowMe1Bluff"
+      },
+      {
+        "position": 216,
+        "prizeEuro": 70,
+        "prizeBountyComponent": 70,
+        "playerName": "HiddenSquid"
+      },
+      {
+        "position": 217,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 218,
+        "prizeEuro": 12,
+        "prizeBountyComponent": 12,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 219,
+        "prizeEuro": 32,
+        "prizeBountyComponent": 32,
+        "playerName": "SYLAASS"
+      },
+      {
+        "position": 220,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "ArmanRarMent"
+      },
+      {
+        "position": 222,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 224,
+        "prizeEuro": 18,
+        "prizeBountyComponent": 18,
+        "playerName": "PALPACUS"
+      },
+      {
+        "position": 226,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 229,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Mr. Satan"
+      },
+      {
+        "position": 232,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Zappzarapp"
+      },
+      {
+        "position": 233,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "TheS4sp3ct"
+      },
+      {
+        "position": 235,
+        "prizeEuro": 95,
+        "prizeBountyComponent": 95,
+        "playerName": "MaitreFichu"
+      },
+      {
+        "position": 237,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Pip-Boy 2000"
+      },
+      {
+        "position": 238,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "jotanovic"
+      },
+      {
+        "position": 243,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "CoIette"
+      },
+      {
+        "position": 244,
+        "prizeEuro": 160,
+        "prizeBountyComponent": 160,
+        "playerName": "DntWrryBHapp"
+      },
+      {
+        "position": 247,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 248,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "LeaPrime"
+      },
+      {
+        "position": 249,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "PalmBeachPit"
+      },
+      {
+        "position": 250,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "ParAAmOr"
+      },
+      {
+        "position": 251,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 252,
+        "prizeEuro": 65,
+        "prizeBountyComponent": 65,
+        "playerName": "drgoathehe"
+      },
+      {
+        "position": 254,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "sabyr_et"
+      },
+      {
+        "position": 255,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "RachaDeDios"
+      },
+      {
+        "position": 257,
+        "prizeEuro": 69.5,
+        "prizeBountyComponent": 69.5,
+        "playerName": "YaDfAZewE"
+      },
+      {
+        "position": 258,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 259,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "BladeNexus"
+      },
+      {
+        "position": 261,
+        "prizeEuro": 150,
+        "prizeBountyComponent": 150,
+        "playerName": "Neruth 667"
+      },
+      {
+        "position": 262,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Porc Fortune"
+      },
+      {
+        "position": 263,
+        "prizeEuro": 85,
+        "prizeBountyComponent": 85,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 264,
+        "prizeEuro": 70,
+        "prizeBountyComponent": 70,
+        "playerName": "Ermita."
+      },
+      {
+        "position": 266,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 267,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "ESPACE KO"
+      },
+      {
+        "position": 274,
+        "prizeEuro": 40,
+        "prizeBountyComponent": 40,
+        "playerName": "_Hugo_Gordo_"
+      },
+      {
+        "position": 276,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "El tapado"
+      },
+      {
+        "position": 278,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "A L.Agachon"
+      },
+      {
+        "position": 279,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 280,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 282,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 283,
+        "prizeEuro": 85,
+        "prizeBountyComponent": 85,
+        "playerName": "BellePosture"
+      },
+      {
+        "position": 285,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "VA-AU-COIN"
+      },
+      {
+        "position": 287,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "NotLikeUs"
+      },
+      {
+        "position": 290,
+        "prizeEuro": 11,
+        "prizeBountyComponent": 11,
+        "playerName": "bot20."
+      },
+      {
+        "position": 292,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Lebordelaii"
+      },
+      {
+        "position": 297,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Vi1monagnole"
+      },
+      {
+        "position": 299,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "mamatoldyaa"
+      },
+      {
+        "position": 300,
+        "prizeEuro": 91,
+        "prizeBountyComponent": 91,
+        "playerName": "1NO PASARAN1"
+      },
+      {
+        "position": 307,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "DERET"
+      },
+      {
+        "position": 309,
+        "prizeEuro": 15,
+        "prizeBountyComponent": 15,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 310,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "GatsbyLeM"
+      },
+      {
+        "position": 311,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "YONItoto1"
+      },
+      {
+        "position": 313,
+        "prizeEuro": 12,
+        "prizeBountyComponent": 12,
+        "playerName": "godmode.exe"
+      },
+      {
+        "position": 314,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Imsirovic32"
+      },
+      {
+        "position": 317,
+        "prizeEuro": 15,
+        "prizeBountyComponent": 15,
+        "playerName": "vs savez pas"
+      },
+      {
+        "position": 323,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Feltway"
+      },
+      {
+        "position": 326,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Que Rico"
+      },
+      {
+        "position": 327,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "VodnikKebule"
+      },
+      {
+        "position": 329,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "ChuckNoriss1"
+      },
+      {
+        "position": 330,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 331,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Gross gardon"
+      },
+      {
+        "position": 333,
+        "prizeEuro": 15,
+        "prizeBountyComponent": 15,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 337,
+        "prizeEuro": 12.4,
+        "prizeBountyComponent": 12.4,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 340,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "LHommePuma"
+      },
+      {
+        "position": 348,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Paradisbleu"
+      },
+      {
+        "position": 351,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Mikhail Tal"
+      },
+      {
+        "position": 352,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "lo  siento"
+      },
+      {
+        "position": 361,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "yawish"
+      },
+      {
+        "position": 362,
+        "prizeEuro": 30,
+        "prizeBountyComponent": 30,
+        "playerName": "TheSenate"
+      },
+      {
+        "position": 367,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "ASIWAJU"
+      },
+      {
+        "position": 369,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Ars3n3_Lupin"
+      },
+      {
+        "position": 372,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "Isla Holbox"
+      },
+      {
+        "position": 374,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Justwinner13"
+      },
+      {
+        "position": 378,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "H.RomeuPinto"
+      },
+      {
+        "position": 379,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "ElFinominoo"
+      },
+      {
+        "position": 382,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "OnYCroiPlus"
+      },
+      {
+        "position": 384,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "The Guinness"
+      },
+      {
+        "position": 386,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "YouAreObv"
+      },
+      {
+        "position": 387,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Contra-Legem"
+      },
+      {
+        "position": 389,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "4_TheGlory ."
+      },
+      {
+        "position": 390,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "CalmeMygale8"
+      },
+      {
+        "position": 396,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 400,
+        "prizeEuro": 275,
+        "prizeBountyComponent": 275,
+        "playerName": "3-BetBoy"
+      },
+      {
+        "position": 402,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "RuskOrSuck"
+      },
+      {
+        "position": 403,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Chenaapaan"
+      },
+      {
+        "position": 405,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Ramiro_1976"
+      },
+      {
+        "position": 406,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 414,
+        "prizeEuro": 45,
+        "prizeBountyComponent": 45,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 418,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "WhoMadeWho"
+      },
+      {
+        "position": 420,
+        "prizeEuro": 12,
+        "prizeBountyComponent": 12,
+        "playerName": "PleinOuVide"
+      },
+      {
+        "position": 435,
+        "prizeEuro": 12,
+        "prizeBountyComponent": 12,
+        "playerName": "99Raul55_"
+      },
+      {
+        "position": 453,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "Sun Wuk0ng"
+      },
+      {
+        "position": 461,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Drury"
+      },
+      {
+        "position": 467,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Croissant&&&"
+      },
+      {
+        "position": 469,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 479,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Soulvova"
+      },
+      {
+        "position": 481,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "heydontshoot"
+      },
+      {
+        "position": 483,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "Sam-Regal"
+      },
+      {
+        "position": 488,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Daigo Saito"
+      },
+      {
+        "position": 497,
+        "prizeEuro": 12,
+        "prizeBountyComponent": 12,
+        "playerName": "Alouate13005"
+      },
+      {
+        "position": 499,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Chupep"
+      },
+      {
+        "position": 504,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "-Petunia-"
+      },
+      {
+        "position": 509,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "naCircus"
+      },
+      {
+        "position": 515,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 516,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "quince"
+      },
+      {
+        "position": 520,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "GG no RE"
+      },
+      {
+        "position": 526,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "SOUMIMII"
+      },
+      {
+        "position": 527,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "- none -"
+      },
+      {
+        "position": 529,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Space noob"
+      },
+      {
+        "position": 532,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "OlympusGold"
+      },
+      {
+        "position": 540,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "En projet."
+      },
+      {
+        "position": 550,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "2.Many.Outs"
+      },
+      {
+        "position": 577,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "FTOO"
+      },
+      {
+        "position": 580,
+        "prizeEuro": 5,
+        "prizeBountyComponent": 5,
+        "playerName": "Xv3_Qz-6m.Kj"
+      },
+      {
+        "position": 590,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "feArlc"
+      },
+      {
+        "position": 595,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "A. Bunny"
+      },
+      {
+        "position": 624,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Klit Kat"
+      }
+    ]
+  },
+  {
+    "id": "1050216146",
+    "name": "GRAVITY",
+    "currency": "EUR",
+    "totalEntrants": 123,
+    "reEntries": 23,
+    "tickets": 3,
+    "guarantee": 25000,
+    "prizePool": 33872,
+    "stake": 232,
+    "rake": 18,
+    "playersPerTable": 6,
+    "payoutTable": [
+      {
+        "position": 1,
+        "prizeEuro": 5637.45,
+        "prizeBountyComponent": 2606.47,
+        "playerName": "Baldcaraz"
+      },
+      {
+        "position": 2,
+        "prizeEuro": 3231.88,
+        "prizeBountyComponent": 201,
+        "playerName": "ArgenD10S-"
+      },
+      {
+        "position": 3,
+        "prizeEuro": 3195.7,
+        "prizeBountyComponent": 1175.11,
+        "playerName": "wraJke"
+      },
+      {
+        "position": 4,
+        "prizeEuro": 1509.7,
+        "prizeBountyComponent": 130,
+        "playerName": "MonsieurBluf"
+      },
+      {
+        "position": 5,
+        "prizeEuro": 1923.85,
+        "prizeBountyComponent": 947.35,
+        "playerName": "s9br"
+      },
+      {
+        "position": 6,
+        "prizeEuro": 915.03,
+        "prizeBountyComponent": 197.7,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 7,
+        "prizeEuro": 746.22,
+        "prizeBountyComponent": 198.5,
+        "playerName": "Augusjo"
+      },
+      {
+        "position": 8,
+        "prizeEuro": 872.62,
+        "prizeBountyComponent": 437.25,
+        "playerName": "Piknycia"
+      },
+      {
+        "position": 9,
+        "prizeEuro": 657.87,
+        "prizeBountyComponent": 222.5,
+        "playerName": "ICMWHO_"
+      },
+      {
+        "position": 10,
+        "prizeEuro": 1108.11,
+        "prizeBountyComponent": 747.25,
+        "playerName": "Wiscoso"
+      },
+      {
+        "position": 11,
+        "prizeEuro": 724.36,
+        "prizeBountyComponent": 363.5,
+        "playerName": "Andreas0394"
+      },
+      {
+        "position": 12,
+        "prizeEuro": 555.98,
+        "prizeBountyComponent": 243.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 13,
+        "prizeEuro": 355.45,
+        "prizeBountyComponent": 42.97,
+        "playerName": "JG.Ibi"
+      },
+      {
+        "position": 14,
+        "prizeEuro": 787.48,
+        "prizeBountyComponent": 475,
+        "playerName": "CHICHAR1TO"
+      },
+      {
+        "position": 15,
+        "prizeEuro": 369.49,
+        "prizeBountyComponent": 86.25,
+        "playerName": "Last hand"
+      },
+      {
+        "position": 16,
+        "prizeEuro": 338.24,
+        "prizeBountyComponent": 55,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 17,
+        "prizeEuro": 381.99,
+        "prizeBountyComponent": 98.75,
+        "playerName": "bxsh1do"
+      },
+      {
+        "position": 18,
+        "prizeEuro": 669.34,
+        "prizeBountyComponent": 400,
+        "playerName": "marrakesh25"
+      },
+      {
+        "position": 19,
+        "prizeEuro": 359.21,
+        "prizeBountyComponent": 89.87,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 20,
+        "prizeEuro": 230,
+        "prizeBountyComponent": 230,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 21,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "M.Caicedo"
+      },
+      {
+        "position": 23,
+        "prizeEuro": 87.5,
+        "prizeBountyComponent": 87.5,
+        "playerName": "D.Pablo II"
+      },
+      {
+        "position": 24,
+        "prizeEuro": 175,
+        "prizeBountyComponent": 175,
+        "playerName": "Red BulI"
+      },
+      {
+        "position": 25,
+        "prizeEuro": 387.5,
+        "prizeBountyComponent": 387.5,
+        "playerName": "CHIPolinn0"
+      },
+      {
+        "position": 26,
+        "prizeEuro": 150,
+        "prizeBountyComponent": 150,
+        "playerName": "robertomg"
+      },
+      {
+        "position": 28,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "BackToSchool"
+      },
+      {
+        "position": 30,
+        "prizeEuro": 324.38,
+        "prizeBountyComponent": 324.38,
+        "playerName": "SiIksong"
+      },
+      {
+        "position": 31,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 33,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "Meph1stos"
+      },
+      {
+        "position": 34,
+        "prizeEuro": 80,
+        "prizeBountyComponent": 80,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 35,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "chopedsuprem"
+      },
+      {
+        "position": 36,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Why4lwaysM3"
+      },
+      {
+        "position": 37,
+        "prizeEuro": 456.25,
+        "prizeBountyComponent": 456.25,
+        "playerName": "WOYTECH"
+      },
+      {
+        "position": 38,
+        "prizeEuro": 155,
+        "prizeBountyComponent": 155,
+        "playerName": "AiiAAiiA"
+      },
+      {
+        "position": 40,
+        "prizeEuro": 87.5,
+        "prizeBountyComponent": 87.5,
+        "playerName": "SerVlaMin"
+      },
+      {
+        "position": 43,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Chism0s0"
+      },
+      {
+        "position": 44,
+        "prizeEuro": 62.5,
+        "prizeBountyComponent": 62.5,
+        "playerName": "Chriis1401"
+      },
+      {
+        "position": 48,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "theluckster"
+      },
+      {
+        "position": 50,
+        "prizeEuro": 23.75,
+        "prizeBountyComponent": 23.75,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 52,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Tanchico"
+      },
+      {
+        "position": 53,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 54,
+        "prizeEuro": 112.5,
+        "prizeBountyComponent": 112.5,
+        "playerName": "LaBubuuu"
+      },
+      {
+        "position": 56,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 57,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "Boo-Hoo"
+      },
+      {
+        "position": 59,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Space noob"
+      },
+      {
+        "position": 60,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "QuintinBCN"
+      },
+      {
+        "position": 61,
+        "prizeEuro": 62.5,
+        "prizeBountyComponent": 62.5,
+        "playerName": "KhaoManee"
+      },
+      {
+        "position": 62,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "AR_15"
+      },
+      {
+        "position": 64,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "TEZZ2B"
+      },
+      {
+        "position": 68,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "-MiouMiou-"
+      },
+      {
+        "position": 79,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "Pigkevich99"
+      },
+      {
+        "position": 85,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "-Petunia-"
+      },
+      {
+        "position": 91,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "IKBFU"
+      },
+      {
+        "position": 98,
+        "prizeEuro": 125,
+        "prizeBountyComponent": 125,
+        "playerName": "BamBamMaster"
+      },
+      {
+        "position": 100,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 116,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Cherviachek"
+      }
+    ]
+  },
+  {
+    "id": "1085481374",
+    "name": "HIGHROLLER",
+    "currency": "EUR",
+    "totalEntrants": 55,
+    "reEntries": 8,
+    "tickets": 2,
+    "guarantee": 10000,
+    "prizePool": 14616,
+    "stake": 232,
+    "rake": 18,
+    "playersPerTable": 6,
+    "payoutTable": [
+      {
+        "position": 1,
+        "prizeEuro": 3407.86,
+        "prizeBountyComponent": 1439.11,
+        "playerName": "Chez Castel"
+      },
+      {
+        "position": 2,
+        "prizeEuro": 2143.8,
+        "prizeBountyComponent": 175.05,
+        "playerName": "skjold3d"
+      },
+      {
+        "position": 3,
+        "prizeEuro": 1451.32,
+        "prizeBountyComponent": 191.32,
+        "playerName": "PriseDeNotes"
+      },
+      {
+        "position": 4,
+        "prizeEuro": 1155.15,
+        "prizeBountyComponent": 288.9,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 5,
+        "prizeEuro": 737,
+        "prizeBountyComponent": 107,
+        "playerName": "zazagwen50"
+      },
+      {
+        "position": 6,
+        "prizeEuro": 526,
+        "prizeBountyComponent": 53.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 7,
+        "prizeEuro": 522.15,
+        "prizeBountyComponent": 128.4,
+        "playerName": "Cherviachek"
+      },
+      {
+        "position": 8,
+        "prizeEuro": 394.18,
+        "prizeBountyComponent": 79.18,
+        "playerName": "GeverGabriel"
+      },
+      {
+        "position": 10,
+        "prizeEuro": 21.4,
+        "prizeBountyComponent": 21.4,
+        "playerName": "Poty"
+      },
+      {
+        "position": 11,
+        "prizeEuro": 214,
+        "prizeBountyComponent": 214,
+        "playerName": "Lebordelaii"
+      },
+      {
+        "position": 14,
+        "prizeEuro": 346.68,
+        "prizeBountyComponent": 346.68,
+        "playerName": "Piknycia"
+      },
+      {
+        "position": 15,
+        "prizeEuro": 62.06,
+        "prizeBountyComponent": 62.06,
+        "playerName": "Breiz1credit"
+      },
+      {
+        "position": 16,
+        "prizeEuro": 53.5,
+        "prizeBountyComponent": 53.5,
+        "playerName": "jouer cher"
+      },
+      {
+        "position": 18,
+        "prizeEuro": 203.3,
+        "prizeBountyComponent": 203.3,
+        "playerName": ". ..   . ."
+      },
+      {
+        "position": 19,
+        "prizeEuro": 74.9,
+        "prizeBountyComponent": 74.9,
+        "playerName": "P.DiDi"
+      },
+      {
+        "position": 20,
+        "prizeEuro": 288.9,
+        "prizeBountyComponent": 288.9,
+        "playerName": "PouPouChou"
+      },
+      {
+        "position": 26,
+        "prizeEuro": 21.4,
+        "prizeBountyComponent": 21.4,
+        "playerName": "estufin"
+      },
+      {
+        "position": 27,
+        "prizeEuro": 42.8,
+        "prizeBountyComponent": 42.8,
+        "playerName": "ChuckNoriss1"
+      },
+      {
+        "position": 28,
+        "prizeEuro": 21.4,
+        "prizeBountyComponent": 21.4,
+        "playerName": "Soacabecinha"
+      },
+      {
+        "position": 32,
+        "prizeEuro": 42.8,
+        "prizeBountyComponent": 42.8,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 34,
+        "prizeEuro": 128.4,
+        "prizeBountyComponent": 128.4,
+        "playerName": "NyZio_Nc"
+      },
+      {
+        "position": 36,
+        "prizeEuro": 160.5,
+        "prizeBountyComponent": 160.5,
+        "playerName": "Telegram"
+      },
+      {
+        "position": 45,
+        "prizeEuro": 21.4,
+        "prizeBountyComponent": 21.4,
+        "playerName": "Bilouuuu695"
+      }
+    ]
+  },
+  {
+    "id": "1085468785",
+    "name": "BATTLE ROYALE",
+    "currency": "EUR",
+    "totalEntrants": 208,
+    "reEntries": 31,
+    "tickets": 2,
+    "guarantee": 15000,
+    "prizePool": 21510,
+    "stake": 90,
+    "rake": 10,
+    "playersPerTable": 6,
+    "payoutTable": [
+      {
+        "position": 1,
+        "prizeEuro": 3871.21,
+        "prizeBountyComponent": 2108.05,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 2,
+        "prizeEuro": 2014.28,
+        "prizeBountyComponent": 251.25,
+        "playerName": "RaphaelDiasB"
+      },
+      {
+        "position": 3,
+        "prizeEuro": 1826.64,
+        "prizeBountyComponent": 651.29,
+        "playerName": "YaDfAZewE"
+      },
+      {
+        "position": 4,
+        "prizeEuro": 1107.52,
+        "prizeBountyComponent": 323.95,
+        "playerName": "Igotrobbed"
+      },
+      {
+        "position": 5,
+        "prizeEuro": 741.75,
+        "prizeBountyComponent": 208.45,
+        "playerName": "Fleur Douce"
+      },
+      {
+        "position": 6,
+        "prizeEuro": 520.82,
+        "prizeBountyComponent": 144.5,
+        "playerName": "Balimekana"
+      },
+      {
+        "position": 7,
+        "prizeEuro": 392.69,
+        "prizeBountyComponent": 117,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 8,
+        "prizeEuro": 265.89,
+        "prizeBountyComponent": 55.9,
+        "playerName": "NagZzZz"
+      },
+      {
+        "position": 9,
+        "prizeEuro": 573.09,
+        "prizeBountyComponent": 363.1,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 10,
+        "prizeEuro": 362.56,
+        "prizeBountyComponent": 196,
+        "playerName": "DreamBig26"
+      },
+      {
+        "position": 11,
+        "prizeEuro": 180.56,
+        "prizeBountyComponent": 14,
+        "playerName": "WhenLamboXD"
+      },
+      {
+        "position": 12,
+        "prizeEuro": 336.92,
+        "prizeBountyComponent": 199.1,
+        "playerName": "Pr.Foloeil"
+      },
+      {
+        "position": 13,
+        "prizeEuro": 367.32,
+        "prizeBountyComponent": 229.5,
+        "playerName": "Sun Wuk0ng"
+      },
+      {
+        "position": 14,
+        "prizeEuro": 276.82,
+        "prizeBountyComponent": 139,
+        "playerName": "Deliverooo"
+      },
+      {
+        "position": 15,
+        "prizeEuro": 249.17,
+        "prizeBountyComponent": 130,
+        "playerName": "Biedronka"
+      },
+      {
+        "position": 16,
+        "prizeEuro": 229.67,
+        "prizeBountyComponent": 110.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 17,
+        "prizeEuro": 186.67,
+        "prizeBountyComponent": 67.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 18,
+        "prizeEuro": 185.92,
+        "prizeBountyComponent": 78,
+        "playerName": "brazilinoooo"
+      },
+      {
+        "position": 19,
+        "prizeEuro": 257.42,
+        "prizeBountyComponent": 149.5,
+        "playerName": "Bonzo7"
+      },
+      {
+        "position": 20,
+        "prizeEuro": 145.92,
+        "prizeBountyComponent": 38,
+        "playerName": "C.ALCARAZZ"
+      },
+      {
+        "position": 21,
+        "prizeEuro": 142.92,
+        "prizeBountyComponent": 35,
+        "playerName": "PriseDeNotes"
+      },
+      {
+        "position": 22,
+        "prizeEuro": 177.92,
+        "prizeBountyComponent": 70,
+        "playerName": "bot20."
+      },
+      {
+        "position": 23,
+        "prizeEuro": 159.92,
+        "prizeBountyComponent": 52,
+        "playerName": "ChuckNoriss1"
+      },
+      {
+        "position": 24,
+        "prizeEuro": 102.57,
+        "prizeBountyComponent": 0,
+        "playerName": "Lebordelaii"
+      },
+      {
+        "position": 25,
+        "prizeEuro": 122.57,
+        "prizeBountyComponent": 20,
+        "playerName": "ufre1"
+      },
+      {
+        "position": 26,
+        "prizeEuro": 174.57,
+        "prizeBountyComponent": 72,
+        "playerName": "Allaniche."
+      },
+      {
+        "position": 27,
+        "prizeEuro": 132.57,
+        "prizeBountyComponent": 30,
+        "playerName": "ObsiTrap"
+      },
+      {
+        "position": 28,
+        "prizeEuro": 112.57,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 29,
+        "prizeEuro": 175.57,
+        "prizeBountyComponent": 73,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 30,
+        "prizeEuro": 265.07,
+        "prizeBountyComponent": 162.5,
+        "playerName": "U.Nielsen."
+      },
+      {
+        "position": 31,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Prove7589"
+      },
+      {
+        "position": 32,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "xorxinho88"
+      },
+      {
+        "position": 33,
+        "prizeEuro": 240,
+        "prizeBountyComponent": 240,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 34,
+        "prizeEuro": 55,
+        "prizeBountyComponent": 55,
+        "playerName": "FTOO"
+      },
+      {
+        "position": 35,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "ribbadekin"
+      },
+      {
+        "position": 36,
+        "prizeEuro": 45,
+        "prizeBountyComponent": 45,
+        "playerName": "NagiNIT"
+      },
+      {
+        "position": 37,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "TurroTeorico"
+      },
+      {
+        "position": 38,
+        "prizeEuro": 39,
+        "prizeBountyComponent": 39,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 39,
+        "prizeEuro": 142.5,
+        "prizeBountyComponent": 142.5,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 40,
+        "prizeEuro": 30,
+        "prizeBountyComponent": 30,
+        "playerName": "D1v1deByZer0"
+      },
+      {
+        "position": 42,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Daridorexant"
+      },
+      {
+        "position": 43,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "vs savez pas"
+      },
+      {
+        "position": 44,
+        "prizeEuro": 55,
+        "prizeBountyComponent": 55,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 47,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 49,
+        "prizeEuro": 42,
+        "prizeBountyComponent": 42,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 51,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "P. Richard"
+      },
+      {
+        "position": 52,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 53,
+        "prizeEuro": 67.5,
+        "prizeBountyComponent": 67.5,
+        "playerName": "bxsh1do"
+      },
+      {
+        "position": 54,
+        "prizeEuro": 32,
+        "prizeBountyComponent": 32,
+        "playerName": "DireStr8ts"
+      },
+      {
+        "position": 55,
+        "prizeEuro": 102,
+        "prizeBountyComponent": 102,
+        "playerName": "AsFantome"
+      },
+      {
+        "position": 57,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "fuEqulibriuM"
+      },
+      {
+        "position": 58,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "amavis"
+      },
+      {
+        "position": 59,
+        "prizeEuro": 45,
+        "prizeBountyComponent": 45,
+        "playerName": "Nuno.Mendes"
+      },
+      {
+        "position": 60,
+        "prizeEuro": 30,
+        "prizeBountyComponent": 30,
+        "playerName": "Brebiou_man"
+      },
+      {
+        "position": 62,
+        "prizeEuro": 75,
+        "prizeBountyComponent": 75,
+        "playerName": "LeFullDuBus"
+      },
+      {
+        "position": 68,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "Lechapotier"
+      },
+      {
+        "position": 69,
+        "prizeEuro": 70,
+        "prizeBountyComponent": 70,
+        "playerName": "The Guinness"
+      },
+      {
+        "position": 71,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Soulvova"
+      },
+      {
+        "position": 77,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "C Poletti"
+      },
+      {
+        "position": 78,
+        "prizeEuro": 16,
+        "prizeBountyComponent": 16,
+        "playerName": "Slava Snus1k"
+      },
+      {
+        "position": 81,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "Huntrx"
+      },
+      {
+        "position": 83,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Emergens"
+      },
+      {
+        "position": 85,
+        "prizeEuro": 20,
+        "prizeBountyComponent": 20,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 87,
+        "prizeEuro": 60,
+        "prizeBountyComponent": 60,
+        "playerName": "ICMWHO_"
+      },
+      {
+        "position": 88,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "Beu_Teu"
+      },
+      {
+        "position": 90,
+        "prizeEuro": 40,
+        "prizeBountyComponent": 40,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 91,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 93,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "WeFlipYouRip"
+      },
+      {
+        "position": 94,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "MICHELBUSTOS"
+      },
+      {
+        "position": 95,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "AiiAAiiA"
+      },
+      {
+        "position": 104,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Poty"
+      },
+      {
+        "position": 107,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "M.Caicedo"
+      },
+      {
+        "position": 108,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "VillainRaise"
+      },
+      {
+        "position": 109,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "M1NEO"
+      },
+      {
+        "position": 111,
+        "prizeEuro": 30,
+        "prizeBountyComponent": 30,
+        "playerName": "AstroEspoir"
+      },
+      {
+        "position": 114,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 115,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "JollyJumper7"
+      },
+      {
+        "position": 119,
+        "prizeEuro": 35,
+        "prizeBountyComponent": 35,
+        "playerName": "Tchu PR0tect"
+      },
+      {
+        "position": 123,
+        "prizeEuro": 25,
+        "prizeBountyComponent": 25,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 126,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "DrB0skonovic"
+      },
+      {
+        "position": 129,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "OnYCroiPlus"
+      },
+      {
+        "position": 137,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 139,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "2phenethyl"
+      },
+      {
+        "position": 142,
+        "prizeEuro": 5,
+        "prizeBountyComponent": 5,
+        "playerName": "Isla Holbox"
+      },
+      {
+        "position": 143,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "MilkModu"
+      },
+      {
+        "position": 146,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "Paddy_Mayne"
+      },
+      {
+        "position": 154,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "AALX11"
+      },
+      {
+        "position": 155,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "S Tier"
+      },
+      {
+        "position": 158,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      },
+      {
+        "position": 159,
+        "prizeEuro": 50,
+        "prizeBountyComponent": 50,
+        "playerName": "SpaceBureau"
+      },
+      {
+        "position": 173,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "RondinDuVN"
+      },
+      {
+        "position": 175,
+        "prizeEuro": 10,
+        "prizeBountyComponent": 10,
+        "playerName": "<UNKNOWN>"
+      }
+    ]
+  }
+]

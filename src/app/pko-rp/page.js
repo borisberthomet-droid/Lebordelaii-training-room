@@ -7,6 +7,7 @@ import { computeSeatRP } from "@/lib/poker/rpFromHH";
 import { isHRCExport, computeHRCStats } from "@/lib/poker/hrcJson";
 import { isSharkScopeExport, parseSharkScopeTournament } from "@/lib/poker/sharkscopeJson";
 import { PkoRpIcon } from "@/components/ToolIcons";
+import sharkscopeLibrary from "@/data/sharkscopeLibrary.json";
 
 const inputStyle = {
   width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
@@ -61,14 +62,24 @@ export default function PkoRpPage() {
   const [winamaxRows, setWinamaxRows] = useState(null);
   const [hrcStats, setHrcStats] = useState(null);
   const [sharkscopeTournament, setSharkscopeTournament] = useState(null);
+  const [libraryId, setLibraryId] = useState("");
   const [error, setError] = useState("");
   const [knownStartingStack, setKnownStartingStack] = useState(null); // récupéré d'un screenshot extrait plus haut
+
+  const selectLibraryTournament = (id) => {
+    setLibraryId(id);
+    if (!id) { setSharkscopeTournament(null); return; }
+    const t = sharkscopeLibrary.find((x) => x.id === id);
+    setSharkscopeTournament(t || null);
+    if (t && knownStartingStack > 0 && t.stake > 0) {
+      setChipValue(String(t.stake / knownStartingStack));
+    }
+  };
 
   const handleAnalyze = () => {
     setError("");
     setWinamaxRows(null);
     setHrcStats(null);
-    setSharkscopeTournament(null);
     setParsedType(null);
     if (!input.trim()) { setError("Colle une hand history ou un export JSON d'abord."); return; }
 
@@ -81,6 +92,10 @@ export default function PkoRpPage() {
       setParsedType("hrc");
       setHrcStats(stats);
       setHeroIndex(0);
+      // La structure HRC est autosuffisante — une référence bibliothèque sélectionnée
+      // par ailleurs n'a plus de sens ici, on l'efface pour éviter la confusion.
+      setSharkscopeTournament(null);
+      setLibraryId("");
       return;
     }
 
@@ -88,6 +103,7 @@ export default function PkoRpPage() {
       const t = parseSharkScopeTournament(json);
       setParsedType("sharkscope");
       setSharkscopeTournament(t);
+      setLibraryId("");
       // La vraie valeur du jeton ne peut se calculer que si on connaît le stack de
       // départ (pas dans cet export) — on réutilise celui d'un screenshot déjà extrait.
       if (knownStartingStack > 0 && t.stake > 0) {
@@ -240,6 +256,37 @@ export default function PkoRpPage() {
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 600 }}>Bibliothèque de tournois (SharkScope)</span>
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>
+          Structures de payout réelles déjà récupérées — sélectionne le tournoi correspondant à ta hand history pour l&apos;utiliser comme référence, sans avoir à recoller le JSON.
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {sharkscopeLibrary.map((t) => {
+            const active = libraryId === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => selectLibraryTournament(active ? "" : t.id)}
+                style={{
+                  textAlign: "left", padding: "10px 12px", borderRadius: 8, cursor: "pointer",
+                  background: active ? "rgba(52,211,153,0.1)" : "var(--panel-2)",
+                  border: active ? "1px solid var(--accent)" : "1px solid var(--border)",
+                  color: "var(--text)", fontSize: 12,
+                }}
+              >
+                <span style={{ fontWeight: 600 }}>{active ? "✓ " : ""}{t.name}</span>
+                <span style={{ color: "var(--text-muted)" }}>
+                  {" — "}{t.totalEntrants}+{t.reEntries} entrants · guarantee {t.guarantee}€ · buy-in {t.stake}+{t.rake}€ · {t.payoutTable.length} places payées
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
           Hand history Winamax (texte complet) OU export JSON HRC — collé ici, le format est détecté automatiquement
         </div>
@@ -288,10 +335,10 @@ export default function PkoRpPage() {
             Export HRC détecté — {hrcStats.nbTotal} joueurs restants, {hrcStats.totalChips.toFixed(1)} jetons (BB) en jeu, {hrcStats.remainingTotalPrizes.toFixed(2)}€ de prizepool restant ({hrcStats.bountyType === "KO" ? "Mystery KO" : "PKO, facteur ×" + hrcStats.progressiveFactor}). Stack moyen et valeur des KO calculés automatiquement.
           </div>
         )}
-        {parsedType === "sharkscope" && sharkscopeTournament && (
+        {sharkscopeTournament && (
           <div style={{ background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 10, padding: 12, marginBottom: 14, fontSize: 11 }}>
             <div style={{ fontWeight: 700, marginBottom: 6, color: "var(--accent)" }}>
-              Export SharkScope : {sharkscopeTournament.name}
+              {libraryId ? "Référence bibliothèque : " : "Export SharkScope : "}{sharkscopeTournament.name}
             </div>
             <div style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
               {sharkscopeTournament.totalEntrants} entrants + {sharkscopeTournament.reEntries} recaves · Guarantee {sharkscopeTournament.guarantee}€ · Prizepool réel {sharkscopeTournament.prizePool}€ · Buy-in {sharkscopeTournament.stake}€ + {sharkscopeTournament.rake}€ rake · {sharkscopeTournament.payoutTable.length} places payées
@@ -299,7 +346,9 @@ export default function PkoRpPage() {
               {knownStartingStack > 0
                 ? `Valeur du jeton appliquée automatiquement (stack de départ ${knownStartingStack} connu via un screenshot).`
                 : "Extrait d'abord un screenshot du panneau INFO (ci-dessus) pour connaître le stack de départ et calculer la valeur du jeton."}
-              {" "}Colle ensuite une hand history de ce tournoi pour obtenir la grille RP — cet export ne contient pas les stacks des joueurs, seulement la structure de payout réelle.
+              {" "}{(winamaxRows || hrcRows)
+                ? "Grille RP calculée ci-dessous."
+                : "Colle ensuite une hand history de ce tournoi pour obtenir la grille RP — cet export ne contient pas les stacks des joueurs, seulement la structure de payout réelle."}
             </div>
           </div>
         )}
