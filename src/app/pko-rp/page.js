@@ -5,6 +5,7 @@ import Link from "next/link";
 import { parseWinamaxHH, buildHHReplay } from "@/lib/poker/hhParser";
 import { computeSeatRP } from "@/lib/poker/rpFromHH";
 import { isHRCExport, computeHRCStats } from "@/lib/poker/hrcJson";
+import { isSharkScopeExport, parseSharkScopeTournament } from "@/lib/poker/sharkscopeJson";
 import { PkoRpIcon } from "@/components/ToolIcons";
 
 const inputStyle = {
@@ -56,15 +57,18 @@ export default function PkoRpPage() {
   const [fieldLeft, setFieldLeft] = useState(50);
   const [chipValue, setChipValue] = useState("");
   const [heroIndex, setHeroIndex] = useState(0);
-  const [parsedType, setParsedType] = useState(null); // "winamax" | "hrc" | null
+  const [parsedType, setParsedType] = useState(null); // "winamax" | "hrc" | "sharkscope" | null
   const [winamaxRows, setWinamaxRows] = useState(null);
   const [hrcStats, setHrcStats] = useState(null);
+  const [sharkscopeTournament, setSharkscopeTournament] = useState(null);
   const [error, setError] = useState("");
+  const [knownStartingStack, setKnownStartingStack] = useState(null); // récupéré d'un screenshot extrait plus haut
 
   const handleAnalyze = () => {
     setError("");
     setWinamaxRows(null);
     setHrcStats(null);
+    setSharkscopeTournament(null);
     setParsedType(null);
     if (!input.trim()) { setError("Colle une hand history ou un export JSON d'abord."); return; }
 
@@ -77,6 +81,18 @@ export default function PkoRpPage() {
       setParsedType("hrc");
       setHrcStats(stats);
       setHeroIndex(0);
+      return;
+    }
+
+    if (json && isSharkScopeExport(json)) {
+      const t = parseSharkScopeTournament(json);
+      setParsedType("sharkscope");
+      setSharkscopeTournament(t);
+      // La vraie valeur du jeton ne peut se calculer que si on connaît le stack de
+      // départ (pas dans cet export) — on réutilise celui d'un screenshot déjà extrait.
+      if (knownStartingStack > 0 && t.stake > 0) {
+        setChipValue(String(t.stake / knownStartingStack));
+      }
       return;
     }
 
@@ -137,6 +153,7 @@ export default function PkoRpPage() {
       setExtractResult(ex);
 
       // Applique automatiquement ce qui peut l'être aux champs du calcul RP en dessous.
+      if (ex.startingStackChips > 0) setKnownStartingStack(ex.startingStackChips);
       if (ex.buyInStaking > 0 && ex.startingStackChips > 0) {
         setChipValue(String(ex.buyInStaking / ex.startingStackChips));
       }
@@ -238,7 +255,7 @@ export default function PkoRpPage() {
               {FL_OPTIONS.map((v) => <option key={v} value={v}>{v === "TF" ? "Table finale" : `${v}%`}</option>)}
             </select>
           </div>
-          {parsedType !== "hrc" && (
+          {parsedType !== "hrc" && parsedType !== "sharkscope" && (
             <>
               <div>
                 <label style={labelStyle}>Stack moyen (BB)</label>
@@ -259,14 +276,31 @@ export default function PkoRpPage() {
             </div>
           )}
         </div>
-        {parsedType !== "hrc" && (
+        {parsedType !== "hrc" && parsedType !== "sharkscope" && (
           <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14 }}>
-            Format hand history texte : la valeur d&apos;un jeton et le stack moyen ne sont pas dans la HH — indique-les à la main. Un export JSON HRC calcule tout automatiquement (structure de payout incluse).
+            Format hand history texte : la valeur d&apos;un jeton et le stack moyen ne sont pas dans la HH — indique-les à la main
+            {knownStartingStack > 0 ? ` (stack de départ connu : ${knownStartingStack} jetons, via un screenshot extrait plus haut).` : "."}
+            {" "}Un export JSON HRC calcule tout automatiquement (structure de payout incluse).
           </div>
         )}
         {parsedType === "hrc" && hrcStats && (
           <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14 }}>
             Export HRC détecté — {hrcStats.nbTotal} joueurs restants, {hrcStats.totalChips.toFixed(1)} jetons (BB) en jeu, {hrcStats.remainingTotalPrizes.toFixed(2)}€ de prizepool restant ({hrcStats.bountyType === "KO" ? "Mystery KO" : "PKO, facteur ×" + hrcStats.progressiveFactor}). Stack moyen et valeur des KO calculés automatiquement.
+          </div>
+        )}
+        {parsedType === "sharkscope" && sharkscopeTournament && (
+          <div style={{ background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 10, padding: 12, marginBottom: 14, fontSize: 11 }}>
+            <div style={{ fontWeight: 700, marginBottom: 6, color: "var(--accent)" }}>
+              Export SharkScope : {sharkscopeTournament.name}
+            </div>
+            <div style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
+              {sharkscopeTournament.totalEntrants} entrants + {sharkscopeTournament.reEntries} recaves · Guarantee {sharkscopeTournament.guarantee}€ · Prizepool réel {sharkscopeTournament.prizePool}€ · Buy-in {sharkscopeTournament.stake}€ + {sharkscopeTournament.rake}€ rake · {sharkscopeTournament.payoutTable.length} places payées
+              <br />
+              {knownStartingStack > 0
+                ? `Valeur du jeton appliquée automatiquement (stack de départ ${knownStartingStack} connu via un screenshot).`
+                : "Extrait d'abord un screenshot du panneau INFO (ci-dessus) pour connaître le stack de départ et calculer la valeur du jeton."}
+              {" "}Colle ensuite une hand history de ce tournoi pour obtenir la grille RP — cet export ne contient pas les stacks des joueurs, seulement la structure de payout réelle.
+            </div>
           </div>
         )}
 
