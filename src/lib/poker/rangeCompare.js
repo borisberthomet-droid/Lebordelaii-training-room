@@ -1,14 +1,16 @@
 import { ALL_CLASSES, getClassCombos } from './combos';
 
 // Compare deux ranges pondérées (0-1 par combo, comme comboWeights partout ailleurs dans le
-// projet) sur les 1326 combos réels — un combo absent des DEUX objets compte comme un accord
-// implicite à 0% (check/fold), pas comme ignoré : sans ça, une petite range de référence rendrait
-// la comparaison quasi vide de sens. Retourne un score de similarité global + le détail par classe
-// (les 169 cases du grid) pour la vue diff : `diff` signé (+ = l'élève sur-bet cette classe par
-// rapport à la référence, - = il la sous-bet), `absDiff` pour l'intensité visuelle.
+// projet). Le score global ne compte QUE les combos "actifs" (poids > 0 côté élève OU côté
+// référence, ou les deux) — pas les 1326 combos réels. Une range serrée (ex: paires premium
+// seulement) a l'immense majorité de ses 1326 combos à 0% des deux côtés ; les compter comme
+// "accord" noie un vrai désaccord dans le bruit (constaté : un pli entier oublié — TT, 6 combos —
+// donnait 100% de similarité au lieu de ~80%, alors que la grille d'écart montrait bien le trou).
+// `perClass` reste calculé sur les vrais 13 (ou 4/12) combos de la classe pour la vue diff — c'est
+// seulement l'agrégat global qui doit ignorer le bruit des combos jamais évoqués par personne.
 export function compareRanges(studentWeights, referenceWeights) {
   let sumAbsDiff = 0;
-  let totalCombos = 0;
+  let activeCombos = 0;
   const perClass = {};
 
   for (const cls of ALL_CLASSES) {
@@ -20,9 +22,8 @@ export function compareRanges(studentWeights, referenceWeights) {
       clsAbsDiff += Math.abs(s - r);
       studentSum += s;
       referenceSum += r;
+      if (s > 0 || r > 0) { sumAbsDiff += Math.abs(s - r); activeCombos++; }
     }
-    sumAbsDiff += clsAbsDiff;
-    totalCombos += combos.length;
     perClass[cls] = {
       studentAvg: studentSum / combos.length,
       referenceAvg: referenceSum / combos.length,
@@ -31,7 +32,7 @@ export function compareRanges(studentWeights, referenceWeights) {
     };
   }
 
-  const avgAbsDiff = totalCombos > 0 ? sumAbsDiff / totalCombos : 0;
-  const accuracy = Math.round((1 - avgAbsDiff) * 100);
+  const avgAbsDiff = activeCombos > 0 ? sumAbsDiff / activeCombos : 0;
+  const accuracy = activeCombos > 0 ? Math.round((1 - avgAbsDiff) * 100) : 100;
   return { accuracy, avgAbsDiff, perClass };
 }
