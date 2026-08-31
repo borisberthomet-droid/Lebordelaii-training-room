@@ -257,3 +257,15 @@ create policy "users can insert their own range_attempts"
   on range_attempts for insert
   to authenticated
   with check (auth.uid() = user_id);
+
+-- Classement général Range Builder : précision moyenne, filtrée à un minimum de tentatives
+-- côté requête (même convention que player_stats/pot_odds_stats).
+create or replace view range_builder_stats as
+select
+  p.id as user_id,
+  p.pseudo,
+  count(a.id) as total_attempts,
+  coalesce(avg(a.accuracy), 0) as avg_accuracy
+from profiles p
+join range_attempts a on a.user_id = p.id
+group by p.id, p.pseudo;

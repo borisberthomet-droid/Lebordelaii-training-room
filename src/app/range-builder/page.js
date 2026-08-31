@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import {
-  listRangeSpots, listRangeCategories, createRangeSpot, deleteRangeSpot, insertRangeAttempt,
+  listRangeSpots, listRangeCategories, createRangeSpot, updateRangeSpot, deleteRangeSpot,
+  insertRangeAttempt, getRangeSpotLeaderboard,
 } from "@/lib/supabase/rangeSpots";
 import { parsePastedRange } from "@/lib/poker/rangeParser";
 import { compareRanges } from "@/lib/poker/rangeCompare";
@@ -76,10 +78,13 @@ export default function RangeBuilderPage() {
   const [categoryFilter, setCategoryFilter] = useState("Toutes");
   const [selectedSpotId, setSelectedSpotId] = useState("");
 
+  const [practiceMode, setPracticeMode] = useState(false);
   const [studentWeights, setStudentWeights] = useState({});
   const [result, setResult] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
 
-  // --- création de spot (admin) ---
+  // --- création / édition de spot (admin) ---
+  const [editingSpotId, setEditingSpotId] = useState(null);
   const [newCategory, setNewCategory] = useState("");
   const [newLabel, setNewLabel] = useState("");
   const [refWeights, setRefWeights] = useState({});
@@ -119,8 +124,21 @@ export default function RangeBuilderPage() {
 
   const selectSpot = (id) => {
     setSelectedSpotId(id);
+    setPracticeMode(false);
     setStudentWeights({});
     setResult(null);
+    setLeaderboard([]);
+  };
+
+  const refreshLeaderboard = async (spotId) => {
+    try { setLeaderboard(await getRangeSpotLeaderboard(spotId)); } catch (e) { console.error("getRangeSpotLeaderboard", e); }
+  };
+
+  const startPractice = () => {
+    setPracticeMode(true);
+    setStudentWeights({});
+    setResult(null);
+    if (selectedSpot) refreshLeaderboard(selectedSpot.id);
   };
 
   const handleCompare = async () => {
@@ -129,6 +147,7 @@ export default function RangeBuilderPage() {
     setResult(r);
     try {
       await insertRangeAttempt({ spotId: selectedSpot.id, studentWeights, accuracy: r.accuracy });
+      await refreshLeaderboard(selectedSpot.id);
     } catch (e) {
       console.error("insertRangeAttempt", e);
     }
@@ -140,14 +159,34 @@ export default function RangeBuilderPage() {
     setRefWeights((prev) => ({ ...prev, ...parsed }));
   };
 
+  const startEdit = (spot) => {
+    setEditingSpotId(spot.id);
+    setNewCategory(spot.category);
+    setNewLabel(spot.label);
+    setRefWeights({ ...spot.referenceWeights });
+    setRefPasteText("");
+    setSaveMsg("");
+  };
+
+  const cancelEdit = () => {
+    setEditingSpotId(null);
+    setNewCategory(""); setNewLabel(""); setRefWeights({}); setRefPasteText(""); setSaveMsg("");
+  };
+
   const handleSaveSpot = async () => {
     if (!newCategory.trim() || !newLabel.trim()) { setSaveMsg("Catégorie et intitulé requis."); return; }
     if (!Object.values(refWeights).some((w) => w > 0)) { setSaveMsg("La range de référence est vide."); return; }
     setSaveMsg("Enregistrement…");
     try {
-      await createRangeSpot({ category: newCategory.trim(), label: newLabel.trim(), referenceWeights: refWeights });
-      setSaveMsg("Spot enregistré.");
-      setNewLabel(""); setRefWeights({}); setRefPasteText("");
+      if (editingSpotId) {
+        await updateRangeSpot(editingSpotId, { category: newCategory.trim(), label: newLabel.trim(), referenceWeights: refWeights });
+        setSaveMsg("Spot mis à jour.");
+        setEditingSpotId(null);
+      } else {
+        await createRangeSpot({ category: newCategory.trim(), label: newLabel.trim(), referenceWeights: refWeights });
+        setSaveMsg("Spot enregistré.");
+      }
+      setNewCategory(""); setNewLabel(""); setRefWeights({}); setRefPasteText("");
       await refresh();
     } catch (e) {
       setSaveMsg("Erreur : " + e.message);
@@ -178,10 +217,11 @@ export default function RangeBuilderPage() {
             <RangeBuilderIcon size={18} /> Range Builder
           </span>
         }
+        right={<Link href="/range-builder/ranking" style={{ fontSize: 12, color: "var(--text-muted)" }}>Classement</Link>}
       />
 
       {isAdmin && (
-        <Section title="Créer un spot (admin)">
+        <Section title={editingSpotId ? "Éditer le spot" : "Créer un spot (admin)"}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
             <div>
               <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Catégorie</label>
@@ -223,8 +263,14 @@ export default function RangeBuilderPage() {
           <RangeGrid comboWeights={refWeights} setComboWeights={setRefWeights} mode="admin" />
 
           <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
-            <button onClick={handleSaveSpot} style={primaryButtonStyle}>Enregistrer le spot</button>
-            <button onClick={() => { setRefWeights({}); setRefPasteText(""); }} style={ghostButtonStyle}>Vider</button>
+            <button onClick={handleSaveSpot} style={primaryButtonStyle}>
+              {editingSpotId ? "Enregistrer les modifications" : "Enregistrer le spot"}
+            </button>
+            {editingSpotId ? (
+              <button onClick={cancelEdit} style={ghostButtonStyle}>Annuler l&apos;édition</button>
+            ) : (
+              <button onClick={() => { setRefWeights({}); setRefPasteText(""); }} style={ghostButtonStyle}>Vider</button>
+            )}
             {saveMsg && <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{saveMsg}</span>}
           </div>
         </Section>
@@ -257,19 +303,51 @@ export default function RangeBuilderPage() {
           <>
             <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{selectedSpot.label}</div>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 14 }}>
-              {selectedSpot.category} — dessine la stratégie que tu penses correcte, puis compare.
-              {isAdmin && (
-                <button onClick={() => handleDeleteSpot(selectedSpot.id)} style={{ ...ghostButtonStyle, marginLeft: 10, fontSize: 10, padding: "3px 8px" }}>
-                  Supprimer ce spot
-                </button>
-              )}
+              {selectedSpot.category}
             </div>
 
-            <RangeGrid comboWeights={studentWeights} setComboWeights={setStudentWeights} mode="admin" />
+            {!practiceMode && (
+              <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+                <button onClick={startPractice} style={primaryButtonStyle}>S&apos;entraîner</button>
+                {isAdmin && (
+                  <>
+                    <button onClick={() => startEdit(selectedSpot)} style={ghostButtonStyle}>Éditer le spot</button>
+                    <button onClick={() => handleDeleteSpot(selectedSpot.id)} style={{ ...ghostButtonStyle, color: "#E0645A" }}>
+                      Supprimer
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
 
-            <div style={{ marginTop: 14 }}>
-              <button onClick={handleCompare} style={primaryButtonStyle}>Comparer</button>
-            </div>
+            {practiceMode && (
+              <>
+                <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10 }}>
+                  Dessine la stratégie que tu penses correcte, puis compare.
+                  <button onClick={() => setPracticeMode(false)} style={{ ...ghostButtonStyle, marginLeft: 10, fontSize: 10, padding: "3px 8px" }}>
+                    ← Changer de spot
+                  </button>
+                </div>
+
+                <RangeGrid comboWeights={studentWeights} setComboWeights={setStudentWeights} mode="admin" />
+
+                <div style={{ marginTop: 14 }}>
+                  <button onClick={handleCompare} style={primaryButtonStyle}>Comparer</button>
+                </div>
+
+                {leaderboard.length > 0 && (
+                  <div style={{ marginTop: 16 }}>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>Meilleurs scores sur ce spot</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {leaderboard.map((row, i) => (
+                        <div key={row.pseudo + i} style={{ display: "flex", justifyContent: "space-between", background: "var(--panel-2)", borderRadius: 8, padding: "6px 10px", fontSize: 11 }}>
+                          <span>#{i + 1} {row.pseudo}</span>
+                          <span style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--accent)" }}>{row.accuracy}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
             {result && (
               <div style={{ marginTop: 20 }}>
@@ -295,6 +373,8 @@ export default function RangeBuilderPage() {
                   </div>
                 </div>
               </div>
+            )}
+              </>
             )}
           </>
         )}

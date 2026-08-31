@@ -41,6 +41,18 @@ export async function createRangeSpot({ category, label, referenceWeights }) {
   return fromRow(data);
 }
 
+export async function updateRangeSpot(id, { category, label, referenceWeights }) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("range_spots")
+    .update({ category, label, reference_weights: referenceWeights })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return fromRow(data);
+}
+
 export async function deleteRangeSpot(id) {
   const supabase = createClient();
   const { error } = await supabase.from("range_spots").delete().eq("id", id);
@@ -59,6 +71,40 @@ export async function insertRangeAttempt({ spotId, studentWeights, accuracy }) {
     accuracy,
   });
   if (error) throw error;
+}
+
+// Classement d'un spot précis : seule la dernière tentative de chaque élève compte (une nouvelle
+// tentative remplace l'ancienne), trié par score — même convention que getSpotLeaderboard (spots.js).
+export async function getRangeSpotLeaderboard(spotId) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("range_attempts")
+    .select("user_id, accuracy, created_at, profiles(pseudo)")
+    .eq("spot_id", spotId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  const latestByUser = new Map();
+  for (const row of data) {
+    if (!latestByUser.has(row.user_id)) latestByUser.set(row.user_id, row);
+  }
+  return [...latestByUser.values()]
+    .sort((a, b) => b.accuracy - a.accuracy)
+    .slice(0, 10)
+    .map((row) => ({ pseudo: row.profiles?.pseudo || "?", accuracy: row.accuracy }));
+}
+
+// Classement général : précision moyenne sur toutes les tentatives, minimum de tentatives
+// filtré côté requête pour être significatif (même convention que getPotOddsRanking).
+export async function getRangeBuilderRanking(minAttempts = 5) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("range_builder_stats")
+    .select("pseudo, total_attempts, avg_accuracy")
+    .gte("total_attempts", minAttempts)
+    .order("avg_accuracy", { ascending: false });
+  if (error) throw error;
+  return data;
 }
 
 export async function getMyRangeAttempts(spotId) {
