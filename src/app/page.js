@@ -18,7 +18,6 @@ const TOOLS = [
     Icon: () => <PotOddsIcon size={24} />,
     label: "Pot Odds",
     desc: "Fréquences de call, de fold equity et de bluff vs bet/raise river",
-    inDev: true,
   },
   {
     href: "/leak-analyzer",
