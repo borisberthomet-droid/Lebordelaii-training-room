@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SiteLogo from "@/components/SiteLogo";
 import Logo from "@/components/Logo";
-import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon } from "@/components/ToolIcons";
+import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon, RangeBuilderIcon } from "@/components/ToolIcons";
 import LogoutButton from "./logout-button";
 
 const TOOLS = [
@@ -38,6 +38,13 @@ const TOOLS = [
     Icon: () => <LeakfinderIcon size={24} />,
     label: "Leakfinder",
     desc: "Capture ton report Hand2Note, comparaison automatique à la matrice de référence",
+    inDev: true,
+  },
+  {
+    href: "/range-builder",
+    Icon: () => <RangeBuilderIcon size={24} />,
+    label: "Range Builder",
+    desc: "Dessine une stratégie de range sur un spot et compare-la à la référence du coach",
     inDev: true,
   },
 ];

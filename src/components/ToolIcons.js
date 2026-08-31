@@ -53,6 +53,29 @@ export function LeakfinderIcon({ size = 24 }) {
   );
 }
 
+// Mini-grille 3x3 (évoque le grid 13x13 de range) avec une diagonale en dégradé —
+// distingue "construire/comparer une range" du cadran Pot Odds et du tracé Leak Analyzer.
+export function RangeBuilderIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="Range Builder">
+      <Grad id="rb-grad" />
+      <rect x="3" y="3" width="26" height="26" rx="7" stroke="var(--border)" strokeWidth="2" fill="none" />
+      {[0, 1, 2].map((row) =>
+        [0, 1, 2].map((col) => {
+          const on = row <= col;
+          return (
+            <rect
+              key={`${row}-${col}`}
+              x={8 + col * 6} y={8 + row * 6} width="4.5" height="4.5" rx="1"
+              fill={on ? "url(#rb-grad)" : "var(--border)"} opacity={on ? 1 - row * 0.22 : 0.5}
+            />
+          );
+        })
+      )}
+    </svg>
+  );
+}
+
 // Pile de jetons (stack) surmontée d'un anneau en dégradé (le bounty posé dessus) —
 // évoque la valeur du KO empilée sur le stack, distinct des autres marques.
 export function PkoRpIcon({ size = 24 }) {

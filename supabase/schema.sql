@@ -207,3 +207,53 @@ select
 from profiles p
 join pot_odds_attempts a on a.user_id = p.id
 group by p.id, p.pseudo;
+
+-- ---------- range_spots / range_attempts ----------
+-- Range Builder (/range-builder) : Boris crée un spot (catégorie libre + intitulé + range de
+-- référence collée depuis un solveur), un élève dessine sa propre stratégie sur le même spot et
+-- obtient un score de similarité (voir compareRanges dans lib/poker/rangeCompare.js). Catégorie en
+-- texte libre (pas de table séparée) — le formulaire propose les catégories déjà utilisées via un
+-- datalist, mais Boris peut en taper une nouvelle à tout moment ("cbet / deux barrel", "Range de
+-- call PKO vs resteal", etc.), pas de taxonomie figée à maintenir.
+create table if not exists range_spots (
+  id uuid primary key default gen_random_uuid(),
+  category text not null,
+  label text not null,
+  reference_weights jsonb not null default '{}'::jsonb,
+  created_by uuid references profiles(id),
+  created_at timestamptz not null default now()
+);
+
+alter table range_spots enable row level security;
+
+create policy "range_spots are readable by any authenticated user"
+  on range_spots for select
+  to authenticated
+  using (true);
+
+create policy "only admins can write range_spots"
+  on range_spots for all
+  to authenticated
+  using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'))
+  with check (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
+
+create table if not exists range_attempts (
+  id uuid primary key default gen_random_uuid(),
+  spot_id uuid not null references range_spots(id) on delete cascade,
+  user_id uuid not null references profiles(id) on delete cascade,
+  student_weights jsonb not null default '{}'::jsonb,
+  accuracy numeric not null,
+  created_at timestamptz not null default now()
+);
+
+alter table range_attempts enable row level security;
+
+create policy "range_attempts are readable by any authenticated user"
+  on range_attempts for select
+  to authenticated
+  using (true);
+
+create policy "users can insert their own range_attempts"
+  on range_attempts for insert
+  to authenticated
+  with check (auth.uid() = user_id);
