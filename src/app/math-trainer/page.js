@@ -74,8 +74,12 @@ export default function MathTrainerPage() {
               <span style={{ fontSize: 13, fontWeight: 600 }}>{meta.label}</span>
             </div>
 
-            <div style={{ fontSize: 15, lineHeight: 1.5, marginBottom: 8 }}>{meta.prompt(spot)}</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 20 }}>{meta.hint}</div>
+            <div style={{
+              fontSize: 26, fontWeight: 700, lineHeight: 1.4, marginBottom: 20,
+              fontFamily: "var(--font-ibm-plex-mono), monospace", letterSpacing: -0.5,
+            }}>
+              {meta.prompt(spot)}
+            </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <input

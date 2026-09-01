@@ -38,24 +38,21 @@ export const QUESTION_META = {
     // Tolérance relative (3%) plutôt qu'absolue : un pot en jetons peut valoir 500 ou 60 000,
     // une tolérance fixe en points n'aurait aucun sens dans les deux cas à la fois.
     isCorrect: (guess, answer) => Math.abs(guess - answer) / answer <= 0.03,
-    prompt: (s) => `Pot : ${s.pot} ${s.unit}. Tu veux miser ${s.betPct}% du pot. Quel montant (en ${s.unit}) ?`,
-    hint: "Montant = Pot × %.",
+    prompt: (s) => `${s.pot} ${s.unit} × ${s.betPct}% = ?`,
     formula: (s, a) => `${s.pot} × ${s.betPct}% = ${a.toFixed(s.unit === "BB" ? 1 : 0)} ${s.unit}`,
   },
   sizing_pct: {
     label: "Pourcentage du pot",
     unit: () => "%",
     isCorrect: (guess, answer) => Math.abs(guess - answer) <= 2,
-    prompt: (s) => `Pot : ${s.pot} ${s.unit}. Tu mises ${s.bet} ${s.unit}. Quel pourcentage du pot ?`,
-    hint: "% = Mise ÷ Pot × 100.",
+    prompt: (s) => `${s.bet} / ${s.pot} = ? %`,
     formula: (s, a) => `${s.bet} ÷ ${s.pot} × 100 = ${a.toFixed(1)}%`,
   },
   odds_ratio: {
     label: "Cote risque / récompense",
     unit: () => "%",
     isCorrect: (guess, answer) => Math.abs(guess - answer) <= 2,
-    prompt: (s) => `Tu risques ${s.risk} pour gagner ${s.reward} (cote ${s.risk}/${s.reward}). Quelle équité minimale te faut-il pour que ce soit rentable ?`,
-    hint: "Équité = Risque ÷ (Risque + Récompense) × 100.",
+    prompt: (s) => `${s.risk} / (${s.risk} + ${s.reward}) = ? %`,
     formula: (s, a) => `${s.risk} ÷ (${s.risk} + ${s.reward}) × 100 = ${a.toFixed(1)}%`,
   },
 };
