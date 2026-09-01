@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SiteLogo from "@/components/SiteLogo";
 import Logo from "@/components/Logo";
-import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon, RangeBuilderIcon } from "@/components/ToolIcons";
+import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon, RangeBuilderIcon, MathTrainerIcon, MemoIcon } from "@/components/ToolIcons";
 import LogoutButton from "./logout-button";
 
 const TOOLS = [
@@ -45,6 +45,20 @@ const TOOLS = [
     Icon: () => <RangeBuilderIcon size={24} />,
     label: "Range Builder",
     desc: "Dessine une stratégie de range sur un spot et compare-la à la référence du coach",
+    inDev: true,
+  },
+  {
+    href: "/math-trainer",
+    Icon: () => <MathTrainerIcon size={24} />,
+    label: "Math Trainer",
+    desc: "Calcul mental rapide : sizing en % du pot (BB ou jetons), cotes risque/récompense",
+    inDev: true,
+  },
+  {
+    href: "/memo",
+    Icon: () => <MemoIcon size={24} />,
+    label: "Mémo",
+    desc: "Tableaux de référence : pot odds, bluffs, MDF, value bet, valeur des KO",
     inDev: true,
   },
 ];

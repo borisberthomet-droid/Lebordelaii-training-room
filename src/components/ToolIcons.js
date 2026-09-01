@@ -76,6 +76,34 @@ export function RangeBuilderIcon({ size = 24 }) {
   );
 }
 
+// Symbole de division (point / barre / point) en dégradé dans un cadre — évoque le calcul
+// mental rapide (sizing, cotes), distinct des autres marques qui n'utilisent pas de symbole math.
+export function MathTrainerIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="Math Trainer">
+      <Grad id="mt-grad" />
+      <rect x="3" y="3" width="26" height="26" rx="7" stroke="var(--border)" strokeWidth="2" fill="none" />
+      <circle cx="16" cy="10.5" r="2.4" fill="url(#mt-grad)" />
+      <rect x="8" y="14.8" width="16" height="2.4" rx="1.2" fill="url(#mt-grad)" />
+      <circle cx="16" cy="21.5" r="2.4" fill="url(#mt-grad)" />
+    </svg>
+  );
+}
+
+// Trois lignes de tableau (largeurs différentes, comme des colonnes de données) dans un cadre —
+// évoque une fiche de référence/mémo, distinct de la mini-grille de Range Builder.
+export function MemoIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="Mémo">
+      <Grad id="mm-grad" />
+      <rect x="3" y="3" width="26" height="26" rx="7" stroke="var(--border)" strokeWidth="2" fill="none" />
+      <rect x="8" y="9" width="16" height="2.6" rx="1.3" fill="url(#mm-grad)" />
+      <rect x="8" y="15" width="11" height="2.6" rx="1.3" fill="var(--border)" />
+      <rect x="8" y="21" width="14" height="2.6" rx="1.3" fill="var(--border)" />
+    </svg>
+  );
+}
+
 // Pile de jetons (stack) surmontée d'un anneau en dégradé (le bounty posé dessus) —
 // évoque la valeur du KO empilée sur le stack, distinct des autres marques.
 export function PkoRpIcon({ size = 24 }) {

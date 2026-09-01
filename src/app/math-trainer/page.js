@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { generateSpot, computeAnswer, QUESTION_META } from "@/lib/poker/potOdds";
-import { getMyPotOddsStats, insertPotOddsAttempt } from "@/lib/supabase/potOddsAttempts";
-import { PotOddsIcon } from "@/components/ToolIcons";
+import { generateSpot, computeAnswer, QUESTION_META } from "@/lib/poker/mathTrainer";
+import { MathTrainerIcon } from "@/components/ToolIcons";
 
 const inputStyle = {
   width: 120, background: "var(--panel-2)", border: "1px solid var(--border)",
@@ -22,27 +21,24 @@ const ghostButtonStyle = {
   border: "1px solid var(--border)", borderRadius: 8, fontSize: 13, cursor: "pointer",
 };
 
-export default function PotOddsPage() {
+export default function MathTrainerPage() {
   const [spot, setSpot] = useState(null);
   const [guess, setGuess] = useState("");
   const [reveal, setReveal] = useState(null); // { correct, answer }
-  const [stats, setStats] = useState({ score: 0, total_questions: 0 });
+  const [score, setScore] = useState(0);
 
-  useEffect(() => {
-    setSpot(generateSpot());
-    getMyPotOddsStats().then(setStats).catch(() => {});
-  }, []);
+  useEffect(() => { setSpot(generateSpot()); }, []);
 
   const meta = spot && QUESTION_META[spot.questionType];
   const answer = spot && computeAnswer(spot);
+  const unit = spot && meta.unit(spot);
 
   const handleValidate = () => {
     const g = parseFloat(guess.replace(",", "."));
     if (isNaN(g)) return;
-    const correct = Math.abs(g - answer) <= meta.tolerance;
+    const correct = meta.isCorrect(g, answer);
     setReveal({ correct, answer });
-    setStats((s) => ({ ...s, score: s.score + (correct ? 1 : -1), total_questions: s.total_questions + 1 }));
-    insertPotOddsAttempt({ questionType: spot.questionType, correct }).catch(() => {});
+    setScore((sc) => sc + (correct ? 1 : -1));
   };
 
   const handleNext = () => {
@@ -55,18 +51,15 @@ export default function PotOddsPage() {
     <div style={{ minHeight: "100vh", padding: 20, maxWidth: 560, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <PotOddsIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>
-            Pot Odds
-          </span>
+          <MathTrainerIcon size={22} />
+          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Math Trainer</span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
-          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Bet &amp; raise river</span>
+          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Sizing &amp; cotes</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: stats.score >= 0 ? "var(--accent)" : "#E0645A" }}>
-            {stats.score >= 0 ? "+" : ""}{stats.score} pts
+          <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: score >= 0 ? "var(--accent)" : "#E0645A" }}>
+            {score >= 0 ? "+" : ""}{score} pts
           </span>
-          <Link href="/pot-odds/ranking" style={{ fontSize: 12, color: "var(--text-muted)" }}>Classement</Link>
           <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
         </div>
       </div>
@@ -86,12 +79,13 @@ export default function PotOddsPage() {
 
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <input
-                type="text" inputMode="decimal" placeholder={meta.unit} value={guess}
+                type="text" inputMode="decimal" placeholder={unit} value={guess}
                 onChange={(e) => setGuess(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !reveal && handleValidate()}
                 disabled={!!reveal}
                 style={{ ...inputStyle, opacity: reveal ? 0.6 : 1 }}
               />
+              <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{unit}</span>
               {!reveal ? (
                 <button onClick={handleValidate} style={primaryButtonStyle} disabled={!guess.trim()}>Valider</button>
               ) : (
@@ -106,7 +100,7 @@ export default function PotOddsPage() {
                 border: `1px solid ${reveal.correct ? "rgba(52,211,153,0.35)" : "rgba(224,100,90,0.35)"}`,
               }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: reveal.correct ? "#34D399" : "#E0645A", marginBottom: 4 }}>
-                  {reveal.correct ? "✓ Correct" : `✗ Réponse : ${reveal.answer.toFixed(1)} ${meta.unit}`}
+                  {reveal.correct ? "✓ Correct" : `✗ Réponse : ${reveal.answer.toFixed(unit === "jetons" ? 0 : 1)} ${unit}`}
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
                   {meta.formula(spot, reveal.answer)}
