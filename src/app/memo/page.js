@@ -5,7 +5,8 @@ import Link from "next/link";
 import {
   POT_ODDS_ROWS, potOddsRow, bluffCombosFor,
   ELASTICITY_LEVELS, ELASTICITY_RP_STEPS, rangeMultiplier,
-  RP_MAX_BY_KO_RATIO, KO_VALUE_BY_FIELD, RP_BY_BOUNTY_RATIO,
+  RP_MAX_BY_KO_RATIO, KO_VALUE_BY_FIELD,
+  riskPremiumFromRatio, RP_RATIO_STEPS, ALPHA_REFERENCE,
   CALL_THRESHOLD_OPEN_SHOVE, CALL_THRESHOLD_RESTEAL, VILLAIN_TIGHTENING,
 } from "@/lib/poker/memoTables";
 import { BONUS_RP_THRESHOLDS, BONUS_RP_VALUES, RP_BASE_TABLE, CHIPLEAD_TABLE } from "@/lib/poker/rpFromHH";
@@ -194,6 +195,12 @@ function PkoTab() {
     values: RP_MAX_BY_KO_RATIO.map((d) => d.rpMax),
   }];
 
+  const rpCurveSeries = [{
+    label: "RP = −19% × ln(1 + 1.31r)",
+    color: "#E8C547",
+    values: RP_RATIO_STEPS.map((r) => riskPremiumFromRatio(r)),
+  }];
+
   return (
     <>
       <Section title="Élasticité — multiplicateur de range selon le Risk Premium">
@@ -359,28 +366,145 @@ function PkoTab() {
         </div>
       </Section>
 
-      <Section title="Du ratio bounty au Risk Premium">
-        <div style={note}>
-          r = valeur du KO ÷ stack du vilain. La relation est <strong style={{ color: "var(--text)" }}>logarithmique, pas linéaire</strong> —
-          elle se tasse quand r monte : à r=238%, le solveur donne −27%, pas −38% comme le suggérerait une extrapolation linéaire.
+      <Section title="La chaîne de calcul">
+        <div style={{
+          background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 10, padding: 14,
+          fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 12, lineHeight: 2, marginBottom: 12,
+        }}>
+          <div><span style={{ color: "var(--text-muted)" }}>1.</span> valeur du KO (BB) = N_KO × α(FL) × starting stack (BB actuels)</div>
+          <div><span style={{ color: "var(--text-muted)" }}>2.</span> r = valeur du KO / stack du vilain</div>
+          <div><span style={{ color: "var(--text-muted)" }}>3.</span> RP = −19% × ln(1 + 1.31 × r)</div>
+          <div><span style={{ color: "var(--text-muted)" }}>4.</span> M = e<sup>k × |RP|</sup></div>
         </div>
-        <table style={tableStyle}>
+        <div style={{ ...note, marginBottom: 0 }}>
+          N_KO = bounty du vilain ÷ bounty initiale du tournoi. Starting stack en BB actuels ≈ average de la table × field restant.
+          <br /><strong style={{ color: "var(--text)" }}>Zone de validité : 100% → ~30% field restant (hors ICM).</strong> En dessous, la pression ICM
+          s&apos;ajoute et il faut le calcul exact (<Link href="/pko-rp/trainer" style={{ color: "var(--accent)" }}>RP Trainer</Link>).
+        </div>
+      </Section>
+
+      <Section title="Étape 1 — α(FL) : valeur d'un KO de base">
+        <div style={note}>
+          Fraction du starting stack qu&apos;un KO de base rapporte, selon le % de field restant.
+          <strong style={{ color: "var(--text)" }}> α est universel</strong> : identique de 100 à 3000 inscrits, seule la structure du tournoi le change.
+          Il monte au fil du tournoi parce que le prizepool restant fond (les moitiés de primes encaissées sortent) alors que les jetons en circulation restent constants.
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20, alignItems: "start" }}>
+          <table style={tableStyle}>
+            <thead>
+              <tr><th style={th}>Field restant</th><th style={th}>α (encaissable)</th></tr>
+            </thead>
+            <tbody>
+              {ALPHA_REFERENCE.map((d) => (
+                <tr key={d.fl}>
+                  <td style={{ ...td, fontWeight: d.shortcut ? 700 : 400 }}>
+                    {d.fl}%{d.limit ? <span style={{ color: "#E89A47" }}> ← limite hors-ICM</span> : ""}
+                  </td>
+                  <td style={{
+                    ...td, fontWeight: d.shortcut ? 700 : 400,
+                    color: d.postItm ? "var(--text-muted)" : "var(--accent)",
+                  }}>
+                    {d.alpha.toFixed(2)}{d.postItm ? " *" : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div>
+            <div style={{
+              background: "var(--panel-2)", border: "1px solid var(--accent)", borderRadius: 10,
+              padding: 14, fontSize: 13, marginBottom: 12,
+            }}>
+              <strong style={{ color: "var(--accent)" }}>Raccourci in-game</strong><br />
+              <span style={{ color: "var(--text-muted)" }}>À mi-tournoi, 1 KO de base ≈ <strong style={{ color: "var(--text)" }}>0.3 × starting stack</strong>.</span>
+            </div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>
+              <strong style={{ color: "#E89A47" }}>*</strong> Sous ~20% FL, ces valeurs viennent du calcul observable, pas du générateur :
+              une fois l&apos;ITM passée, une partie des payouts est déjà versée, le pool restant est plus petit,
+              donc le KO vaut <em>encore plus</em>. Le générateur suppose le prizepool régulier intact et sous-estime
+              (0.41 au lieu de 0.43 à 10% FL, 0.48 au lieu de 0.60 à 3%).
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Étape 3 — Du ratio bounty au Risk Premium">
+        <div style={note}>
+          <strong style={{ color: "var(--text)" }}>RP = −19% × ln(1 + 1.31 × r)</strong>, validée sur 6 spots solver de r=0.29 à r=2.38.
+          La relation est logarithmique : elle se tasse quand r monte. À r=238%, une extrapolation linéaire prédirait −38%, le solveur donne −27%.
+          <strong style={{ color: "var(--text)" }}> Ne jamais linéariser.</strong>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20, alignItems: "start" }}>
+          <table style={tableStyle}>
+            <thead>
+              <tr><th style={th}>r = KO / stack vilain</th><th style={th}>Risk Premium</th></tr>
+            </thead>
+            <tbody>
+              {RP_RATIO_STEPS.map((r) => (
+                <tr key={r}>
+                  <td style={{ ...td, fontWeight: 700 }}>{(r * 100).toFixed(0)}%</td>
+                  <td style={{ ...td, color: "var(--accent)" }}>{riskPremiumFromRatio(r).toFixed(1)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div>
+            <LineChart
+              series={rpCurveSeries}
+              xLabels={RP_RATIO_STEPS.map((r) => `${(r * 100).toFixed(0)}%`)}
+              yMin={-32} yMax={0} yFormat={(v) => `${v.toFixed(0)}%`}
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Les deux régimes de décision">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
+          <div>
+            <SubTitle>Régime 1 — tu clôtures l&apos;action</SubTitle>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.7 }}>
+              Dernier à parler, ex. BB face à un jam.
+              <div style={{
+                background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 8,
+                padding: 10, margin: "8px 0", fontFamily: "var(--font-ibm-plex-mono), monospace",
+                fontSize: 12, color: "var(--accent)",
+              }}>
+                seuil = à payer / (pot final + KO en BB)
+              </div>
+              Pas de RP, pas de coefficient. <strong style={{ color: "var(--text)" }}>Le malus « couvert » n&apos;existe pas ici</strong> —
+              même couvert par toute la table, le calcul est le même. Les dilatations peuvent être énormes (×4 et plus).
+            </div>
+          </div>
+          <div>
+            <SubTitle>Régime 2 — des joueurs restent à parler</SubTitle>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.7 }}>
+              Ex. BTN face à un jam, avec SB/BB derrière. Chaîne complète r → RP → M.
+              <div style={{
+                background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 8,
+                padding: 10, margin: "8px 0", fontFamily: "var(--font-ibm-plex-mono), monospace",
+                fontSize: 12, color: "var(--accent)",
+              }}>
+                tu couvres tout le monde derrière → RP − 5 pts
+              </div>
+              Le RP de la formule correspond au cas « couvert par des joueurs derrière ».
+              Le vrai coût d&apos;être couvert n&apos;est pas le stack, c&apos;est le <strong style={{ color: "var(--text)" }}>risque d&apos;isolation</strong>.
+            </div>
+          </div>
+        </div>
+        <SubTitle>Pattern : l&apos;inversion call → shove</SubTitle>
+        <div style={note}>
+          Quand hero est couvert, la dilatation part en iso-shove, pas en call (5 réplications indépendantes).
+          Le flat invite les stacks derrière à voler le KO ou à isoler ; le shove verrouille la capture en heads-up.
+        </div>
+        <table style={{ ...tableStyle, maxWidth: 360 }}>
           <thead>
-            <tr><th style={th}>r = KO / stack vilain</th><th style={th}>Risk Premium</th></tr>
+            <tr><th style={th}>Bounty vilain</th><th style={th}>Call</th><th style={th}>Iso-shove</th></tr>
           </thead>
           <tbody>
-            {RP_BY_BOUNTY_RATIO.map((d) => (
-              <tr key={d.ratio}>
-                <td style={{ ...td, fontWeight: 700 }}>{d.ratio}%</td>
-                <td style={{ ...td, color: "var(--accent)" }}>{d.rp}%</td>
-              </tr>
-            ))}
+            <tr><td style={{ ...td, fontWeight: 700 }}>1 KO</td><td style={td}>16.3%</td><td style={td}>3.5%</td></tr>
+            <tr><td style={{ ...td, fontWeight: 700 }}>3 KO</td><td style={{ ...td, color: "var(--text-muted)" }}>4.8%</td><td style={{ ...td, color: "var(--accent)", fontWeight: 700 }}>28.7%</td></tr>
           </tbody>
         </table>
-        <div style={{ ...note, marginTop: 12, marginBottom: 0, color: "#E89A47" }}>
-          Seuls tes trois repères mesurés sont affichés : la formule log exacte de ta courbe n&apos;est pas dans le code.
-          Donne-la-moi et j&apos;affiche la courbe complète plutôt que ces points isolés.
-        </div>
       </Section>
 
       <Section title="Tables RP — méthode par paliers">

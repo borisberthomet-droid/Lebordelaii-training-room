@@ -38,12 +38,15 @@ export function bluffCombosFor(betPct, valueCombos) {
 // (k=2.7 → ×2.25, k=3.5 → ×2.86, k=4.0 → ×3.32, k=4.6 → ×3.97, k=5.5 → ×5.21 à RP=-30%).
 // ---------------------------------------------------------------------------
 
+// Critères issus de PKO_framework_reference.md §4. Fiabilité inégale, signalée telle quelle :
+// niveaux 1/3/4 solides (2 à 4 mesures chacun), niveau 2 une seule mesure, niveau 5 trois
+// mesures dont deux avec des arbres d'actions asymétriques — la bande 5–6 tient, pas la décimale.
 export const ELASTICITY_LEVELS = [
-  { level: 1, k: 2.7, label: "Deep, vs open raise", color: "#4FA8E0" },
-  { level: 2, k: 3.5, label: "Semi-commit", color: "#6FCF97" },
-  { level: 3, k: 4.0, label: "All-in, jammeur large/deep", color: "#E8C547" },
-  { level: 4, k: 4.6, label: "All-in, jammeur tight early", color: "#E89A47" },
-  { level: 5, k: 5.5, label: "Chasse ouverte", color: "#E0645A" },
+  { level: 1, k: 2.7, label: "Deep 40bb+, vs open raise, postflop à jouer", color: "#4FA8E0", solid: true },
+  { level: 2, k: 3.5, label: "Semi-commit, le porteur du KO coûte cher à attaquer", color: "#6FCF97", solid: false },
+  { level: 3, k: 4.0, label: "All-in, jammeur large (BTN/SB) ou deep (15-25bb)", color: "#E8C547", solid: true },
+  { level: 4, k: 4.6, label: "All-in, jammeur tight en early position, 8-12bb", color: "#E89A47", solid: true },
+  { level: 5, k: 5.5, label: "Chasseur qui couvre la prime, peut agir, et à bas coût", color: "#E0645A", solid: false },
 ];
 
 export function rangeMultiplier(k, rpAbs) {
@@ -79,13 +82,60 @@ export const KO_VALUE_BY_FIELD = [
   { field: 3000, value: 1.0, chips: 20000 },
 ];
 
-// Repères de la courbe RP = f(ratio KO/stack du vilain). Mesures solver de Boris.
-// La formule log exacte n'est pas connue ici — on n'affiche que ces points mesurés plutôt
-// que d'extrapoler une courbe ajustée qui aurait l'air officielle sans l'être.
-export const RP_BY_BOUNTY_RATIO = [
-  { ratio: 50, rp: -10 },
-  { ratio: 100, rp: -16 },
-  { ratio: 200, rp: -25 },
+// RP = f(r), r = valeur du KO / stack du vilain.
+// Formule du framework de Boris (PKO_framework_reference.md §3), validée sur 6 spots solver
+// indépendants de r=0.29 à r=2.38. Vérifiée ici contre sa propre table mémorisable :
+// écart max 0.56 pt, dans sa tolérance annoncée de ±1 pt.
+// Le tassement logarithmique est mesuré, pas supposé : à r=2.38 une extrapolation linéaire
+// prédirait -38%, le solveur donne -27%. Ne jamais linéariser.
+export function riskPremiumFromRatio(r) {
+  return -19 * Math.log(1 + 1.31 * r);
+}
+
+export const RP_RATIO_STEPS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.4, 3.0];
+
+// --- α(FL) : valeur encaissable d'un KO de base, en fraction du starting stack ---
+// α est universel : identique de 100 à 3000 inscrits, seul le % de field restant compte.
+// Seule la structure (bounty/regular/rake) change la table.
+// Générateur porté depuis le framework, points de contrôle α_brut vérifiés à 0.1% près
+// (100% FL → 0.5556 vs 0.556 · 50% → 0.6463 vs 0.646 · 30% → 0.6995 vs 0.699).
+export function generateAlphaTable(bountyRatio = 0.5, regRatio = 0.4, gamma = 3.0) {
+  const N = 1000;
+  const bountyBase = bountyRatio;
+  const ppReg = N * regRatio;
+  let ppKO = N * bountyRatio;
+  const table = { 1: bountyBase / ((ppReg + ppKO) / N) };
+  for (let k = N; k > 1; k--) {
+    const fl = k / N;
+    const beta = Math.pow(1 - fl, gamma);
+    const bountyElim = beta * (ppKO / k) + (1 - beta) * bountyBase;
+    ppKO -= 0.5 * bountyElim; // moitié encaissée = sort du pool
+    table[(k - 1) / N] = bountyBase / ((ppReg + ppKO) / N); // α BRUT
+  }
+  return table;
+}
+
+// α encaissable = α brut × 0.5 en PKO progressif (l'autre moitié roule sur notre tête).
+export function alphaEncaissable(table, fl) {
+  return table[Math.round(fl * 1000) / 1000] * 0.5;
+}
+
+// Table de référence du framework. Au-delà de ~20% FL le générateur diverge de ces valeurs
+// (FL 10% : 0.408 calculé vs 0.43 doc ; FL 3% : 0.475 vs 0.60) — attendu et documenté :
+// le générateur suppose le prizepool régulier intact, ce qui cesse d'être vrai après l'ITM
+// (les places déjà payées sortent du pool, donc le KO vaut ENCORE plus). Sous l'ITM, c'est
+// le calcul observable (pilier 3) qui fait foi, pas cette table.
+export const ALPHA_REFERENCE = [
+  { fl: 100, alpha: 0.28 },
+  { fl: 70, alpha: 0.30 },
+  { fl: 50, alpha: 0.32, shortcut: true },
+  { fl: 40, alpha: 0.34 },
+  { fl: 30, alpha: 0.35, limit: true },
+  { fl: 20, alpha: 0.37 },
+  { fl: 10, alpha: 0.43, postItm: true },
+  { fl: 5, alpha: 0.52, postItm: true },
+  { fl: 3, alpha: 0.60, postItm: true },
+  { fl: 1, alpha: 0.75, postItm: true },
 ];
 
 // Seuils de call (équité requise) selon la valeur du KO, en BB. Mesures solver.
