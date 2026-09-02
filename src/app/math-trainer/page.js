@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { generateSpot, computeAnswer, QUESTION_META } from "@/lib/poker/mathTrainer";
+import { getMyMathTrainerStats, insertMathTrainerAttempt } from "@/lib/supabase/mathTrainerAttempts";
 import { MathTrainerIcon } from "@/components/ToolIcons";
 
 const inputStyle = {
@@ -25,9 +26,12 @@ export default function MathTrainerPage() {
   const [spot, setSpot] = useState(null);
   const [guess, setGuess] = useState("");
   const [reveal, setReveal] = useState(null); // { correct, answer }
-  const [score, setScore] = useState(0);
+  const [stats, setStats] = useState({ score: 0, total_questions: 0 });
 
-  useEffect(() => { setSpot(generateSpot()); }, []);
+  useEffect(() => {
+    setSpot(generateSpot());
+    getMyMathTrainerStats().then(setStats).catch(() => {});
+  }, []);
 
   const meta = spot && QUESTION_META[spot.questionType];
   const answer = spot && computeAnswer(spot);
@@ -38,7 +42,8 @@ export default function MathTrainerPage() {
     if (isNaN(g)) return;
     const correct = meta.isCorrect(g, answer);
     setReveal({ correct, answer });
-    setScore((sc) => sc + (correct ? 1 : -1));
+    setStats((s) => ({ ...s, score: s.score + (correct ? 1 : -1), total_questions: s.total_questions + 1 }));
+    insertMathTrainerAttempt({ questionType: spot.questionType, correct }).catch(() => {});
   };
 
   const handleNext = () => {
@@ -57,9 +62,10 @@ export default function MathTrainerPage() {
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Sizing &amp; cotes</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: score >= 0 ? "var(--accent)" : "#E0645A" }}>
-            {score >= 0 ? "+" : ""}{score} pts
+          <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: stats.score >= 0 ? "var(--accent)" : "#E0645A" }}>
+            {stats.score >= 0 ? "+" : ""}{stats.score} pts
           </span>
+          <Link href="/math-trainer/ranking" style={{ fontSize: 12, color: "var(--text-muted)" }}>Classement</Link>
           <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
         </div>
       </div>

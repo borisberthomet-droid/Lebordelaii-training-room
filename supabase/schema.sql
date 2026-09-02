@@ -269,3 +269,40 @@ select
 from profiles p
 join range_attempts a on a.user_id = p.id
 group by p.id, p.pseudo;
+
+-- ---------- math_trainer_attempts ----------
+-- Une ligne par question répondue dans Math Trainer (/math-trainer). Pas de spot_id : les
+-- opérations sont générées à la volée (voir lib/poker/mathTrainer.js), comme pour pot_odds.
+create table if not exists math_trainer_attempts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references profiles(id) on delete cascade,
+  question_type text not null,
+  correct boolean not null,
+  created_at timestamptz not null default now()
+);
+
+alter table math_trainer_attempts enable row level security;
+
+create policy "math_trainer_attempts are readable by any authenticated user"
+  on math_trainer_attempts for select
+  to authenticated
+  using (true);
+
+create policy "users can insert their own math trainer attempts"
+  on math_trainer_attempts for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+-- Stats Math Trainer : score cumulé (+1/-1) pour l'affichage perso, précision pour le
+-- classement — filtré à un minimum de questions côté requête.
+create or replace view math_trainer_stats as
+select
+  p.id as user_id,
+  p.pseudo,
+  count(a.id) as total_questions,
+  count(*) filter (where a.correct) as total_correct,
+  count(*) filter (where a.correct) - count(*) filter (where not a.correct) as score,
+  coalesce(avg(case when a.correct then 1.0 else 0.0 end), 0) as accuracy
+from profiles p
+join math_trainer_attempts a on a.user_id = p.id
+group by p.id, p.pseudo;
