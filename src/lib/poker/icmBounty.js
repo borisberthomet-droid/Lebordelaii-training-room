@@ -28,6 +28,50 @@ export function icmEquities(stacks, payouts) {
   return eq;
 }
 
+// Au-delà de ce nombre de joueurs, l'énumération exacte (O(n!)) devient impraticable et on
+// bascule sur le Monte-Carlo. Mesuré : 10 joueurs passent encore, 12 commencent à ramer.
+export const EXACT_ICM_MAX_PLAYERS = 10;
+
+// ICM par échantillonnage de Malmuth-Weitzman : on tire des ordres d'arrivée en piochant, à
+// chaque place, un survivant proportionnellement à son stack. Même processus que l'énumération
+// exacte, mais échantillonné — indispensable à 2-3 tables où l'exact est hors de portée.
+// Validé contre icmEquities sur les tailles où les deux tournent (voir la suite de tests).
+export function icmEquitiesMonteCarlo(stacks, payouts, iterations = 120000) {
+  const n = stacks.length;
+  const eq = new Array(n).fill(0);
+  const places = Math.min(payouts.length, n);
+  const idx = new Array(n);
+  const pool = new Array(n);
+
+  for (let it = 0; it < iterations; it++) {
+    for (let i = 0; i < n; i++) { idx[i] = i; pool[i] = stacks[i]; }
+    let remaining = n;
+    let total = 0;
+    for (let i = 0; i < n; i++) total += stacks[i];
+
+    for (let place = 0; place < places; place++) {
+      if (total <= 0) break;
+      let draw = Math.random() * total;
+      let pick = 0;
+      while (pick < remaining - 1 && draw > pool[pick]) { draw -= pool[pick]; pick++; }
+      eq[idx[pick]] += payouts[place];
+      total -= pool[pick];
+      // Retrait O(1) : on remplace l'élu par le dernier du pool.
+      pool[pick] = pool[remaining - 1];
+      idx[pick] = idx[remaining - 1];
+      remaining--;
+    }
+  }
+  return eq.map((v) => v / iterations);
+}
+
+// Choisit automatiquement l'exact ou le Monte-Carlo selon la taille de la table.
+export function icmEquitiesAuto(stacks, payouts, iterations) {
+  return stacks.length <= EXACT_ICM_MAX_PLAYERS
+    ? icmEquities(stacks, payouts)
+    : icmEquitiesMonteCarlo(stacks, payouts, iterations);
+}
+
 // Equity totale de chaque joueur dans un état donné :
 //   - composante ICM sur le prizepool régulier
 //   - composante bounty proportionnelle aux jetons, sur le pool KO ENCORE EN CIRCULATION
