@@ -95,8 +95,9 @@ export function riskPremiumFromRatio(r) {
 export const RP_RATIO_STEPS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.4, 3.0];
 
 // --- α(FL) : valeur encaissable d'un KO de base, en fraction du starting stack ---
-// α est universel : identique de 100 à 3000 inscrits, seul le % de field restant compte.
-// Seule la structure (bounty/regular/rake) change la table.
+// α est universel POUR UNE STRUCTURE DONNÉE : identique de 100 à 3000 inscrits, seul le % de
+// field restant compte. En revanche la répartition du buy-in change la table, et l'écart n'est
+// pas anecdotique : ~11% sur α, soit ~1 point de RP.
 // Générateur porté depuis le framework, points de contrôle α_brut vérifiés à 0.1% près
 // (100% FL → 0.5556 vs 0.556 · 50% → 0.6463 vs 0.646 · 30% → 0.6995 vs 0.699).
 export function generateAlphaTable(bountyRatio = 0.5, regRatio = 0.4, gamma = 3.0) {
@@ -120,11 +121,62 @@ export function alphaEncaissable(table, fl) {
   return table[Math.round(fl * 1000) / 1000] * 0.5;
 }
 
-// Table de référence du framework. Au-delà de ~20% FL le générateur diverge de ces valeurs
-// (FL 10% : 0.408 calculé vs 0.43 doc ; FL 3% : 0.475 vs 0.60) — attendu et documenté :
-// le générateur suppose le prizepool régulier intact, ce qui cesse d'être vrai après l'ITM
-// (les places déjà payées sortent du pool, donc le KO vaut ENCORE plus). Sous l'ITM, c'est
-// le calcul observable (pilier 3) qui fait foi, pas cette table.
+// --- Structures de répartition du buy-in -----------------------------------------------------
+// C'est ce qui distingue un Space KO d'un PKO 50/50, et ça change α d'environ 11%. Le prizePool
+// SharkScope est le pool NET total (vérifié : prizePool = entrants × stake sur les 7 tournois de
+// la bibliothèque) — il ne dit pas comment il se répartit entre KO et régulier. La structure est
+// donc une donnée à saisir, pas à deviner depuis les résultats.
+export const PKO_STRUCTURES = [
+  {
+    id: "sko",
+    label: "Space KO",
+    short: "SKO",
+    bountyRatio: 0.50,
+    regRatio: 0.40,
+    rake: 0.10,
+    note: "50% du buy-in dans les KO, 40% au prizepool régulier, 10% de rake.",
+  },
+  {
+    id: "pko5050",
+    label: "PKO 50/50",
+    short: "PKO",
+    bountyRatio: 0.45,
+    regRatio: 0.45,
+    rake: 0.10,
+    note: "45% du buy-in dans les KO, 45% au prizepool régulier, 10% de rake.",
+  },
+];
+
+export const DEFAULT_STRUCTURE_ID = "pko5050";
+
+export function pkoStructure(id) {
+  return PKO_STRUCTURES.find((s) => s.id === id) || PKO_STRUCTURES.find((s) => s.id === DEFAULT_STRUCTURE_ID);
+}
+
+// Tables α générées une fois par structure (le générateur boucle sur 1000 pas, inutile de le
+// relancer à chaque question).
+const ALPHA_TABLE_CACHE = new Map();
+
+export function alphaTableFor(structureId) {
+  const s = pkoStructure(structureId);
+  if (!ALPHA_TABLE_CACHE.has(s.id)) {
+    ALPHA_TABLE_CACHE.set(s.id, generateAlphaTable(s.bountyRatio, s.regRatio));
+  }
+  return ALPHA_TABLE_CACHE.get(s.id);
+}
+
+export function alphaFor(structureId, fl) {
+  return alphaEncaissable(alphaTableFor(structureId), fl);
+}
+
+// Table de référence du framework, telle qu'écrite dans le document de Boris. Elle décrit le
+// SPACE KO (50/40/10) : c'est elle qui donne le 0.32 à 50% FL. Le PKO 50/50 (45/45/10) donne
+// 0.29 au même stade — les deux sortent du même générateur, seule la structure change.
+//
+// Au-delà de ~20% FL le générateur diverge de ces valeurs (FL 10% : 0.408 calculé vs 0.43 doc ;
+// FL 3% : 0.475 vs 0.60) — attendu et documenté : le générateur suppose le prizepool régulier
+// intact, ce qui cesse d'être vrai après l'ITM (les places déjà payées sortent du pool, donc le
+// KO vaut ENCORE plus). Sous l'ITM, c'est le calcul observable (pilier 3) qui fait foi.
 export const ALPHA_REFERENCE = [
   { fl: 100, alpha: 0.28 },
   { fl: 70, alpha: 0.30 },
@@ -137,6 +189,27 @@ export const ALPHA_REFERENCE = [
   { fl: 3, alpha: 0.60, postItm: true },
   { fl: 1, alpha: 0.75, postItm: true },
 ];
+
+// Zone où le générateur α reste valide : au-dessus de l'ITM, le prizepool régulier est encore
+// intact, hypothèse sur laquelle il repose.
+const ALPHA_GENERATOR_MIN_FL = 0.20;
+
+// Colonne PKO 50/50 de la table de référence.
+//   - FL ≥ 20% : générateur direct. Il reproduit la colonne SKO du document à 0.005 près, donc
+//     rien ne justifie de passer par un rapport — et surtout, partir du 0.32 DÉJÀ ARRONDI du
+//     document donnerait 0.283 au lieu de 0.286 à 50% FL, soit 0.28 affiché au lieu de 0.29.
+//   - Sous l'ITM : le générateur diverge (il ignore les places déjà payées), donc on part de la
+//     valeur mesurée du document et on lui applique le rapport des deux structures. Ce rapport
+//     est stable (1.11 à 1.16 de 100% à 10% FL) là où les valeurs absolues ne le sont pas.
+export function alphaReferenceRows() {
+  return ALPHA_REFERENCE.map((row) => {
+    const fl = row.fl / 100;
+    const alphaPko = fl >= ALPHA_GENERATOR_MIN_FL
+      ? alphaFor("pko5050", fl)
+      : row.alpha * (alphaFor("pko5050", fl) / alphaFor("sko", fl));
+    return { ...row, alphaSko: row.alpha, alphaPko };
+  });
+}
 
 // Seuils de call (équité requise) selon la valeur du KO, en BB. Mesures solver.
 export const CALL_THRESHOLD_OPEN_SHOVE = {

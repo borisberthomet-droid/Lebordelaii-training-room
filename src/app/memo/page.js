@@ -6,7 +6,7 @@ import {
   POT_ODDS_ROWS, potOddsRow, bluffCombosFor,
   ELASTICITY_LEVELS, ELASTICITY_RP_STEPS, rangeMultiplier,
   RP_MAX_BY_KO_RATIO, KO_VALUE_BY_FIELD,
-  riskPremiumFromRatio, RP_RATIO_STEPS, ALPHA_REFERENCE,
+  riskPremiumFromRatio, RP_RATIO_STEPS, alphaReferenceRows,
   CALL_THRESHOLD_OPEN_SHOVE, CALL_THRESHOLD_RESTEAL, VILLAIN_TIGHTENING,
 } from "@/lib/poker/memoTables";
 import { BONUS_RP_THRESHOLDS, BONUS_RP_VALUES, RP_BASE_TABLE, CHIPLEAD_TABLE } from "@/lib/poker/rpFromHH";
@@ -386,30 +386,46 @@ function PkoTab() {
       <Section title="Étape 1 — α(FL) : valeur d'un KO de base">
         <div style={note}>
           Fraction du starting stack qu&apos;un KO de base rapporte, selon le % de field restant.
-          <strong style={{ color: "var(--text)" }}> α est universel</strong> : identique de 100 à 3000 inscrits, seule la structure du tournoi le change.
+          <strong style={{ color: "var(--text)" }}> α est universel à structure donnée</strong> : identique de 100 à 3000 inscrits, seul le format du tournoi le change.
           Il monte au fil du tournoi parce que le prizepool restant fond (les moitiés de primes encaissées sortent) alors que les jetons en circulation restent constants.
+          <br />
+          <strong style={{ color: "var(--text)" }}>Space KO</strong> met 50% du buy-in dans les KO (40% au prizepool régulier, 10% de rake),
+          le <strong style={{ color: "var(--text)" }}>PKO 50/50</strong> en met 45% (45% régulier, 10% de rake). Plus de KO en jeu, donc α plus élevé —
+          environ 11% d&apos;écart, soit ~1 point de RP sur le même spot.
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20, alignItems: "start" }}>
-          <table style={tableStyle}>
-            <thead>
-              <tr><th style={th}>Field restant</th><th style={th}>α (encaissable)</th></tr>
-            </thead>
-            <tbody>
-              {ALPHA_REFERENCE.map((d) => (
-                <tr key={d.fl}>
-                  <td style={{ ...td, fontWeight: d.shortcut ? 700 : 400 }}>
-                    {d.fl}%{d.limit ? <span style={{ color: "#E89A47" }}> ← limite hors-ICM</span> : ""}
-                  </td>
-                  <td style={{
-                    ...td, fontWeight: d.shortcut ? 700 : 400,
-                    color: d.postItm ? "var(--text-muted)" : "var(--accent)",
-                  }}>
-                    {d.alpha.toFixed(2)}{d.postItm ? " *" : ""}
-                  </td>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20, alignItems: "start" }}>
+          <div style={scroll}>
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  <th style={th}>Field restant</th>
+                  <th style={th}>α Space KO</th>
+                  <th style={th}>α PKO 50/50</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {alphaReferenceRows().map((d) => (
+                  <tr key={d.fl}>
+                    <td style={{ ...td, fontWeight: d.shortcut ? 700 : 400, whiteSpace: "nowrap" }}>
+                      {d.fl}%{d.limit ? <span style={{ color: "#E89A47" }}> ← limite hors-ICM</span> : ""}
+                    </td>
+                    <td style={{
+                      ...td, fontWeight: d.shortcut ? 700 : 400,
+                      color: d.postItm ? "var(--text-muted)" : "var(--accent)",
+                    }}>
+                      {d.alphaSko.toFixed(2)}{d.postItm ? " *" : ""}
+                    </td>
+                    <td style={{
+                      ...td, fontWeight: d.shortcut ? 700 : 400,
+                      color: d.postItm ? "var(--text-muted)" : "var(--accent)",
+                    }}>
+                      {d.alphaPko.toFixed(2)}{d.postItm ? " *" : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div>
             <div style={{
               background: "var(--panel-2)", border: "1px solid var(--accent)", borderRadius: 10,
@@ -423,6 +439,10 @@ function PkoTab() {
               une fois l&apos;ITM passée, une partie des payouts est déjà versée, le pool restant est plus petit,
               donc le KO vaut <em>encore plus</em>. Le générateur suppose le prizepool régulier intact et sous-estime
               (0.41 au lieu de 0.43 à 10% FL, 0.48 au lieu de 0.60 à 3%).
+              <br /><br />
+              La colonne Space KO est la table mesurée. La colonne PKO 50/50 en est déduite par le rapport
+              des deux structures : ce rapport est stable (1.11 à 1.16 de 100% à 10% FL) là où les valeurs
+              absolues ne le sont pas.
             </div>
           </div>
         </div>

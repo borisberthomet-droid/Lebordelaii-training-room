@@ -8,7 +8,9 @@
 //   pilier 2 (ICM exact + bounty)    : table finale                     → moteur porté et testé
 
 import { payoutStructure, riskPremium } from "./icmBounty";
-import { solveFrameworkSpot, generateFrameworkSpot } from "./rpFramework";
+import {
+  solveFrameworkSpot, generateFrameworkSpot, DEFAULT_STRUCTURE_ID, pkoStructure,
+} from "./rpFramework";
 
 // `kind` : 'framework' = chaîne hors-ICM · 'icm' = moteur ICM (exact ou Monte-Carlo).
 // `playersLeft` : soit une fraction du field (fl), soit un nombre absolu (abs).
@@ -120,7 +122,7 @@ function drawFinalTableStacks(n) {
   return Array.from({ length: n }, () => Math.round(rand(8, 120)));
 }
 
-export function generateStageQuestion(tournament, stage, pctPaid) {
+export function generateStageQuestion(tournament, stage, pctPaid, structureId = DEFAULT_STRUCTURE_ID) {
   const totalEntries = tournament.totalEntrants + tournament.reEntries;
   const playersLeft = playersLeftAt(stage, totalEntries, pctPaid);
   const fieldLeft = playersLeft / totalEntries;
@@ -139,6 +141,9 @@ export function generateStageQuestion(tournament, stage, pctPaid) {
     const bountyPool = vanilla ? 0 : circulatingBountyPool(tournament, playersLeft);
     const rp = riskPremium(stacks, payouts, hero, villain, bountyPool);
 
+    // Pas de `structure` ici, et c'est volontaire : en table finale les deux pools sont observés
+    // directement sur la grille de gains du tournoi. La structure ne sert qu'à générer α, qui
+    // n'intervient pas dans le pilier 2. L'exposer donnerait à croire qu'elle change le résultat.
     return {
       kind: "icm", stage, tournament: tournament.name, playersLeft, fieldLeft, confidence,
       stacks, hero, villain, payouts, bountyPool, vanilla,
@@ -148,12 +153,13 @@ export function generateStageQuestion(tournament, stage, pctPaid) {
     };
   }
 
-  // Le FL est imposé au générateur, pas écrasé après coup : sinon le nombre de KO et le stack
-  // moyen seraient tirés pour un autre stade que celui affiché.
-  const spot = generateFrameworkSpot(fieldLeft);
+  // Le FL et la structure sont imposés au générateur, pas écrasés après coup : sinon le nombre
+  // de KO, α et le stack moyen seraient tirés pour un autre tournoi que celui affiché.
+  const spot = generateFrameworkSpot(fieldLeft, structureId);
   const solved = solveFrameworkSpot(spot);
   return {
     kind: "framework", stage, tournament: tournament.name, playersLeft, fieldLeft, confidence,
+    structure: pkoStructure(structureId),
     ...spot, ...solved,
     answer: solved.rp,
   };

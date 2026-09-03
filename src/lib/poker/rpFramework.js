@@ -8,12 +8,14 @@
 // elles alimentent aussi les fiches mémo. Pas de duplication : une seule définition par formule.
 
 import {
-  generateAlphaTable, alphaEncaissable, riskPremiumFromRatio, rangeMultiplier, ELASTICITY_LEVELS,
+  alphaFor, riskPremiumFromRatio, rangeMultiplier, ELASTICITY_LEVELS,
+  PKO_STRUCTURES, DEFAULT_STRUCTURE_ID, pkoStructure,
 } from "./memoTables";
 
-// Table α générée une fois pour la structure PKO 50/50 standard. Régénérable pour une autre
-// structure (SKO, mystery) via generateAlphaTable(bountyRatio, regRatio).
-const DEFAULT_ALPHA_TABLE = generateAlphaTable(0.5, 0.4);
+// α dépend de la structure du tournoi, pas seulement du field restant : un Space KO (50% du
+// buy-in dans les KO) donne α = 0.32 à 50% FL, un PKO 50/50 (45%) donne 0.29. Environ 11%
+// d'écart sur α, soit ~1 point de RP. C'est un paramètre, pas une constante.
+export { PKO_STRUCTURES, DEFAULT_STRUCTURE_ID, pkoStructure };
 
 export const FL_MIN = 0.30; // limite basse de validité du framework
 export const FL_MAX = 1.0;
@@ -45,14 +47,14 @@ export function closingEquityThreshold(toCall, potFinal, koBB) {
   return (toCall / (potFinal + koBB)) * 100;
 }
 
-export function alphaForFieldLeft(fl, table = DEFAULT_ALPHA_TABLE) {
-  return alphaEncaissable(table, fl);
+export function alphaForFieldLeft(fl, structureId = DEFAULT_STRUCTURE_ID) {
+  return alphaFor(structureId, fl);
 }
 
 // Chaîne complète pour un spot de régime 2. Retourne chaque étape intermédiaire : le trainer
 // affiche la correction pas à pas, donc rien ne doit rester implicite.
-export function solveFrameworkSpot({ fieldLeft, avgStackBB, nKO, villainStackBB, coversEveryoneBehind, k }) {
-  const alpha = alphaForFieldLeft(fieldLeft);
+export function solveFrameworkSpot({ fieldLeft, avgStackBB, nKO, villainStackBB, coversEveryoneBehind, k, structureId }) {
+  const alpha = alphaForFieldLeft(fieldLeft, structureId);
   const startingStackBB = avgStackBB * fieldLeft;
   const koBB = koValueBB(nKO, alpha, startingStackBB);
   const r = ratioR(koBB, villainStackBB);
@@ -112,18 +114,20 @@ export const R_MAX_TRAINABLE = 2.5;
 // `forcedFieldLeft` : impose le stade de tournoi. Indispensable quand l'appelant sait à quel
 // stade il veut la question — sinon le N_KO et l'échantillonnage par rejet sont calculés pour
 // un autre stade que celui affiché, et le spot devient incohérent.
-export function generateFrameworkSpot(forcedFieldLeft = null) {
+// `structureId` : idem pour la structure. Elle entre dans α donc dans r, et doit donc être
+// connue AVANT le rejet — l'appliquer après coup ferait sortir des spots de la zone validée.
+export function generateFrameworkSpot(forcedFieldLeft = null, structureId = DEFAULT_STRUCTURE_ID) {
   // Rejet des tirages qui sortent de la zone validée. Convergence rapide en pratique ;
   // le compteur borne le pire cas plutôt que de risquer une boucle infinie.
   for (let attempt = 0; attempt < 60; attempt++) {
-    const spot = drawRawSpot(forcedFieldLeft);
-    const r = solveFrameworkSpot({ ...spot }).r;
+    const spot = drawRawSpot(forcedFieldLeft, structureId);
+    const r = solveFrameworkSpot(spot).r;
     if (r >= R_MIN_TRAINABLE && r <= R_MAX_TRAINABLE) return spot;
   }
-  return drawRawSpot(forcedFieldLeft);
+  return drawRawSpot(forcedFieldLeft, structureId);
 }
 
-function drawRawSpot(forcedFieldLeft = null) {
+function drawRawSpot(forcedFieldLeft = null, structureId = DEFAULT_STRUCTURE_ID) {
   const fieldLeft = forcedFieldLeft ?? Math.round(rand(FL_MIN, FL_MAX) * 100) / 100;
   const avgStackBB = drawAvgStackBB(fieldLeft);
   // Stack du vilain, en multiple de l'average. La dispersion des stacks s'ouvre au fil du
@@ -150,7 +154,7 @@ function drawRawSpot(forcedFieldLeft = null) {
   const k = spotFamily === "allin" ? 4.6 : 2.7;
 
   return {
-    fieldLeft, avgStackBB, villainStackBB, nKO,
+    fieldLeft, avgStackBB, villainStackBB, nKO, structureId,
     villainPos, heroPos, heroCloses, coversEveryoneBehind, spotFamily, k,
   };
 }

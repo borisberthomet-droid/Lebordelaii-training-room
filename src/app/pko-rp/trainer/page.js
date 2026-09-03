@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { STAGES, PAYOUT_PCTS, generateStageQuestion } from "@/lib/poker/rpStages";
-import { ELASTICITY_LEVELS } from "@/lib/poker/rpFramework";
+import { ELASTICITY_LEVELS, PKO_STRUCTURES, DEFAULT_STRUCTURE_ID } from "@/lib/poker/rpFramework";
 import { PkoRpIcon } from "@/components/ToolIcons";
 import sharkscopeLibrary from "@/data/sharkscopeLibrary.json";
 
@@ -50,6 +50,7 @@ function Row({ label, value, strong }) {
 export default function RpTrainerPage() {
   const [tournamentId, setTournamentId] = useState(sharkscopeLibrary[0]?.id || "");
   const [pctPaid, setPctPaid] = useState(0.125);
+  const [structureId, setStructureId] = useState(DEFAULT_STRUCTURE_ID);
   const [selected, setSelected] = useState(["fl50"]);
   const [question, setQuestion] = useState(null);
   const [answer, setAnswer] = useState("");
@@ -79,7 +80,7 @@ export default function RpTrainerPage() {
   const handleNew = () => {
     if (!tournament || selected.length === 0) return;
     const stage = STAGES.find((s) => s.id === selected[Math.floor(Math.random() * selected.length)]);
-    setQuestion(generateStageQuestion(tournament, stage, pctPaid));
+    setQuestion(generateStageQuestion(tournament, stage, pctPaid, structureId));
     setAnswer("");
     setResult(null);
   };
@@ -132,6 +133,22 @@ export default function RpTrainerPage() {
               {PAYOUT_PCTS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
           </div>
+          <div>
+            <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Format KO</label>
+            <select value={structureId} onChange={(e) => setStructureId(e.target.value)} style={inputStyle}>
+              {PKO_STRUCTURES.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label} — {Math.round(s.bountyRatio * 100)}% KO / {Math.round(s.regRatio * 100)}% PP
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 14, lineHeight: 1.6 }}>
+          {PKO_STRUCTURES.find((s) => s.id === structureId).note}{" "}
+          Il y a plus de KO en jeu en Space KO, donc α y est plus élevé : 0.32 contre 0.29 à 50% de
+          field restant, soit environ 1 point de RP d&apos;écart sur le même spot.
         </div>
 
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
@@ -165,6 +182,7 @@ export default function RpTrainerPage() {
             <span style={{ fontSize: 14, fontWeight: 700 }}>{question.stage.label}</span>
             <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
               {question.tournament} · {question.playersLeft} joueurs restants
+              {question.structure ? ` · ${question.structure.label}` : ""}
             </span>
           </div>
           <div style={{
@@ -235,7 +253,10 @@ export default function RpTrainerPage() {
 
               {question.kind === "framework" ? (
                 <div style={{ color: "var(--text-muted)", lineHeight: 1.9 }}>
-                  <Row label="1. α au field restant" value={question.alpha.toFixed(3)} />
+                  <Row
+                    label={`1. α au field restant (${question.structure.short})`}
+                    value={question.alpha.toFixed(3)}
+                  />
                   <Row label="2. Starting stack en BB actuelles" value={`${question.avgStackBB} × ${(question.fieldLeft * 100).toFixed(0)}% = ${question.startingStackBB.toFixed(1)} BB`} />
                   <Row label="3. Valeur du KO" value={`${question.nKO} × ${question.alpha.toFixed(3)} × ${question.startingStackBB.toFixed(1)} = ${question.koBB.toFixed(1)} BB`} />
                   <Row label="4. r = KO / stack vilain" value={`${question.koBB.toFixed(1)} / ${question.villainStackBB} = ${question.r.toFixed(2)}`} />
