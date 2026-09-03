@@ -289,7 +289,11 @@ export default function PkoRpPage() {
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Depuis une hand history ou un export HRC</span>
         </div>
-        <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <Link href="/pko-rp/trainer" style={{ fontSize: 12, color: "var(--accent)" }}>RP Trainer →</Link>
+          <Link href="/memo" style={{ fontSize: 12, color: "var(--text-muted)" }}>Mémo</Link>
+          <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
+        </div>
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px dashed var(--border)", borderRadius: 14, padding: 20, marginBottom: 16 }}>

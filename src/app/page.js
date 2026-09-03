@@ -34,6 +34,13 @@ const TOOLS = [
     inDev: true,
   },
   {
+    href: "/pko-rp/trainer",
+    Icon: () => <PkoRpIcon size={24} />,
+    label: "RP Trainer",
+    desc: "Entraîne-toi à estimer le Risk Premium, du début de tournoi à la table finale",
+    inDev: true,
+  },
+  {
     href: null,
     Icon: () => <LeakfinderIcon size={24} />,
     label: "Leakfinder",

@@ -147,7 +147,13 @@ export const PKO_STRUCTURES = [
   },
 ];
 
-export const DEFAULT_STRUCTURE_ID = "pko5050";
+// Défaut : Space KO. Mesuré sur la bibliothèque, en partant du fait que TOUS les gains réguliers
+// vont à des places payées — donc Σ(prize − composante bounty) sur la grille EST le prizepool
+// régulier, et le reste du pool net est le pool KO. Six des sept tournois donnent 50.0% du
+// buy-in dans les KO (50.5% pour le W Series, arrondis de grille), ce qui est la signature du
+// Space KO. Seul le HIGHROLLER 250€ à 63 entrants mesure 42.8%, plus proche du PKO 50/50 — mais
+// sa grille est trop petite et trop trouée pour trancher.
+export const DEFAULT_STRUCTURE_ID = "sko";
 
 export function pkoStructure(id) {
   return PKO_STRUCTURES.find((s) => s.id === id) || PKO_STRUCTURES.find((s) => s.id === DEFAULT_STRUCTURE_ID);
