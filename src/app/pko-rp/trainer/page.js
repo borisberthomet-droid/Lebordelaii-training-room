@@ -5,6 +5,7 @@ import Link from "next/link";
 import { STAGES, PAYOUT_PCTS, generateStageQuestion } from "@/lib/poker/rpStages";
 import { ELASTICITY_LEVELS, PKO_STRUCTURES, DEFAULT_STRUCTURE_ID } from "@/lib/poker/rpFramework";
 import { PkoRpIcon } from "@/components/ToolIcons";
+import PokerTable from "@/components/PokerTable";
 import sharkscopeLibrary from "@/data/sharkscopeLibrary.json";
 
 const inputStyle = {
@@ -24,6 +25,11 @@ const ghostButtonStyle = {
 
 const TOL_EXACT = 2;
 const TOL_CLOSE = 4;
+
+// Espace fine insécable entre les milliers, comme dans le client Winamax.
+function fmtChips(n) {
+  return Math.round(n).toLocaleString("fr-FR").replace(/ | /g, " ");
+}
 
 function chipStyle(active) {
   return {
@@ -192,20 +198,31 @@ export default function RpTrainerPage() {
             <strong>{question.confidence.engine}</strong> — {question.confidence.note}
           </div>
 
+          <PokerTable
+            seats={question.seats}
+            showKO={question.kind === "framework"}
+            center={
+              <>
+                <div>{fmtChips(question.smallBlind)} / {fmtChips(question.bigBlind)}</div>
+                <div>ante {fmtChips(question.ante)}</div>
+                <div style={{ opacity: 0.7 }}>{(question.fieldLeft * 100).toFixed(1)}% du field</div>
+              </>
+            }
+          />
+
           <div style={{ background: "var(--panel-2)", borderRadius: 10, padding: 14, fontSize: 12, marginBottom: 14 }}>
+            <Row label="Stack de départ du tournoi" value={`${fmtChips(question.startingStack)} jetons`} />
+            <Row label="Niveau de blinds" value={`${fmtChips(question.smallBlind)} / ${fmtChips(question.bigBlind)} (ante ${fmtChips(question.ante)})`} />
             {question.kind === "framework" ? (
               <>
-                <Row label="Field restant" value={`${(question.fieldLeft * 100).toFixed(1)}%`} />
-                <Row label="Average de la table" value={`${question.avgStackBB} BB`} />
-                <Row label="Vilain" value={`${question.villainPos} · ${question.villainStackBB} BB · ${question.nKO} KO de base`} />
-                <Row label="Toi" value={`${question.heroPos}${question.coversEveryoneBehind ? " — tu couvres tout le monde derrière" : ""}`} />
+                <Row label="Field restant" value={`${(question.fieldLeft * 100).toFixed(1)}% — ${question.playersLeft} joueurs`} />
+                <Row label="Average du tournoi" value={`${question.avgStackBB} BB`} />
                 <Row label="Type de spot" value={question.spotFamily === "allin" ? "all-in (k=4.6)" : "vs open raise (k=2.7)"} />
               </>
             ) : (
               <>
                 <Row label="Table" value={`${question.playersLeft} joueurs`} />
-                <Row label="Ton stack" value={`${question.heroStack} BB`} />
-                <Row label="Vilain" value={`${question.villainStack} BB${question.heroCovers ? " (tu le couvres)" : " (il te couvre)"}`} />
+                <Row label="Confrontation" value={`toi ${question.heroStack} BB vs ${question.villainStack} BB${question.heroCovers ? " (tu le couvres)" : " (il te couvre)"}`} />
                 <Row label="Pool KO en circulation" value={question.vanilla ? "aucun (RP vanilla)" : `${Math.round(question.bountyPool)} €`} />
                 <Row label="Prizepool restant" value={`${Math.round(question.payouts.reduce((a, b) => a + b, 0))} €`} />
               </>
@@ -257,19 +274,25 @@ export default function RpTrainerPage() {
                     label={`1. α au field restant (${question.structure.short})`}
                     value={question.alpha.toFixed(3)}
                   />
-                  <Row label="2. Starting stack en BB actuelles" value={`${question.avgStackBB} × ${(question.fieldLeft * 100).toFixed(0)}% = ${question.startingStackBB.toFixed(1)} BB`} />
+                  <Row label="2. Starting stack en BB actuelles" value={`${fmtChips(question.startingStack)} / ${fmtChips(question.bigBlind)} = ${question.startingStackBB.toFixed(1)} BB`} />
+                  <Row label="   (ou average × field restant)" value={`${question.avgStackBB} × ${(question.fieldLeft * 100).toFixed(0)}% = ${(question.avgStackBB * question.fieldLeft).toFixed(1)} BB`} />
                   <Row label="3. Valeur du KO" value={`${question.nKO} × ${question.alpha.toFixed(3)} × ${question.startingStackBB.toFixed(1)} = ${question.koBB.toFixed(1)} BB`} />
                   <Row label="4. r = KO / stack vilain" value={`${question.koBB.toFixed(1)} / ${question.villainStackBB} = ${question.r.toFixed(2)}`} />
                   <Row label="5. RP = −19% × ln(1 + 1.31r)" value={`${question.rpRaw.toFixed(1)}%`} />
-                  {question.coversEveryoneBehind && (
-                    <Row label="6. Tu couvres derrière : −5 pts" value={`${question.rp.toFixed(1)}%`} />
-                  )}
+                  {/* Affiché dans les deux cas : la couverture se lit sur la table, l'élève doit
+                      pouvoir vérifier sa lecture même quand elle ne change rien au résultat. */}
+                  <Row
+                    label={question.heroCloses
+                      ? "6. Tu clôtures l'action : pas de malus"
+                      : question.coversEveryoneBehind
+                        ? "6. Tu couvres tout le monde derrière : −5 pts"
+                        : "6. Tu ne couvres pas tout derrière : pas de malus"}
+                    value={`${question.rp.toFixed(1)}%`}
+                  />
                   <Row label="Multiplicateur de range" value={`×${question.M.toFixed(2)}`} strong />
                 </div>
               ) : (
                 <div style={{ color: "var(--text-muted)", lineHeight: 1.9 }}>
-                  <Row label="Stacks" value={question.stacks.join(" · ")} />
-                  <Row label="Confrontation" value={`toi ${question.heroStack} BB vs ${question.villainStack} BB`} />
                   <Row label="Jetons en jeu" value={`${Math.min(question.heroStack, question.villainStack)} BB (le plus petit des deux)`} />
                   <Row label={question.vanilla ? "Pression ICM pure" : "ICM + bounty"} value={`${question.answer.toFixed(1)}%`} strong />
                   <div style={{ marginTop: 8, fontSize: 11 }}>

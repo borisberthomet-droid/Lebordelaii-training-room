@@ -53,9 +53,13 @@ export function alphaForFieldLeft(fl, structureId = DEFAULT_STRUCTURE_ID) {
 
 // Chaîne complète pour un spot de régime 2. Retourne chaque étape intermédiaire : le trainer
 // affiche la correction pas à pas, donc rien ne doit rester implicite.
-export function solveFrameworkSpot({ fieldLeft, avgStackBB, nKO, villainStackBB, coversEveryoneBehind, k, structureId }) {
+export function solveFrameworkSpot(spot) {
+  const { fieldLeft, avgStackBB, nKO, villainStackBB, coversEveryoneBehind, k, structureId } = spot;
   const alpha = alphaForFieldLeft(fieldLeft, structureId);
-  const startingStackBB = avgStackBB * fieldLeft;
+  // Quand la blinde est connue, elle fait foi : starting stack ÷ BB est exact. Sinon on retombe
+  // sur average × field restant, qui est la même quantité écrite autrement (les jetons en jeu
+  // sont constants, donc average = starting ÷ field restant).
+  const startingStackBB = spot.startingStackBB ?? avgStackBB * fieldLeft;
   const koBB = koValueBB(nKO, alpha, startingStackBB);
   const r = ratioR(koBB, villainStackBB);
   const rpRaw = riskPremiumFromRatio(r);
@@ -71,9 +75,6 @@ function rand(min, max) {
   return min + Math.random() * (max - min);
 }
 
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
 
 // Nombre moyen de KO de base par survivant, déduit de la conservation du pool KO — le même
 // modèle que le moteur ICM : chaque élimination retire la moitié d'une prime du pool.
@@ -105,6 +106,46 @@ function drawAvgStackBB(fieldLeft) {
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
+// --- Niveau de blinds ------------------------------------------------------------------------
+// Sans la blinde, « le vilain porte 1 KO » ne dit rien : l'élève ne peut pas savoir si ça vaut
+// 5 BB ou 12 BB. On tire donc un vrai palier, et c'est LUI qui devient la vérité du spot —
+// starting stack ÷ BB est alors exact, au lieu de passer par l'approximation average × FL.
+const BLIND_MANTISSAS = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8];
+const BLIND_MIN = 50;
+const BLIND_MAX = 5e6;
+
+export const BLIND_LADDER = (() => {
+  const out = [];
+  for (let k = 1; k <= 7; k++) {
+    for (const m of BLIND_MANTISSAS) {
+      const bb = m * Math.pow(10, k);
+      if (bb >= BLIND_MIN && bb <= BLIND_MAX) out.push(bb);
+    }
+  }
+  return out.sort((a, b) => a - b);
+})();
+
+// Palier le plus proche de la cible en écart RELATIF : à 3000 jetons de cible, 2500 et 4000 sont
+// à 500 l'un comme l'autre en absolu, mais 2500 est nettement plus proche en proportion.
+export function snapBigBlind(target) {
+  return BLIND_LADDER.reduce((best, bb) =>
+    Math.abs(Math.log(bb / target)) < Math.abs(Math.log(best / target)) ? bb : best
+  , BLIND_LADDER[0]);
+}
+
+// Winamax joue l'ante en big blind. Purement cosmétique ici : l'ante n'entre pas dans la chaîne.
+export function blindLevel(bigBlind) {
+  return { bigBlind, smallBlind: bigBlind / 2, ante: bigBlind };
+}
+
+// Stacks des sièges, recentrés pour que leur moyenne soit exactement l'average annoncé. Sans ce
+// recentrage l'élève lit une table dont la moyenne contredit la donnée du problème.
+function drawSeatStacks(n, avgStackBB, spread) {
+  const raw = Array.from({ length: n }, () => rand(Math.max(0.15, 1 - spread), 1 + spread));
+  const mean = raw.reduce((a, b) => a + b, 0) / raw.length;
+  return raw.map((x) => Math.max(1, Math.round((x / mean) * avgStackBB * 10) / 10));
+}
+
 // Zone où la formule RP est réellement validée (r = 0.29 → 2.38 sur les sims solver).
 // On génère dans une bande légèrement élargie, mais jamais au-delà : entraîner un élève sur
 // r = 8 lui apprendrait un RP que le framework n'a jamais mesuré (extrapolation log non testée).
@@ -116,46 +157,68 @@ export const R_MAX_TRAINABLE = 2.5;
 // un autre stade que celui affiché, et le spot devient incohérent.
 // `structureId` : idem pour la structure. Elle entre dans α donc dans r, et doit donc être
 // connue AVANT le rejet — l'appliquer après coup ferait sortir des spots de la zone validée.
-export function generateFrameworkSpot(forcedFieldLeft = null, structureId = DEFAULT_STRUCTURE_ID) {
+// `startingStack` : stack de départ du tournoi, en jetons. Sert à en déduire un vrai niveau de
+// blinds (100 000 sur le HIGHROLLER, 20 000 sur les autres).
+export function generateFrameworkSpot(forcedFieldLeft = null, structureId = DEFAULT_STRUCTURE_ID, startingStack = 20000) {
   // Rejet des tirages qui sortent de la zone validée. Convergence rapide en pratique ;
   // le compteur borne le pire cas plutôt que de risquer une boucle infinie.
   for (let attempt = 0; attempt < 60; attempt++) {
-    const spot = drawRawSpot(forcedFieldLeft, structureId);
+    const spot = drawRawSpot(forcedFieldLeft, structureId, startingStack);
     const r = solveFrameworkSpot(spot).r;
     if (r >= R_MIN_TRAINABLE && r <= R_MAX_TRAINABLE) return spot;
   }
-  return drawRawSpot(forcedFieldLeft, structureId);
+  return drawRawSpot(forcedFieldLeft, structureId, startingStack);
 }
 
-function drawRawSpot(forcedFieldLeft = null, structureId = DEFAULT_STRUCTURE_ID) {
+function drawRawSpot(forcedFieldLeft = null, structureId = DEFAULT_STRUCTURE_ID, startingStack = 20000) {
   const fieldLeft = forcedFieldLeft ?? Math.round(rand(FL_MIN, FL_MAX) * 100) / 100;
-  const avgStackBB = drawAvgStackBB(fieldLeft);
-  // Stack du vilain, en multiple de l'average. La dispersion des stacks s'ouvre au fil du
-  // tournoi : au niveau 1 tout le monde a le stack de départ, en fin de tournoi l'écart entre
-  // chip leader et short est énorme. Tirer une dispersion fixe donnait des vilains à 0.2× la
-  // moyenne dès 100% de field restant, ce qui n'existe pas.
-  const spread = 0.15 + (1 - fieldLeft) * 0.95; // ±15% à 100% FL, ±~1.0 en fin de tournoi
-  // Plancher à 5 BB, mais pas de plafond dur : le « 5–40 BB » du brief décrit les spots de jam
-  // early/mid, et l'appliquer à 100% FL (average ~70 BB) clampait TOUS les vilains à 40, donc
-  // les rendait artificiellement courts. Un spot deep est légitime, il relève simplement de
-  // l'élasticité « vs open raise » (k=2.7) plutôt que « all-in ».
-  const villainStackBB = Math.round(
-    Math.max(5, avgStackBB * rand(Math.max(0.15, 1 - spread), 1 + spread)) * 10
-  ) / 10;
-  const nKO = drawNKO(fieldLeft);
+
+  // On tire un average plausible, on en déduit le palier de blinds correspondant, puis on
+  // REPART de la blinde : elle est ce que l'élève lit à la table, donc c'est elle qui doit être
+  // ronde et exacte, pas l'average.
+  const bigBlind = snapBigBlind(startingStack / (drawAvgStackBB(fieldLeft) * fieldLeft));
+  const startingStackBB = startingStack / bigBlind;
+  const avgStackBB = Math.round((startingStackBB / fieldLeft) * 10) / 10;
+
+  // La dispersion des stacks s'ouvre au fil du tournoi : au niveau 1 tout le monde a le stack de
+  // départ, en fin de tournoi l'écart entre chip leader et short est énorme. Une dispersion fixe
+  // donnait des vilains à 0.2× la moyenne dès 100% de field restant, ce qui n'existe pas.
+  const spread = 0.15 + (1 - fieldLeft) * 0.95;
+  const stacks = drawSeatStacks(POSITIONS.length, avgStackBB, spread);
 
   // Configuration de table : un jammeur, un décideur (pas de multiway, cf. brief).
-  const villainPos = pick(POSITIONS.slice(0, 4)); // le jammeur ouvre depuis UTG..BTN
-  const heroIdx = POSITIONS.indexOf(villainPos) + 1 + Math.floor(Math.random() * (POSITIONS.length - POSITIONS.indexOf(villainPos) - 1));
-  const heroPos = POSITIONS[Math.min(heroIdx, POSITIONS.length - 1)];
-  const heroCloses = heroPos === "BB"; // dernier à parler = clôture l'action
-  const coversEveryoneBehind = !heroCloses && Math.random() < 0.4;
+  const villainIdx = Math.floor(Math.random() * 4); // le jammeur ouvre depuis UTG..BTN
+  const heroIdx = villainIdx + 1 + Math.floor(Math.random() * (POSITIONS.length - villainIdx - 1));
+  const heroCloses = heroIdx === POSITIONS.length - 1; // dernier à parler = clôture l'action
+
+  // La couverture se LIT sur la table au lieu d'être tirée au sort : hero couvre s'il a plus de
+  // jetons que chacun des joueurs encore à parler derrière lui. C'est la définition, et ça rend
+  // la table informative plutôt que décorative.
+  const behind = stacks.slice(heroIdx + 1);
+  const coversEveryoneBehind = !heroCloses && behind.every((s) => stacks[heroIdx] > s);
+
+  const nKOs = stacks.map(() => drawNKO(fieldLeft));
   const spotFamily = Math.random() < 0.65 ? "allin" : "vsOR";
-  const k = spotFamily === "allin" ? 4.6 : 2.7;
+
+  const seats = POSITIONS.map((label, i) => ({
+    label,
+    stackBB: stacks[i],
+    nKO: nKOs[i],
+    isHero: i === heroIdx,
+    isVillain: i === villainIdx,
+    // « fold » avant le jammeur, « à parler » après hero : c'est ce découpage qui dit à l'élève
+    // s'il est en régime 1 (il clôture) ou en régime 2 (il reste du monde derrière).
+    state: i < villainIdx ? "folded" : i === villainIdx ? "jam" : i === heroIdx ? "hero" : i < heroIdx ? "folded" : "toAct",
+  }));
 
   return {
-    fieldLeft, avgStackBB, villainStackBB, nKO, structureId,
-    villainPos, heroPos, heroCloses, coversEveryoneBehind, spotFamily, k,
+    fieldLeft, avgStackBB, startingStackBB, startingStack, structureId,
+    ...blindLevel(bigBlind),
+    seats,
+    villainPos: POSITIONS[villainIdx], heroPos: POSITIONS[heroIdx],
+    villainStackBB: stacks[villainIdx], heroStackBB: stacks[heroIdx], nKO: nKOs[villainIdx],
+    heroCloses, coversEveryoneBehind, spotFamily,
+    k: spotFamily === "allin" ? 4.6 : 2.7,
   };
 }
 

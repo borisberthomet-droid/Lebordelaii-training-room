@@ -10,6 +10,7 @@
 import { payoutStructure, riskPremium } from "./icmBounty";
 import {
   solveFrameworkSpot, generateFrameworkSpot, DEFAULT_STRUCTURE_ID, pkoStructure,
+  snapBigBlind, blindLevel,
 } from "./rpFramework";
 
 // `kind` : 'framework' = chaîne hors-ICM · 'icm' = moteur ICM (exact ou Monte-Carlo).
@@ -127,12 +128,22 @@ export function generateStageQuestion(tournament, stage, pctPaid, structureId = 
   const playersLeft = playersLeftAt(stage, totalEntries, pctPaid);
   const fieldLeft = playersLeft / totalEntries;
   const confidence = stageConfidence(stage);
+  // Le stack de départ est propre à chaque tournoi (100 000 sur le HIGHROLLER, 20 000 ailleurs)
+  // et c'est lui qui fixe l'échelle des blinds.
+  const startingStack = tournament.startingStack || 20000;
 
   if (stage.kind === "icm") {
     const stacks = drawFinalTableStacks(playersLeft);
     let hero = Math.floor(Math.random() * playersLeft);
     let villain = Math.floor(Math.random() * playersLeft);
     while (villain === hero) villain = Math.floor(Math.random() * playersLeft);
+
+    // Niveau de blinds cohérent avec les stacks tirés : les jetons en jeu sont constants, donc
+    // l'average en jetons est connu, et la BB s'en déduit. Cosmétique pour le calcul ICM, mais
+    // sans elle un stack « 67 BB » ne se rattache à rien de concret.
+    const avgChips = (startingStack * totalEntries) / playersLeft;
+    const avgBB = stacks.reduce((a, b) => a + b, 0) / stacks.length;
+    const blinds = blindLevel(snapBigBlind(avgChips / avgBB));
 
     const payouts = remainingRegularPayouts(tournament, playersLeft);
     // Une question sur trois est un RP « vanilla » (sans prime) : c'est le repère de pression
@@ -147,15 +158,21 @@ export function generateStageQuestion(tournament, stage, pctPaid, structureId = 
     return {
       kind: "icm", stage, tournament: tournament.name, playersLeft, fieldLeft, confidence,
       stacks, hero, villain, payouts, bountyPool, vanilla,
+      startingStack, ...blinds,
+      seats: stacks.map((s, i) => ({
+        label: `S${i + 1}`, stackBB: s, isHero: i === hero, isVillain: i === villain,
+        state: i === hero ? "hero" : i === villain ? "jam" : "idle",
+      })),
       heroStack: stacks[hero], villainStack: stacks[villain],
       heroCovers: stacks[hero] > stacks[villain],
       answer: rp,
     };
   }
 
-  // Le FL et la structure sont imposés au générateur, pas écrasés après coup : sinon le nombre
-  // de KO, α et le stack moyen seraient tirés pour un autre tournoi que celui affiché.
-  const spot = generateFrameworkSpot(fieldLeft, structureId);
+  // Le FL, la structure et le stack de départ sont imposés au générateur, pas écrasés après
+  // coup : sinon le nombre de KO, α, les blinds et les stacks seraient tirés pour un autre
+  // tournoi que celui affiché.
+  const spot = generateFrameworkSpot(fieldLeft, structureId, startingStack);
   const solved = solveFrameworkSpot(spot);
   return {
     kind: "framework", stage, tournament: tournament.name, playersLeft, fieldLeft, confidence,
