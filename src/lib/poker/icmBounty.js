@@ -36,12 +36,24 @@ export const EXACT_ICM_MAX_PLAYERS = 10;
 // chaque place, un survivant proportionnellement à son stack. Même processus que l'énumération
 // exacte, mais échantillonné — indispensable à 2-3 tables où l'exact est hors de portée.
 // Validé contre icmEquities sur les tailles où les deux tournent (voir la suite de tests).
-export function icmEquitiesMonteCarlo(stacks, payouts, iterations = 120000) {
+// PRNG déterministe (mulberry32) : permet de rejouer exactement la même séquence de tirages.
+function makeRng(seed) {
+  let a = seed >>> 0;
+  return function rng() {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export function icmEquitiesMonteCarlo(stacks, payouts, iterations = 120000, seed = null) {
   const n = stacks.length;
   const eq = new Array(n).fill(0);
   const places = Math.min(payouts.length, n);
   const idx = new Array(n);
   const pool = new Array(n);
+  const rng = seed === null ? Math.random : makeRng(seed);
 
   for (let it = 0; it < iterations; it++) {
     for (let i = 0; i < n; i++) { idx[i] = i; pool[i] = stacks[i]; }
@@ -51,7 +63,7 @@ export function icmEquitiesMonteCarlo(stacks, payouts, iterations = 120000) {
 
     for (let place = 0; place < places; place++) {
       if (total <= 0) break;
-      let draw = Math.random() * total;
+      let draw = rng() * total;
       let pick = 0;
       while (pick < remaining - 1 && draw > pool[pick]) { draw -= pool[pick]; pick++; }
       eq[idx[pick]] += payouts[place];
@@ -66,24 +78,26 @@ export function icmEquitiesMonteCarlo(stacks, payouts, iterations = 120000) {
 }
 
 // Choisit automatiquement l'exact ou le Monte-Carlo selon la taille de la table.
-export function icmEquitiesAuto(stacks, payouts, iterations) {
+export function icmEquitiesAuto(stacks, payouts, iterations, seed = null) {
   return stacks.length <= EXACT_ICM_MAX_PLAYERS
     ? icmEquities(stacks, payouts)
-    : icmEquitiesMonteCarlo(stacks, payouts, iterations);
+    : icmEquitiesMonteCarlo(stacks, payouts, iterations, seed);
 }
 
 // Equity totale de chaque joueur dans un état donné :
 //   - composante ICM sur le prizepool régulier
 //   - composante bounty proportionnelle aux jetons, sur le pool KO ENCORE EN CIRCULATION
 // Les joueurs à 0 jeton sont considérés éliminés (ils ont déjà touché le prix de leur place).
-export function totalEquity(stacks, payoutsFull, nStart, bountyPoolStart, share = 0.5) {
+export function totalEquity(stacks, payoutsFull, nStart, bountyPoolStart, share = 0.5, mcIterations, seed = null) {
   const alive = stacks.map((s, i) => [s, i]).filter(([s]) => s > 1e-9);
   const sub = alive.map(([s]) => s);
   const nAlive = alive.length;
   const nOut = nStart - nAlive;
 
+  // Auto : exact en table finale, Monte-Carlo au-delà. Sans ça, un spot à 2-3 tables
+  // lancerait une énumération en O(n!) et figerait la page.
   const pay = payoutsFull.slice(0, nAlive);
-  const e = icmEquities(sub, pay);
+  const e = icmEquitiesAuto(sub, pay, mcIterations, seed);
 
   // Pool KO encore sur les têtes : chaque élimination en retire la moitié.
   const bHead = bountyPoolStart / nStart;
@@ -99,18 +113,23 @@ export function totalEquity(stacks, payoutsFull, nStart, bountyPoolStart, share 
 
 // RP = seuil d'équité requis en $ − seuil chipEV (0.5 pour un all-in symétrique).
 // Positif = l'ICM serre. Négatif = le bounty pousse à élargir.
-export function riskPremium(stacks, payoutsFull, hero, villain, bountyPool = 0, share = 0.5) {
+// `seed` : nombres aleatoires communs aux trois scenarios (maintenant / gagne / perd). Sans
+// cela, le RP est une difference de trois estimations bruitees independamment et l'amplitude
+// atteignait 3-5 points a 18-27 joueurs — plus large que la tolerance du trainer (+/-2).
+// Mesure : le CRN ramene l'amplitude sous 0.2 point.
+export function riskPremium(stacks, payoutsFull, hero, villain, bountyPool = 0, share = 0.5, mcIterations, seed = null) {
+  const crn = seed === null ? ((Math.random() * 2 ** 31) | 0) : seed;
   const n = stacks.length;
   const bHead = bountyPool ? bountyPool / n : 0;
   const eff = Math.min(stacks[hero], stacks[villain]);
 
-  const eqNow = totalEquity(stacks, payoutsFull, n, bountyPool, share)[hero];
+  const eqNow = totalEquity(stacks, payoutsFull, n, bountyPool, share, mcIterations, crn)[hero];
 
   // Hero gagne : villain éliminé s'il ne couvrait pas.
   const win = [...stacks];
   win[hero] += eff;
   win[villain] -= eff;
-  let eqWin = totalEquity(win, payoutsFull, n, bountyPool, share)[hero];
+  let eqWin = totalEquity(win, payoutsFull, n, bountyPool, share, mcIterations, crn)[hero];
   if (bountyPool && stacks[villain] <= stacks[hero] + 1e-9) {
     eqWin += bHead * share; // moitié encaissée en cash, uniquement si hero le couvre
   }
@@ -125,7 +144,7 @@ export function riskPremium(stacks, payoutsFull, hero, villain, bountyPool = 0, 
     const nAliveAfter = lose.filter((s) => s > 1e-9).length;
     eqLose = payoutsFull[nAliveAfter];
   } else {
-    eqLose = totalEquity(lose, payoutsFull, n, bountyPool, share)[hero];
+    eqLose = totalEquity(lose, payoutsFull, n, bountyPool, share, mcIterations, crn)[hero];
   }
 
   const den = eqWin - eqLose;

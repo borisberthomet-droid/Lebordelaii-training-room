@@ -73,15 +73,25 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// N_KO pondéré vers 1-2 en early (le brief demande 1 à 4, « pondéré vers 1-2 en early »).
-// Plafonné par le field restant : à 95% de field, personne n'a encore eu le temps d'empiler
-// 3 primes — générer ce spot apprendrait un chiffre qui ne se rencontre pas.
+// Nombre moyen de KO de base par survivant, déduit de la conservation du pool KO — le même
+// modèle que le moteur ICM : chaque élimination retire la moitié d'une prime du pool.
+//   pool restant = B_total × (0.5 + 0.5 × FL)     joueurs restants = N × FL
+//   → N_KO moyen = (0.5 + 0.5 × FL) / FL
+// Donne 1.0 à 100% FL, 1.5 à 50%, 2.5 à 25%, 5.5 à 10% — cohérent avec l'exemple de TF du
+// document de Boris, où un vilain porte 10 KO de base. Un plafond fixe à 4, comme le suggérait
+// le brief (écrit pour le module early/mid seul), inversait la courbe : le RP faiblissait en fin
+// de tournoi au lieu de se renforcer.
+export function meanNKO(fieldLeft) {
+  return (0.5 + 0.5 * fieldLeft) / Math.max(fieldLeft, 0.005);
+}
+
+// Tirage autour de cette moyenne : la plupart des joueurs sont proches, quelques-uns ont
+// accumulé (le porteur de grosse prime est justement le spot intéressant).
 function drawNKO(fieldLeft) {
-  const roll = Math.random();
-  if (fieldLeft > 0.85) return roll < 0.85 ? 1 : 2;
-  if (fieldLeft > 0.7) return roll < 0.6 ? 1 : roll < 0.9 ? 2 : 3;
-  if (fieldLeft > 0.5) return roll < 0.45 ? 1 : roll < 0.8 ? 2 : roll < 0.95 ? 3 : 4;
-  return roll < 0.3 ? 1 : roll < 0.6 ? 2 : roll < 0.85 ? 3 : 4;
+  const mean = meanNKO(fieldLeft);
+  const draw = mean * rand(0.4, 2.2);
+  // Arrondi au demi-KO en early (1, 1.5, 2…), à l'unité quand les primes s'empilent.
+  return mean < 3 ? Math.max(1, Math.round(draw * 2) / 2) : Math.max(1, Math.round(draw));
 }
 
 // Average stack réaliste : se resserre à mesure que le tournoi avance. starting = average × FL,
@@ -99,24 +109,34 @@ const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 export const R_MIN_TRAINABLE = 0.15;
 export const R_MAX_TRAINABLE = 2.5;
 
-export function generateFrameworkSpot() {
+// `forcedFieldLeft` : impose le stade de tournoi. Indispensable quand l'appelant sait à quel
+// stade il veut la question — sinon le N_KO et l'échantillonnage par rejet sont calculés pour
+// un autre stade que celui affiché, et le spot devient incohérent.
+export function generateFrameworkSpot(forcedFieldLeft = null) {
   // Rejet des tirages qui sortent de la zone validée. Convergence rapide en pratique ;
   // le compteur borne le pire cas plutôt que de risquer une boucle infinie.
   for (let attempt = 0; attempt < 60; attempt++) {
-    const spot = drawRawSpot();
+    const spot = drawRawSpot(forcedFieldLeft);
     const r = solveFrameworkSpot({ ...spot }).r;
     if (r >= R_MIN_TRAINABLE && r <= R_MAX_TRAINABLE) return spot;
   }
-  return drawRawSpot();
+  return drawRawSpot(forcedFieldLeft);
 }
 
-function drawRawSpot() {
-  const fieldLeft = Math.round(rand(FL_MIN, FL_MAX) * 100) / 100;
+function drawRawSpot(forcedFieldLeft = null) {
+  const fieldLeft = forcedFieldLeft ?? Math.round(rand(FL_MIN, FL_MAX) * 100) / 100;
   const avgStackBB = drawAvgStackBB(fieldLeft);
-  // Stack du vilain corrélé à l'average (0.2× à 1.6×), puis borné à la plage du brief (5–40 BB).
-  // Tiré indépendamment, on obtenait des vilains à 5 BB en tout début de tournoi.
+  // Stack du vilain, en multiple de l'average. La dispersion des stacks s'ouvre au fil du
+  // tournoi : au niveau 1 tout le monde a le stack de départ, en fin de tournoi l'écart entre
+  // chip leader et short est énorme. Tirer une dispersion fixe donnait des vilains à 0.2× la
+  // moyenne dès 100% de field restant, ce qui n'existe pas.
+  const spread = 0.15 + (1 - fieldLeft) * 0.95; // ±15% à 100% FL, ±~1.0 en fin de tournoi
+  // Plancher à 5 BB, mais pas de plafond dur : le « 5–40 BB » du brief décrit les spots de jam
+  // early/mid, et l'appliquer à 100% FL (average ~70 BB) clampait TOUS les vilains à 40, donc
+  // les rendait artificiellement courts. Un spot deep est légitime, il relève simplement de
+  // l'élasticité « vs open raise » (k=2.7) plutôt que « all-in ».
   const villainStackBB = Math.round(
-    Math.min(40, Math.max(5, avgStackBB * rand(0.2, 1.6))) * 10
+    Math.max(5, avgStackBB * rand(Math.max(0.15, 1 - spread), 1 + spread)) * 10
   ) / 10;
   const nKO = drawNKO(fieldLeft);
 
