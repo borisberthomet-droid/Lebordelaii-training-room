@@ -8,6 +8,7 @@ import {
   MOMENT_OPTIONS, ACCENT, PROFILE_COLORS, PROFILE_OPTIONS, generateSeats, selectStyle,
 } from "@/lib/poker/constants";
 import { comboKey } from "@/lib/poker/combos";
+import { knownCards } from "@/lib/poker/scoring";
 import { parsePastedRange, filterDominantCombos } from "@/lib/poker/rangeParser";
 import { applyCutoff, parseWinamaxHH } from "@/lib/poker/hhParser";
 import RangeGrid from "@/components/RangeGrid";
@@ -431,7 +432,7 @@ export default function AdminPage() {
               </span>
             }
           >
-            <RangeGrid comboWeights={editWeights} setComboWeights={setEditWeights} mode="admin" excludedCards={form.mode === 'exploit' ? [form.heroCard1, form.heroCard2] : []} />
+            <RangeGrid comboWeights={editWeights} setComboWeights={setEditWeights} mode="admin" excludedCards={knownCards(form.mode === 'exploit' ? [form.heroCard1, form.heroCard2] : [], form.board)} />
           </Section>
 
           {form.mode === 'theorique' && (

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getRandomAvailableSpot, getSpot, getSpotLock, insertAttempt, setSpotLock } from "@/lib/supabase/spots";
 import { ACCENT } from "@/lib/poker/constants";
 import { comboKey } from "@/lib/poker/combos";
-import { drawRandomHand, drawWeightedCombo, drawWeightedHand, scoreAttempt } from "@/lib/poker/scoring";
+import { drawRandomHand, drawWeightedCombo, drawWeightedHand, scoreAttempt, knownCards, parseBoardCards } from "@/lib/poker/scoring";
 import { decomposeBuyIn } from "@/lib/poker/hhParser";
 import RangeGrid from "@/components/RangeGrid";
 import MiniCard from "@/components/MiniCard";
@@ -57,14 +57,18 @@ export default function PlaySpotPage() {
           }
         }
 
+        // Les cartes du board sont retirees des DEUX tirages : sans ca, Hero pouvait recevoir
+        // une carte posee sur le tapis, et le combo du vilain a trouver pouvait en contenir une
+        // — donc etre introuvable puisque la grille le grise.
+        const boardCards = parseBoardCards(loaded.board);
         const hero = loaded.mode === "exploit"
           ? [loaded.heroCombo.slice(0, 2), loaded.heroCombo.slice(2, 4)]
           : (loaded.heroWeights && Object.values(loaded.heroWeights).some((w) => w > 0)
-              ? drawWeightedHand(loaded.heroWeights)
-              : drawRandomHand());
+              ? drawWeightedHand(loaded.heroWeights, boardCards)
+              : drawRandomHand(boardCards));
         const villain = loaded.mode === "exploit"
           ? (loaded.villainCombo.length === 4 ? comboKey([loaded.villainCombo.slice(0, 2), loaded.villainCombo.slice(2, 4)]) : loaded.villainCombo)
-          : drawWeightedCombo(loaded.weights, hero);
+          : drawWeightedCombo(loaded.weights, knownCards(hero, loaded.board));
 
         setHeroCards(hero);
         setVillainKey(villain);
@@ -191,7 +195,7 @@ export default function PlaySpotPage() {
               Plus ta sélection est étroite, plus tu marques de points — mais attention, si le bon combo n&apos;y est pas, tu repars à 0. Vise juste, pas large.
             </div>
           </div>
-          <RangeGrid comboWeights={playWeights} setComboWeights={setPlayWeights} mode="play" excludedCards={heroCards} />
+          <RangeGrid comboWeights={playWeights} setComboWeights={setPlayWeights} mode="play" excludedCards={knownCards(heroCards, spot.board)} />
           {spot.question && spot.question.trim() && (
             <div style={{ marginTop: 14, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px" }}>
               <div style={{ fontSize: 13, color: "var(--text)", marginBottom: 8 }}>🤔 {spot.question}</div>
@@ -216,7 +220,7 @@ export default function PlaySpotPage() {
       ) : (
         <>
           <RangeGrid comboWeights={playWeights} setComboWeights={() => {}} mode="reveal"
-            resultReveal={{ villainKey: reveal.villainKey, found: reveal.found }} excludedCards={heroCards} />
+            resultReveal={{ villainKey: reveal.villainKey, found: reveal.found }} excludedCards={knownCards(heroCards, spot.board)} />
           {(() => {
             const msg = getResultMessage(reveal.found, reveal.score);
             return (

@@ -42,6 +42,35 @@ export function parseClass(cls) {
   return { i: i2, j: i1, type: 'offsuit' };
 }
 
+// --- Filtre par couleur ---------------------------------------------------------------------
+// Sert à restreindre le remplissage : « je ne veux peindre que les combos à carreau ».
+// Une clé de combo est la concaténation triée des deux cartes, donc les couleurs sont en
+// position 1 et 3 ("Ad2d" → 'd' et 'd').
+//
+// Deux familles, comme sur les filtres de solveur : « assorti » = les deux cartes de la même
+// couleur, « dépareillé » = deux couleurs différentes. Les paires tombent dans dépareillé, ce
+// qui est cohérent : leurs deux cartes ne sont jamais de la même couleur.
+export function comboIsSuited(key) { return key[1] === key[3]; }
+
+export const EMPTY_SUIT_FILTER = { mode: 'include', suited: [], offsuit: [] };
+
+export function suitFilterIsActive(filter) {
+  return !!filter && (filter.suited.length > 0 || filter.offsuit.length > 0);
+}
+
+// `true` = ce combo est concerné par les clics. Sans filtre actif, tout est concerné.
+// En mode « exclude », la sélection désigne ce qu'il faut ÉPARGNER.
+export function comboMatchesSuitFilter(key, filter) {
+  if (!suitFilterIsActive(filter)) return true;
+  const [s1, s2] = [key[1], key[3]];
+  const hit = s1 === s2
+    ? filter.suited.includes(s1)
+    // Un combo dépareillé porte deux couleurs : il est visé dès que l'une des deux est cochée.
+    // Cocher ♦ et ♣ vise donc tout ce qui contient un carreau OU un trèfle, pas seulement ♦♣.
+    : (filter.offsuit.includes(s1) || filter.offsuit.includes(s2));
+  return filter.mode === 'exclude' ? !hit : hit;
+}
+
 export function getLineClasses(cls) {
   const { i, j, type } = parseClass(cls);
   if (type === 'pair') return [cls];

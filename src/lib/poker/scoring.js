@@ -6,6 +6,21 @@ export function comboOverlapsCards(key, cards) {
   return cards.includes(c1) || cards.includes(c2);
 }
 
+// Le board est stocké en texte libre ("Kh 7d 2s"). On ne garde que ce qui a la forme d'une
+// carte : le champ est saisi à la main et peut contenir des séparateurs ou des restes.
+export function parseBoardCards(board) {
+  if (!board) return [];
+  return String(board).trim().split(/[\s,\/]+/)
+    .filter((t) => t.length === 2 && RANKS.includes(t[0]) && SUITS.includes(t[1]));
+}
+
+// Cartes déjà connues au moment où l'élève dessine : les siennes ET le board. Un combo qui en
+// contient une est impossible pour le vilain — le proposer, c'est laisser l'élève dépenser des
+// combos sur des mains qui n'existent pas, et fausser son score.
+export function knownCards(heroCards, board) {
+  return [...(heroCards || []).filter(Boolean), ...parseBoardCards(board)];
+}
+
 export function drawWeightedCombo(weights, excludeCards) {
   const entries = Object.entries(weights).filter(([k, w]) => w > 0 && !comboOverlapsCards(k, excludeCards));
   if (!entries.length) return null;
@@ -18,14 +33,16 @@ export function drawWeightedCombo(weights, excludeCards) {
 // Tire la main de Hero pondérée par une range d'ouverture (ex: range CO configurée
 // dans l'admin), au lieu d'un tirage uniforme sur les 1326 combos — sans quoi Hero
 // peut se retrouver avec une main hors de toute range réaliste pour la position/l'action.
-export function drawWeightedHand(weights) {
-  const key = drawWeightedCombo(weights, []);
-  return key ? [key.slice(0, 2), key.slice(2, 4)] : drawRandomHand();
+// `excludeCards` : les cartes du board. Sans ce retrait, Hero pouvait recevoir une carte
+// posée sur le tapis.
+export function drawWeightedHand(weights, excludeCards = []) {
+  const key = drawWeightedCombo(weights, excludeCards);
+  return key ? [key.slice(0, 2), key.slice(2, 4)] : drawRandomHand(excludeCards);
 }
 
-export function drawRandomHand() {
+export function drawRandomHand(excludeCards = []) {
   const deck = [];
-  for (const r of RANKS) for (const s of SUITS) deck.push(r + s);
+  for (const r of RANKS) for (const s of SUITS) if (!excludeCards.includes(r + s)) deck.push(r + s);
   const i1 = Math.floor(Math.random() * deck.length);
   const c1 = deck.splice(i1, 1)[0];
   const i2 = Math.floor(Math.random() * deck.length);
