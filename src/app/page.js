@@ -34,6 +34,13 @@ const TOOLS = [
     inDev: true,
   },
   {
+    href: "/range-position",
+    Icon: () => <RangeBuilderIcon size={24} />,
+    label: "Où suis-je dans ma range ?",
+    desc: "Face à une mise, situe ta main dans ta propre range — turn et river, sur sim résolue",
+    inDev: true,
+  },
+  {
     href: "/pko-rp/trainer",
     Icon: () => <PkoRpIcon size={24} />,
     label: "RP Trainer",
