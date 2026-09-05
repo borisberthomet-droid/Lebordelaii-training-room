@@ -1,0 +1,20 @@
+[
+ {
+  "name": "js6h3d-kc-2s",
+  "board": [
+   "Js",
+   "6h",
+   "3d"
+  ],
+  "fullBoard": "Js 6h 3d Kc 2s",
+  "effectiveBB": 40,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 436,
+  "turn": 79,
+  "river": 357,
+  "builtAt": "2026-09-05"
+ }
+]

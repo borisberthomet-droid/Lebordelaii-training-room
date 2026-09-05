@@ -6,7 +6,9 @@ import MiniCard from "@/components/MiniCard";
 import { BUCKETS, bucketFor } from "@/lib/poker/relativeStrength";
 import { RangeBuilderIcon } from "@/components/ToolIcons";
 
-const SIM = "js6h3d-kc-2s";
+// Les simulations disponibles sont découvertes à l'exécution via public/solved/sims.json, que le
+// script de build tient à jour. Écrire un nom de sim en dur ici obligerait à toucher au code à
+// chaque nouvelle texture.
 
 const btn = {
   padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
@@ -63,11 +65,21 @@ function readOut(combo, spot) {
   const [, , equity, percentile, played] = combo;
   const odds = spot.potOddsPct;
   const foldIdx = spot.actions.findIndex((a) => a.type === "F");
+  const callIdx = spot.actions.findIndex((a) => a.type === "C");
   const folds = foldIdx >= 0 ? played[foldIdx] || 0 : 0;
+  const calls = callIdx >= 0 ? played[callIdx] || 0 : 0;
   const isMix = (f) => f > 0.05 && f < 0.95;
   const mixed = played.filter(isMix).length >= 2;
   const ecart = equity - odds;
   const chiffres = `${equity.toFixed(1)}% d'équité contre ${odds}% de cote`;
+
+  // Contradiction franche entre la stratégie du solveur et la cote : payer presque toujours avec
+  // une équité très en dessous. Ça n'arrive que dans les branches peu visitées (0 cas au-dessus
+  // de 25% d'atteinte, 0.2 à 0.8% en dessous) : c'est la convergence du solveur qui manque, pas
+  // une subtilité à apprendre. On le dit au lieu de faire semblant d'y voir une leçon.
+  if (calls > 0.9 && ecart < -12) {
+    return `À prendre avec des pincettes : le solveur paie ici alors que l'équité (${equity.toFixed(1)}%) est très en dessous de la cote (${odds}%). Ce nœud n'est atteint que ${spot.reachPct}% du temps, il est mal convergé. Ton percentile, lui, reste exact.`;
+  }
   // Sur le turn il reste une street : la cote immédiate ne décide pas seule, l'équité implicite
   // et la position pèsent aussi. Ne pas le dire ferait passer un écart pour une contradiction.
   const suite = spot.street === 2 ? " Attention, il reste la river : la cote immédiate ne tranche pas à elle seule." : "";
@@ -88,8 +100,16 @@ function readOut(combo, spot) {
 }
 
 export default function RangePositionPage() {
+  const [sims, setSims] = useState(null);
+  const [sim, setSim] = useState(null);
   const [index, setIndex] = useState(null);
   const [error, setError] = useState(null);
+  // Deux sens pour la même question. À un nœud, hero est TOUJOURS celui qui fait face à la mise,
+  // donc le défenseur : seule la formulation change, la bonne réponse est la même.
+  //   "moi" — je défends, où est MA main dans MA range ?
+  //   "lui" — j'attaque, où est SA main dans SA range de défense ? C'est ce sens qui dit si mes
+  //           bluffs passent et si l'adversaire respecte sa MDF.
+  const [mode, setMode] = useState("moi");
   const [streets, setStreets] = useState(["turn", "river"]);
   const [archetypes, setArchetypes] = useState([]);
   const [q, setQ] = useState(null);       // { spot, combo }
@@ -98,18 +118,31 @@ export default function RangePositionPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`/solved/${SIM}/index.json`)
-      .then((r) => { if (!r.ok) throw new Error(`index introuvable (${r.status})`); return r.json(); })
-      .then(setIndex)
+    fetch("/solved/sims.json")
+      .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
+      .then((list) => {
+        if (!list.length) throw new Error("aucune simulation construite");
+        setSims(list);
+        setSim(list[0].name);
+      })
       .catch((e) => setError(e.message));
   }, []);
+
+  // Changer de texture recharge l'index et remet la question à zéro : garder une question d'une
+  // autre sim à l'écran afficherait un board qui ne correspond plus aux filtres.
+  useEffect(() => {
+    if (!sim) return;
+    setIndex(null); setQ(null); setAnswer(null);
+    fetch(`/solved/${sim}/index.json`)
+      .then((r) => { if (!r.ok) throw new Error(`index de ${sim} introuvable (${r.status})`); return r.json(); })
+      .then((idx) => { setIndex(idx); setArchetypes([...new Set(idx.spots.map((s) => s.archetype))].sort()); })
+      .catch((e) => setError(e.message));
+  }, [sim]);
 
   const allArchetypes = useMemo(() => {
     if (!index) return [];
     return [...new Set(index.spots.map((s) => s.archetype))].sort();
   }, [index]);
-
-  useEffect(() => { if (allArchetypes.length && !archetypes.length) setArchetypes(allArchetypes); }, [allArchetypes]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pool = useMemo(() => {
     if (!index) return [];
@@ -124,7 +157,7 @@ export default function RangePositionPage() {
     setLoading(true); setAnswer(null);
     try {
       const pick = pool[Math.floor(Math.random() * pool.length)];
-      const res = await fetch(`/solved/${SIM}/${pick.id}.json`);
+      const res = await fetch(`/solved/${sim}/${pick.id}.json`);
       if (!res.ok) throw new Error(`spot ${pick.id} introuvable`);
       const spot = await res.json();
       setQ({ spot, combo: drawCombo(spot.combos) });
@@ -171,6 +204,37 @@ export default function RangePositionPage() {
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 18, marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>Quelle range situer</div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+          <button onClick={() => { setMode("moi"); setAnswer(null); }} style={chip(mode === "moi")}>
+            Ma main dans ma range
+          </button>
+          <button onClick={() => { setMode("lui"); setAnswer(null); }} style={chip(mode === "lui")}>
+            Sa main dans sa range de défense
+          </button>
+        </div>
+        <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 14, lineHeight: 1.6 }}>
+          {mode === "moi"
+            ? "Tu fais face à une mise. Situe ta main dans ta propre range de défense."
+            : "C'est toi qui attaques. Situe la main de ton adversaire dans SA range de défense : c'est ce qui dit si tes bluffs passent, et s'il respecte sa MDF."}
+        </div>
+
+        {sims && sims.length > 1 && (
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
+            <select value={sim || ""} onChange={(e) => setSim(e.target.value)} style={{
+              width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
+              color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
+            }}>
+              {sims.map((s) => (
+                <option key={s.name} value={s.name}>
+                  {s.fullBoard || s.board.join(" ")} — {s.effectiveBB} bb — {s.spots} spots
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {!index ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement de la simulation…</div>
         ) : (
@@ -225,7 +289,9 @@ export default function RangePositionPage() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 14, fontWeight: 700 }}>{spot.archetype}</span>
             <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-              {spot.streetName} · tu es {spot.heroPos} contre {spot.villainPos}
+              {spot.streetName} · {mode === "moi"
+                ? `tu es ${spot.heroPos} contre ${spot.villainPos}`
+                : `tu es ${spot.villainPos}, tu attaques — ${spot.heroPos} défend`}
             </span>
           </div>
 
@@ -239,15 +305,23 @@ export default function RangePositionPage() {
             <Row label="Pot" value={`${spot.potBB} bb`} />
             <Row label="À payer" value={`${spot.toCallBB} bb — cote ${spot.potOddsPct}%`} />
             <Row label="Ta range ici" value={`${spot.combos.length} combos`} />
+            <Row
+              label="Fréquence de ce nœud"
+              value={`${spot.reachPct}% ${spot.reachPct >= 25 ? "— stratégie bien convergée" : "— branche rare, stratégie approximative"}`}
+            />
           </div>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 14 }}>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Ta main</span>
+            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+              {mode === "moi" ? "Ta main" : `La main de ${spot.heroPos}`}
+            </span>
             {heroCards.map((c) => <MiniCard key={c} card={c} />)}
           </div>
 
           <div style={{ fontSize: 13, marginBottom: 10 }}>
-            Où te situes-tu dans <strong>ta propre range</strong> à ce nœud ?
+            {mode === "moi"
+              ? <>Où te situes-tu dans <strong>ta propre range</strong> à ce nœud ?</>
+              : <>Où cette main se situe-t-elle dans <strong>la range de défense de {spot.heroPos}</strong> ?</>}
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
             {BUCKETS.map((b) => {
@@ -282,9 +356,33 @@ export default function RangePositionPage() {
                 {answer.ok ? "Exact" : `Raté — c'était ${BUCKETS.find((b) => b.id === answer.truth).label}`}
               </div>
               <div style={{ color: "var(--text-muted)", lineHeight: 1.9 }}>
-                <Row label="Percentile dans ta range" value={`${combo[3].toFixed(1)}%`} strong />
-                <Row label="Équité face à sa range" value={`${combo[2].toFixed(1)}%`} />
+                <Row label={mode === "moi" ? "Percentile dans ta range" : `Percentile dans la range de ${spot.heroPos}`}
+                  value={`${combo[3].toFixed(1)}%`} strong />
+                <Row label="Équité de cette main" value={`${combo[2].toFixed(1)}%`} />
                 <Row label="Cote du pot à battre" value={`${spot.potOddsPct}%`} />
+
+                {/* Le cœur de la question « est-ce que mes bluffs passent » : comparer ce que la
+                    range DOIT défendre à ce qu'elle défend vraiment. Un écart négatif signifie
+                    qu'un bluff est rentable contre elle. */}
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--border)" }}>
+                  <div style={{ fontSize: 11, color: "var(--text)", fontWeight: 600, marginBottom: 4 }}>
+                    Défense de la range de {spot.heroPos}
+                  </div>
+                  <Row label="MDF théorique" value={`${spot.mdfPct}%`} />
+                  <Row label="Ce que le solveur défend" value={`${spot.defendPct}%`} />
+                  <Row label="Taille de la mise" value={`${((spot.toCallBB / (spot.potBB - spot.toCallBB)) * 100).toFixed(0)}% du pot`} />
+                  <div style={{ fontSize: 11, marginTop: 4, color: "var(--text-muted)" }}>
+                    {/* On donne les deux nombres et l'écart, rien de plus. Deux tentatives
+                        d'explication générale ont été mesurées puis abandonnées : ni la street ni
+                        la taille de mise n'expliquent l'écart de façon fiable une fois agrégé sur
+                        l'arbre. La seule régularité nette apparaît à ranges identiques, où
+                        l'écart se referme quand la mise grossit (−27 pts à 25% du pot, −0.2 pt à
+                        281%) — c'est le cas polarisé, celui où la MDF mord vraiment. */}
+                    Écart de {(spot.defendPct - spot.mdfPct).toFixed(1)} points. La MDF est un
+                    repère, pas une obligation : elle ne mord que face à une range polarisée, et
+                    sur cette sim le solveur défend en dessous presque partout.
+                  </div>
+                </div>
 
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--border)" }}>
                   <div style={{ fontSize: 11, color: "var(--text)", fontWeight: 600, marginBottom: 4 }}>

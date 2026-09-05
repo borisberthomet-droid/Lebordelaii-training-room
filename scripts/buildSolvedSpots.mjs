@@ -120,9 +120,11 @@ const startRanges = {};
 for (const [, d] of [...nodes].sort((a, b) => a[0] - b[0])) {
   if (d.street === root.street && startRanges[d.player] === undefined) startRanges[d.player] = weightsOf(d);
 }
+const startWeight = {};
 for (const p of players) {
   if (!startRanges[p]) throw new Error(`Pas de nœud de street ${root.street} pour le joueur ${p} : range de départ introuvable.`);
-  console.log(`  range de départ J${p} (${POS(p)}) : ${Object.keys(startRanges[p]).length} combos`);
+  startWeight[p] = Object.values(startRanges[p]).reduce((a, b) => a + b, 0);
+  console.log(`  range de départ J${p} (${POS(p)}) : ${Object.keys(startRanges[p]).length} combos, poids ${startWeight[p].toFixed(1)}`);
 }
 
 const out = [];
@@ -161,11 +163,35 @@ while (stack.length) {
     const played = {};
     for (const [c, h] of Object.entries(d.hands)) played[normKey(c)] = h.played;
 
+    // MDF : part de la range qu'il faut défendre pour qu'un bluff adverse ne soit pas rentable.
+    // `pot` inclut déjà la mise à payer, donc le pot AVANT cette mise vaut pot − toCall.
+    const mdfPct = pot > 0 ? +(((pot - toCall) / pot) * 100).toFixed(1) : 0;
+    // Ce que la range défend réellement, d'après le solveur : 1 − fréquence de fold, pondérée.
+    // Comparer les deux répond à « est-ce que mes bluffs passent ».
+    const foldAt = d.actions.findIndex((a) => a.type === "F");
+    let wSum = 0, wDefend = 0;
+    for (const [c, h] of Object.entries(d.hands)) {
+      const k = normKey(c);
+      if (heroW[k] === undefined) continue;
+      wSum += heroW[k];
+      wDefend += heroW[k] * (1 - (foldAt >= 0 ? h.played[foldAt] || 0 : 0));
+    }
+    const defendPct = wSum > 0 ? +((wDefend / wSum) * 100).toFixed(1) : null;
+
+    // Fréquence d'atteinte du nœud : poids de la range de hero ici, rapporté à sa range de
+    // départ. Elle mesure combien d'échantillons le solveur a consacrés à cette branche, donc
+    // à quel point sa stratégie y est fiable. Mesuré sur ce jeu de données : les nœuds atteints
+    // plus de 25% du temps n'ont AUCUNE stratégie aberrante (call à 100% avec une équité 15
+    // points sous la cote), les branches rares en ont 0.2 à 0.8% en poids. L'export est en CI5 :
+    // HRC converge les lignes principales, pas les feuilles.
+    const reachPct = +((Object.values(heroW).reduce((a, b) => a + b, 0) / startWeight[hero]) * 100).toFixed(1);
+
     out.push({
       id,
       street: d.street,
       streetName: STREETS[d.street],
       board,
+      reachPct,
       heroPos: POS(hero),
       villainPos: POS(villain),
       line: describeLine(d.sequence),
@@ -173,6 +199,8 @@ while (stack.length) {
       potBB: +(pot / BB).toFixed(2),
       toCallBB: +(toCall / BB).toFixed(2),
       potOddsPct: +((toCall / (pot + toCall)) * 100).toFixed(1),
+      mdfPct,
+      defendPct,
       actions: d.actions.map((a) => ({ type: a.type, amountBB: +(a.amount / BB).toFixed(2) })),
       // [clé, poids, équité %, percentile, fréquences jouées]
       combos: ranked.combos.map((c) => [
@@ -226,11 +254,34 @@ const index = {
   prizes: settings.eqmodel?.structure?.prizes || null,
   spots: out.map((s) => ({
     id: s.id, street: s.street, streetName: s.streetName, archetype: s.archetype,
-    heroPos: s.heroPos, villainPos: s.villainPos, board: s.board,
+    heroPos: s.heroPos, villainPos: s.villainPos, board: s.board, reachPct: s.reachPct,
     line: s.line, potBB: s.potBB, toCallBB: s.toCallBB, combos: s.combos.length,
+    mdfPct: s.mdfPct, defendPct: s.defendPct,
   })),
 };
 fs.writeFileSync(path.join(outDir, "index.json"), JSON.stringify(index));
+
+// Catalogue des simulations disponibles, mis à jour à chaque exécution. C'est lui que la page
+// lit pour proposer les textures : sans ce fichier il faudrait modifier le code à chaque
+// nouvelle sim, et « relancer une sim » ne suffirait pas à la voir apparaître.
+const catalogPath = path.join("public", "solved", "sims.json");
+const catalog = fs.existsSync(catalogPath) ? JSON.parse(fs.readFileSync(catalogPath, "utf8")) : [];
+const entry = {
+  name: simName,
+  board: parseBoardCards(root.board || ""),
+  // Board final atteint par la sim : c'est ce qui distingue deux textures à l'œil.
+  fullBoard: [...new Set(out.map((s) => s.board.join(" ")))].sort((a, b) => b.length - a.length)[0] || "",
+  effectiveBB: START_STACK / BB,
+  heroPositions: [...new Set(out.map((s) => s.heroPos))].sort(),
+  spots: out.length,
+  turn: out.filter((s) => s.street === 2).length,
+  river: out.filter((s) => s.street === 3).length,
+  builtAt: new Date().toISOString().slice(0, 10),
+};
+const at = catalog.findIndex((c) => c.name === simName);
+if (at >= 0) catalog[at] = entry; else catalog.push(entry);
+fs.writeFileSync(catalogPath, JSON.stringify(catalog, null, 1));
+console.log(`  catalogue : ${catalog.length} simulation(s) dans ${catalogPath}`);
 
 console.log(`${visited} nœuds parcourus, ${skippedEmpty} sans range vivante, ${out.length} spots entraînables écrits dans ${outDir}`);
 console.log(`  poids total : ${(bytes / 1e6).toFixed(1)} Mo · moyenne ${(bytes / out.length / 1024).toFixed(0)} Ko par spot`);
