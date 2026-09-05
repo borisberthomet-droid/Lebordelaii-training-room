@@ -6,12 +6,14 @@ export function comboOverlapsCards(key, cards) {
   return cards.includes(c1) || cards.includes(c2);
 }
 
-// Le board est stocké en texte libre ("Kh 7d 2s"). On ne garde que ce qui a la forme d'une
-// carte : le champ est saisi à la main et peut contenir des séparateurs ou des restes.
+// Le board arrive sous des formes très différentes selon la source : saisi à la main dans
+// l'admin ("As Kd 7h"), et collé d'un coup par HRC qui l'écrit SANS séparateur ("Js6h3d").
+// Un découpage sur les espaces ratait complètement le second cas et rendait un board vide.
+// On balaie donc les couples rang+couleur, ce qui couvre les deux et ignore le reste.
 export function parseBoardCards(board) {
   if (!board) return [];
-  return String(board).trim().split(/[\s,\/]+/)
-    .filter((t) => t.length === 2 && RANKS.includes(t[0]) && SUITS.includes(t[1]));
+  const re = new RegExp(`[${RANKS.join("")}][${SUITS.join("")}]`, "g");
+  return String(board).match(re) || [];
 }
 
 // Cartes déjà connues au moment où l'élève dessine : les siennes ET le board. Un combo qui en
