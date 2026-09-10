@@ -107,7 +107,9 @@ function Seat({ position, stackBB, stackChips, action, bounty, dealer, highlight
             borderBottom: clickable ? '1px dotted rgba(242,153,74,0.5)' : 'none',
           }}
         >
-          {showChips ? stackChips.toLocaleString('fr-FR') : `${stackBB || '—'} BB`}
+          {/* `stackBB || '—'` affichait un tiret pour un stack de 0, alors qu'un joueur à 0 est
+              simplement à tapis. On ne remplace que les valeurs réellement absentes. */}
+          {showChips ? stackChips.toLocaleString('fr-FR') : `${stackBB == null || stackBB === '' ? '—' : stackBB} BB`}
         </div>
       </div>
       {action && (

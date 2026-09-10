@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import MiniCard from "@/components/MiniCard";
+import SolvedReplayer from "@/components/SolvedReplayer";
 import { BUCKETS, bucketFor } from "@/lib/poker/relativeStrength";
 import { RangeBuilderIcon } from "@/components/ToolIcons";
 
@@ -295,10 +296,14 @@ export default function RangePositionPage() {
             </span>
           </div>
 
-          <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: "var(--text-muted)", marginRight: 4 }}>Board</span>
-            {spot.board.map((c) => <MiniCard key={c} card={c} />)}
-          </div>
+          {spot.sequence
+            ? <SolvedReplayer spot={spot} meta={index} heroCards={heroCards} />
+            : (
+              <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: 11, color: "var(--text-muted)", marginRight: 4 }}>Board</span>
+                {spot.board.map((c) => <MiniCard key={c} card={c} />)}
+              </div>
+            )}
 
           <div style={{ background: "var(--panel-2)", borderRadius: 10, padding: 14, fontSize: 12, marginBottom: 14 }}>
             <Row label="Déroulé" value={spot.line} />

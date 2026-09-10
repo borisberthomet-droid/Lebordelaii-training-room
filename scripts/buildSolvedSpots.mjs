@@ -99,21 +99,55 @@ function describeLine(seq) {
   return parts.join(", ");
 }
 
-// Nom court, celui que Boris emploie : deux barrels, vs probe, etc.
+// Agresseur préflop : le dernier à avoir relancé avant le flop. C'est lui qui définit le
+// vocabulaire — on ne parle de cbet et de barrel que pour lui.
+function preflopAggressor(seq) {
+  let pfa = null;
+  for (const a of seq) if (a.street === 0 && a.type === "R") pfa = a.player;
+  return pfa;
+}
+
+// Nom de la ligne, à partir du MOTIF de mise du vilain street par street.
+//
+// La première version comptait seulement sur combien de streets il avait misé : une ligne
+// « flop check-check, turn bet, river bet » sortait en « 2e barrel » alors que c'est un delay
+// cbet suivi d'une mise river. Un barrel suppose d'avoir cbet le flop ; sans ça le vocabulaire
+// est faux, et c'est justement sur ces noms que se fait le choix de ce qu'on entraîne.
 function lineArchetype(seq, street, heroIdx) {
   const post = seq.filter((a) => a.street >= 1);
-  const bets = post.filter((a) => a.type === "R");
-  const byVillain = bets.filter((a) => a.player !== heroIdx).length;
-  const byHero = bets.filter((a) => a.player === heroIdx).length;
-  const streetsWithVillainBet = new Set(bets.filter((a) => a.player !== heroIdx).map((a) => a.street)).size;
-  const flopChecked = !post.some((a) => a.street === 1 && a.type === "R");
+  const pfa = preflopAggressor(seq);
 
-  if (byHero > 0 && byVillain > byHero) return "Face à un raise";
-  if (street === 2 && flopChecked) return "Face à une probe turn";
-  if (street === 3 && streetsWithVillainBet === 1) return "Face à une probe river";
-  if (streetsWithVillainBet >= 3) return "Face au 3e barrel";
-  if (streetsWithVillainBet === 2) return "Face au 2e barrel";
-  return "Face à une mise";
+  // Hero a misé sur cette street et se retrouve à parler : c'est qu'on l'a relancé.
+  if (post.some((a) => a.street === street && a.player === heroIdx && a.type === "R")) {
+    return "Face à un raise";
+  }
+
+  const streetsMisees = [...new Set(post.filter((a) => a.player !== heroIdx && a.type === "R").map((a) => a.street))].sort();
+  const motif = streetsMisees.join("");
+  const villainEstPfa = heroIdx !== pfa;
+
+  if (villainEstPfa) {
+    // Vocabulaire de l'agresseur préflop.
+    return {
+      "1": "Cbet flop",
+      "12": "2e barrel",
+      "123": "3e barrel",
+      "13": "Cbet flop, check turn, bet river",
+      "2": "Delay cbet turn",
+      "23": "Delay cbet + bet river",
+      "3": "Bet river après deux checks",
+    }[motif] || "Face à une mise";
+  }
+  // Le vilain n'est pas l'agresseur : il mise dans la range de celui qui a relancé.
+  return {
+    "1": "Donk flop",
+    "12": "Donk flop + bet turn",
+    "123": "Donk sur les trois streets",
+    "2": "Probe turn",
+    "23": "Probe turn + bet river",
+    "3": "Probe river",
+    "13": "Donk flop, check turn, bet river",
+  }[motif] || "Face à une mise";
 }
 
 // --- Parcours de l'arbre -------------------------------------------------------------------------
@@ -218,6 +252,15 @@ while (stack.length) {
       mdfPct,
       defendPct,
       actions: d.actions.map((a) => ({ type: a.type, amountBB: +(a.amount / BB).toFixed(2) })),
+      // Déroulé structuré, PRÉFLOP COMPRIS — `line` ne garde que le postflop, sous forme de
+      // texte. Le replayer a besoin de chaque action avec son montant et sa street pour
+      // reconstituer stacks, pot et mises à chaque étape.
+      // Attention aux conventions HRC : pour une relance `amount` est le TOTAL engagé sur la
+      // street, pour un call c'est le montant ADDITIONNEL.
+      sequence: d.sequence.map((a) => ({
+        pos: POS(a.player), type: a.type,
+        amountBB: +(a.amount / BB).toFixed(2), street: a.street,
+      })),
       // Taille réelle de la range, en combos pondérés. C'est la mesure honnête : annoncer
       // « 1033 combos » quand un tiers d'entre eux arrivent 0.05% du temps surestime la range.
       weightTotal: +ranked.totalWeight.toFixed(1),
