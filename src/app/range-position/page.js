@@ -304,7 +304,7 @@ export default function RangePositionPage() {
             <Row label="Déroulé" value={spot.line} />
             <Row label="Pot" value={`${spot.potBB} bb`} />
             <Row label="À payer" value={`${spot.toCallBB} bb — cote ${spot.potOddsPct}%`} />
-            <Row label="Ta range ici" value={`${spot.combos.length} combos`} />
+            <Row label="Taille de la range ici" value={`${spot.weightTotal} combos pondérés`} />
             <Row
               label="Fréquence de ce nœud"
               value={`${spot.reachPct}% ${spot.reachPct >= 25 ? "— stratégie bien convergée" : "— branche rare, stratégie approximative"}`}

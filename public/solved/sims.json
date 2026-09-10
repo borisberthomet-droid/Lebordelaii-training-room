@@ -12,9 +12,63 @@
    "BB",
    "BU"
   ],
-  "spots": 436,
+  "spots": 206,
+  "turn": 53,
+  "river": 153,
+  "builtAt": "2026-09-10"
+ },
+ {
+  "name": "ts8h5h-9c-3h",
+  "board": [
+   "Ts",
+   "8h",
+   "5h"
+  ],
+  "fullBoard": "Ts 8h 5h 9c 3h",
+  "effectiveBB": 40,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 264,
+  "turn": 82,
+  "river": 182,
+  "builtAt": "2026-09-10"
+ },
+ {
+  "name": "ts8h5h-jc-3s",
+  "board": [
+   "Ts",
+   "8h",
+   "5h"
+  ],
+  "fullBoard": "Ts 8h 5h Jc 3s",
+  "effectiveBB": 40,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 271,
+  "turn": 80,
+  "river": 191,
+  "builtAt": "2026-09-10"
+ },
+ {
+  "name": "ts8h5h-6c-8d",
+  "board": [
+   "Ts",
+   "8h",
+   "5h"
+  ],
+  "fullBoard": "Ts 8h 5h 6c 8d",
+  "effectiveBB": 40,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 271,
   "turn": 79,
-  "river": 357,
-  "builtAt": "2026-09-05"
+  "river": 192,
+  "builtAt": "2026-09-10"
  }
 ]

@@ -36,6 +36,14 @@ const START_STACK = settings.handdata.stacks[0];
 const POSITION_ORDER = ["UTG", "HJ", "CO", "BU", "SB", "BB"];
 const POS = (i) => POSITION_ORDER[i] ?? `P${i}`;
 const STREETS = { 1: "flop", 2: "turn", 3: "river" };
+// Poids en dessous duquel un combo n'est plus livré : il ne peut pas sortir au tirage pondéré
+// et n'apporte rien à l'élève.
+const COMBO_WEIGHT_FLOOR = 0.001;
+// Taille minimale d'une range, en combos pondérés, pour qu'un spot soit entraînable. En dessous,
+// les quintiles ne veulent rien dire : à 20 combos chaque tranche en contient 4, à 1 combo la
+// question n'a pas de sens. Mesuré sur les 4 premières textures : 10% des nœuds de l'arbre ont
+// moins de 0.5 combo pondéré, et certains exactement 0 — des branches que personne n'atteint.
+const MIN_RANGE_WEIGHT = 20;
 
 // --- Pot et mise à payer ----------------------------------------------------------------------
 // HRC écrit, pour une relance, le TOTAL engagé sur la street ; pour un call, le montant ADDITIONNEL
@@ -132,6 +140,7 @@ const seen = new Set();
 const stack = [[0, startRanges]];
 let visited = 0;
 let skippedEmpty = 0;
+let skippedThin = 0;
 
 while (stack.length) {
   const [id, ranges] = stack.pop();
@@ -155,8 +164,15 @@ while (stack.length) {
   const playable = Object.keys(heroW).length > 0 && Object.keys(vilW).length > 0;
   if (!playable) skippedEmpty++;
 
-  if (playable && facingBet && (d.street === 2 || d.street === 3)) {
-    const ranked = rankRangeOnBoard({ heroWeights: heroW, villainWeights: vilW, board });
+  // Un nœud trop étroit n'est pas entraînable, mais ses ENFANTS peuvent l'être : sortir de
+  // l'itération ici (avec `continue`) amputerait tout le sous-arbre. On se contente donc de ne
+  // pas le publier, et le parcours se poursuit normalement.
+  const ranked = playable && facingBet && (d.street === 2 || d.street === 3)
+    ? rankRangeOnBoard({ heroWeights: heroW, villainWeights: vilW, board })
+    : null;
+  if (ranked && ranked.totalWeight < MIN_RANGE_WEIGHT) skippedThin++;
+
+  if (ranked && ranked.totalWeight >= MIN_RANGE_WEIGHT) {
     const { pot, commit, maxCommit } = potAndToCall(d.sequence);
     const toCall = maxCommit - (commit[hero] || 0);
 
@@ -202,14 +218,24 @@ while (stack.length) {
       mdfPct,
       defendPct,
       actions: d.actions.map((a) => ({ type: a.type, amountBB: +(a.amount / BB).toFixed(2) })),
+      // Taille réelle de la range, en combos pondérés. C'est la mesure honnête : annoncer
+      // « 1033 combos » quand un tiers d'entre eux arrivent 0.05% du temps surestime la range.
+      weightTotal: +ranked.totalWeight.toFixed(1),
+      combosListed: ranked.combos.length,
       // [clé, poids, équité %, percentile, fréquences jouées]
-      combos: ranked.combos.map((c) => [
-        c.key,
-        +c.weight.toFixed(3),
-        +(c.equity * 100).toFixed(1),
-        +c.percentile.toFixed(1),
-        (played[c.key] || []).map((p) => +p.toFixed(3)),
-      ]),
+      // Les combos sous COMBO_WEIGHT_FLOOR sont écartés du fichier : mesuré, ils représentent
+      // 38% des combos pour 0.00% du poids, ne peuvent jamais sortir au tirage pondéré, et
+      // pèsent un tiers de la taille livrée. Les percentiles des combos gardés sont calculés
+      // AVANT ce filtre, donc restent ceux de la range complète.
+      combos: ranked.combos
+        .filter((c) => c.weight >= COMBO_WEIGHT_FLOOR)
+        .map((c) => [
+          c.key,
+          +c.weight.toFixed(3),
+          +(c.equity * 100).toFixed(1),
+          +c.percentile.toFixed(1),
+          (played[c.key] || []).map((p) => +p.toFixed(3)),
+        ]),
     });
   }
 
@@ -256,7 +282,7 @@ const index = {
     id: s.id, street: s.street, streetName: s.streetName, archetype: s.archetype,
     heroPos: s.heroPos, villainPos: s.villainPos, board: s.board, reachPct: s.reachPct,
     line: s.line, potBB: s.potBB, toCallBB: s.toCallBB, combos: s.combos.length,
-    mdfPct: s.mdfPct, defendPct: s.defendPct,
+    weightTotal: s.weightTotal, mdfPct: s.mdfPct, defendPct: s.defendPct,
   })),
 };
 fs.writeFileSync(path.join(outDir, "index.json"), JSON.stringify(index));
@@ -283,7 +309,7 @@ if (at >= 0) catalog[at] = entry; else catalog.push(entry);
 fs.writeFileSync(catalogPath, JSON.stringify(catalog, null, 1));
 console.log(`  catalogue : ${catalog.length} simulation(s) dans ${catalogPath}`);
 
-console.log(`${visited} nœuds parcourus, ${skippedEmpty} sans range vivante, ${out.length} spots entraînables écrits dans ${outDir}`);
+console.log(`${visited} nœuds parcourus, ${skippedEmpty} sans range vivante, ${skippedThin} trop etroits, ${out.length} spots entraînables écrits dans ${outDir}`);
 console.log(`  poids total : ${(bytes / 1e6).toFixed(1)} Mo · moyenne ${(bytes / out.length / 1024).toFixed(0)} Ko par spot`);
 const byArch = {};
 for (const s of out) byArch[s.archetype] = (byArch[s.archetype] || 0) + 1;
