@@ -106,6 +106,22 @@ export function MemoIcon({ size = 24 }) {
 
 // Pile de jetons (stack) surmontée d'un anneau en dégradé (le bounty posé dessus) —
 // évoque la valeur du KO empilée sur le stack, distinct des autres marques.
+// Hexagone de compétences : contour sobre (le maximum atteignable) + surface en dégradé
+// (le niveau atteint) — l'étoile du radar, en réduction.
+export function ProfileIcon({ size = 24 }) {
+  const hex = (r) => Array.from({ length: 6 }, (_, i) => {
+    const a = ((-90 + i * 60) * Math.PI) / 180;
+    return `${(16 + r * Math.cos(a)).toFixed(1)},${(16 + r * Math.sin(a)).toFixed(1)}`;
+  }).join(" ");
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="Fiche joueur">
+      <Grad id="pf-grad" />
+      <polygon points={hex(12)} stroke="var(--border)" strokeWidth="2" fill="none" />
+      <polygon points="16,6 25,12 23,22 12,24 8,17 11,11" fill="url(#pf-grad)" fillOpacity="0.85" />
+    </svg>
+  );
+}
+
 export function PkoRpIcon({ size = 24 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="PKO — KO & RP">

@@ -7,6 +7,7 @@ import { getRandomAvailableSpot, getSpot, getSpotLock, insertAttempt, setSpotLoc
 import { ACCENT } from "@/lib/poker/constants";
 import { comboKey } from "@/lib/poker/combos";
 import { drawRandomHand, drawWeightedCombo, drawWeightedHand, scoreAttempt, knownCards, parseBoardCards } from "@/lib/poker/scoring";
+import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { decomposeBuyIn } from "@/lib/poker/hhParser";
 import RangeGrid from "@/components/RangeGrid";
 import MiniCard from "@/components/MiniCard";
@@ -94,6 +95,11 @@ export default function PlaySpotPage() {
     if (spot.mode === "exploit") await setSpotLock(spot.id);
     try {
       await insertAttempt({ spotId: spot.id, score, found, selectedCount: selected.length, referenceCount });
+      // Le score de Find It est deja une note de qualite sur 100 : on la reprend telle quelle.
+      recordSkillAttempt({
+        exercise: "find-it", outcome: { ratio: score / 100 },
+        meta: { spot: spot.id, found, selectedCount: selected.length },
+      }).catch(() => {});
     } catch (e) {
       console.error("Impossible d'enregistrer la tentative", e);
     }

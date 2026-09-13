@@ -5,6 +5,7 @@ import Link from "next/link";
 import { generateSpot, computeAnswer, QUESTION_META } from "@/lib/poker/mathTrainer";
 import { getMyMathTrainerStats, insertMathTrainerAttempt } from "@/lib/supabase/mathTrainerAttempts";
 import { MathTrainerIcon } from "@/components/ToolIcons";
+import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 
 const inputStyle = {
   width: 120, background: "var(--panel-2)", border: "1px solid var(--border)",
@@ -44,6 +45,9 @@ export default function MathTrainerPage() {
     setReveal({ correct, answer });
     setStats((s) => ({ ...s, score: s.score + (correct ? 1 : -1), total_questions: s.total_questions + 1 }));
     insertMathTrainerAttempt({ questionType: spot.questionType, correct }).catch(() => {});
+    recordSkillAttempt({
+      exercise: "math-trainer", questionType: spot.questionType, outcome: { correct },
+    }).catch(() => {});
   };
 
   const handleNext = () => {

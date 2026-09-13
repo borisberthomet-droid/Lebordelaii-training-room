@@ -3,10 +3,17 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SiteLogo from "@/components/SiteLogo";
 import Logo from "@/components/Logo";
-import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon, RangeBuilderIcon, MathTrainerIcon, MemoIcon } from "@/components/ToolIcons";
+import { PotOddsIcon, LeakAnalyzerIcon, LeakfinderIcon, PkoRpIcon, RangeBuilderIcon, MathTrainerIcon, MemoIcon, ProfileIcon } from "@/components/ToolIcons";
 import LogoutButton from "./logout-button";
 
 const TOOLS = [
+  {
+    href: "/fiche",
+    Icon: () => <ProfileIcon size={24} />,
+    label: "Ma fiche",
+    desc: "Tes compétences notées par tes réponses aux exercices, sur six axes",
+    inDev: true,
+  },
   {
     href: "/find-it",
     Icon: () => <Logo size={24} showWordmark={false} />,

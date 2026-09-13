@@ -6,6 +6,7 @@ import MiniCard from "@/components/MiniCard";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { BUCKETS, bucketFor } from "@/lib/poker/relativeStrength";
 import { RangeBuilderIcon } from "@/components/ToolIcons";
+import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 
 // Les simulations disponibles sont découvertes à l'exécution via public/solved/sims.json, que le
 // script de build tient à jour. Écrire un nom de sim en dur ici obligerait à toucher au code à
@@ -174,6 +175,13 @@ export default function RangePositionPage() {
     const truth = bucketFor(q.combo[3]).id;
     setAnswer({ given: bucketId, truth, ok: bucketId === truth });
     setStats((s) => ({ good: s.good + (bucketId === truth ? 1 : 0), total: s.total + 1 }));
+    // Alimente la fiche joueur. Jamais bloquant : un enregistrement raté ne doit pas
+    // interrompre l'exercice.
+    recordSkillAttempt({
+      exercise: "range-position",
+      outcome: { correct: bucketId === truth },
+      meta: { sim, spot: q.spot.id, street: q.spot.streetName, archetype: q.spot.archetype },
+    }).catch(() => {});
   };
 
   if (error) {

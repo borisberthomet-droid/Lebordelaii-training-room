@@ -306,3 +306,37 @@ select
 from profiles p
 join math_trainer_attempts a on a.user_id = p.id
 group by p.id, p.pseudo;
+
+-- ---------------------------------------------------------------------------
+-- Fiche joueur : une table unique pour TOUTES les tentatives, quel que soit
+-- l'exercice. Les tables par exercice (attempts, pot_odds_attempts, …) restent
+-- pour leurs classements ; celle-ci sert uniquement au calcul des compétences,
+-- et évite d'avoir à rejoindre cinq tables de formes différentes pour tracer un
+-- radar. `score` est déjà normalisé dans [0,1] par src/lib/poker/skillScore.js,
+-- `chance` est le score qu'obtiendrait le hasard sur cette question.
+-- ---------------------------------------------------------------------------
+create table if not exists skill_attempts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references profiles(id) on delete cascade,
+  exercise text not null,
+  question_type text,
+  score real not null check (score >= 0 and score <= 1),
+  chance real not null default 0 check (chance >= 0 and chance < 1),
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists skill_attempts_user_created_idx
+  on skill_attempts (user_id, created_at desc);
+
+alter table skill_attempts enable row level security;
+
+create policy "skill_attempts are readable by any authenticated user"
+  on skill_attempts for select
+  to authenticated
+  using (true);
+
+create policy "users can insert their own skill attempts"
+  on skill_attempts for insert
+  to authenticated
+  with check (auth.uid() = user_id);

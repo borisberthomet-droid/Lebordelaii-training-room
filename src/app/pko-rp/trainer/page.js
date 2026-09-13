@@ -5,6 +5,7 @@ import Link from "next/link";
 import { STAGES, PAYOUT_PCTS, generateStageQuestion } from "@/lib/poker/rpStages";
 import { ELASTICITY_LEVELS, PKO_STRUCTURES, DEFAULT_STRUCTURE_ID } from "@/lib/poker/rpFramework";
 import { PkoRpIcon } from "@/components/ToolIcons";
+import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import PokerTable from "@/components/PokerTable";
 import sharkscopeLibrary from "@/data/sharkscopeLibrary.json";
 
@@ -98,6 +99,10 @@ export default function RpTrainerPage() {
     const delta = Math.abs(given - question.answer);
     const grade = delta <= TOL_EXACT ? "exact" : delta <= TOL_CLOSE ? "proche" : "loin";
     setResult({ given, delta, grade });
+    recordSkillAttempt({
+      exercise: "rp-trainer", outcome: { error: delta },
+      meta: { stage: question.stage.id, kind: question.kind, tournament: question.tournament },
+    }).catch(() => {});
     setStats((s) => ({
       exact: s.exact + (grade === "exact" ? 1 : 0),
       close: s.close + (grade === "proche" ? 1 : 0),

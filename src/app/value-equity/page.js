@@ -6,6 +6,7 @@ import MiniCard from "@/components/MiniCard";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { potOddsRow } from "@/lib/poker/memoTables";
 import { PotOddsIcon } from "@/components/ToolIcons";
+import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 
 // « Quelle est ton équité ? » — sur un nœud où tu peux miser, estime ton équité contre la range
 // GLOBALE de l'adversaire, puis déduis-en jusqu'à quel sizing tu peux miser en value.
@@ -143,6 +144,11 @@ export default function ValueEquityPage() {
       close: s.close + (grade === "proche" ? 1 : 0),
       total: s.total + 1,
     }));
+    recordSkillAttempt({
+      exercise: "value-equity",
+      outcome: { error: delta },
+      meta: { sim, spot: q.spot.id, street: q.spot.streetName, situation: q.spot.situation },
+    }).catch(() => {});
   };
 
   if (error) {

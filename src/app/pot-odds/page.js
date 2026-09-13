@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { generateSpot, computeAnswer, QUESTION_META } from "@/lib/poker/potOdds";
 import { getMyPotOddsStats, insertPotOddsAttempt } from "@/lib/supabase/potOddsAttempts";
+import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { PotOddsIcon } from "@/components/ToolIcons";
 
 const inputStyle = {
@@ -43,6 +44,11 @@ export default function PotOddsPage() {
     setReveal({ correct, answer });
     setStats((s) => ({ ...s, score: s.score + (correct ? 1 : -1), total_questions: s.total_questions + 1 }));
     insertPotOddsAttempt({ questionType: spot.questionType, correct }).catch(() => {});
+    // L'axe depend du type de question : cote de call et equite de value bet nourrissent
+    // « Equite », frequence de bluff et ratio bluff/value nourrissent « Frequence ».
+    recordSkillAttempt({
+      exercise: "pot-odds", questionType: spot.questionType, outcome: { correct },
+    }).catch(() => {});
   };
 
   const handleNext = () => {
