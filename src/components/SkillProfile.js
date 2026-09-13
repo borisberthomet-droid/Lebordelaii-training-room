@@ -29,7 +29,9 @@ function Bar({ value, dim }) {
   );
 }
 
-export default function FichePage() {
+// Bloc « ma progression » : autonome, il charge lui-même ses données. Vit dans /compte pour
+// que l'élève voie son niveau en arrivant, sans avoir à ouvrir une page de plus.
+export default function SkillProfile() {
   const [me, setMe] = useState(null);
   const [students, setStudents] = useState([]);
   const [viewing, setViewing] = useState(null);   // id de l'élève regardé (coach)
@@ -79,12 +81,7 @@ export default function FichePage() {
   useEffect(() => { load(); }, [load]);
 
   if (error) {
-    return (
-      <div style={{ padding: 20, maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ fontSize: 14, color: "#E0645A", marginBottom: 8 }}>{error}</div>
-        <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
-      </div>
-    );
+    return <div style={{ fontSize: 13, color: "#E0645A" }}>{error}</div>;
   }
 
   const mesures = profile?.axes.filter((a) => a.measured) || [];
@@ -97,12 +94,7 @@ export default function FichePage() {
   const jamais = profile?.axes.filter((a) => !a.measured) || [];
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 720, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
-        <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Fiche joueur</span>
-        <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
-      </div>
-
+    <div>
       {me?.role === "admin" && students.length > 0 && (
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Élève</label>
