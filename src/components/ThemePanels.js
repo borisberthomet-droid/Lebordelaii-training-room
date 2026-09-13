@@ -17,7 +17,7 @@ import { buildProfile } from "@/lib/poker/skillScore";
 // déjà cette distinction question par question.
 const THEMES = [
   {
-    axis: "equite", label: "Équité", color: "#34D399",
+    axis: "equite", color2: "#4ADE80", label: "Équité", color: "#34D399",
     desc: "Estimer sa force brute face à une range",
     tools: [
       { href: "/value-equity", label: "Quelle est ton équité ?" },
@@ -25,7 +25,7 @@ const THEMES = [
     ],
   },
   {
-    axis: "frequence", label: "Fréquence", color: "#4FA8E0",
+    axis: "frequence", color2: "#7ED0F0", label: "Fréquence", color: "#4FA8E0",
     desc: "Savoir à quelle fréquence défendre, miser, bluffer",
     tools: [
       { href: "/range-position", label: "Où suis-je dans ma range ?" },
@@ -34,7 +34,7 @@ const THEMES = [
     ],
   },
   {
-    axis: "lecture", label: "Lecture de range", color: "#E8C547",
+    axis: "lecture", color2: "#F2D97A", label: "Lecture de range", color: "#E8C547",
     desc: "Reconstruire ce que l'adversaire peut avoir",
     tools: [
       { href: "/train", label: "Find It! — un spot au hasard" },
@@ -42,7 +42,7 @@ const THEMES = [
     ],
   },
   {
-    axis: "calcul", label: "Calcul mental", color: "#E89A47",
+    axis: "calcul", color2: "#F0B877", label: "Calcul mental", color: "#E89A47",
     desc: "Sortir les nombres sans hésiter",
     tools: [
       { href: "/math-trainer", label: "Math Trainer" },
@@ -65,18 +65,21 @@ export default function ThemePanels() {
         const axis = profile?.axes.find((a) => a.id === theme.axis);
         const note = axis?.measured ? axis.score : null;
         return (
-          <div key={theme.axis} style={{
-            background: `linear-gradient(160deg, ${theme.color}14 0%, var(--panel) 60%)`,
-            border: `1px solid ${theme.color}59`, borderRadius: 14, padding: "18px 18px",
-          }}>
+          <div key={theme.axis} className="theme-card"
+            style={{ "--tp": theme.color, borderRadius: 16, padding: "18px 18px" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, marginBottom: 2 }}>
-              <span style={{ fontSize: 18, fontWeight: 800, color: theme.color, letterSpacing: -0.2 }}>
+              <span className="grad-text" style={{
+                fontSize: 19, fontWeight: 800, letterSpacing: -0.3,
+                backgroundImage: `linear-gradient(100deg, ${theme.color}, ${theme.color2})`,
+              }}>
                 {theme.label}
               </span>
-              <span style={{
-                fontSize: 22, fontWeight: 800, lineHeight: 1,
+              <span className={note != null ? "grad-text" : undefined} style={{
+                fontSize: 24, fontWeight: 800, lineHeight: 1,
                 fontFamily: "var(--font-ibm-plex-mono), monospace",
-                color: note != null ? theme.color : "var(--border)",
+                ...(note != null
+                  ? { backgroundImage: `linear-gradient(140deg, ${theme.color2}, ${theme.color})` }
+                  : { color: "var(--border)" }),
               }}>
                 {note != null ? note : "—"}
               </span>
@@ -88,10 +91,10 @@ export default function ThemePanels() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {theme.tools.map((t) => (
-                <Link key={t.href + t.label} href={t.href} style={{
+                <Link key={t.href + t.label} href={t.href} className="tool-link" style={{
                   display: "block", fontSize: 13, fontWeight: 600, color: "var(--text)",
                   background: "var(--panel-2)", border: "1px solid var(--border)",
-                  borderRadius: 8, padding: "8px 11px",
+                  borderRadius: 9, padding: "9px 11px",
                 }}>
                   {t.label}
                 </Link>

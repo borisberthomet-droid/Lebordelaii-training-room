@@ -1,6 +1,6 @@
 "use client";
 
-import { ACCENT, ACCENT_RGB } from "@/lib/poker/constants";
+import { ACCENT } from "@/lib/poker/constants";
 
 // Étoile de compétences. Un axe non mesuré est tracé en pointillés et tiré à zéro : l'absence de
 // donnée ne doit pas ressembler à une note basse, ni à une note.
@@ -43,9 +43,20 @@ export default function SkillRadar({ axes }) {
         );
       })}
 
-      {/* Surface des compétences */}
+      {/* Surface des compétences : dégradé plutôt qu'un aplat, pour que la forme se lise même
+          quand elle est petite. */}
+      <defs>
+        <linearGradient id="radar-fill" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#4ADE80" stopOpacity="0.42" />
+          <stop offset="1" stopColor="#059669" stopOpacity="0.14" />
+        </linearGradient>
+        <linearGradient id="radar-stroke" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#4ADE80" />
+          <stop offset="1" stopColor="#059669" />
+        </linearGradient>
+      </defs>
       <polygon points={polygon(values, n)}
-        fill={`rgba(${ACCENT_RGB},0.22)`} stroke={ACCENT} strokeWidth="2" strokeLinejoin="round" />
+        fill="url(#radar-fill)" stroke="url(#radar-stroke)" strokeWidth="2.5" strokeLinejoin="round" />
 
       {axes.map((a, i) => {
         const [x, y] = point(i, n, values[i]);

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteLogo from "@/components/SiteLogo";
 import SkillProfile from "@/components/SkillProfile";
+import PersonalInfo from "@/components/PersonalInfo";
 import { createClient } from "@/lib/supabase/client";
 import { MemoIcon, LeakAnalyzerIcon, LeakfinderIcon, PotOddsIcon, ProfileIcon } from "@/components/ToolIcons";
 
@@ -101,6 +102,10 @@ export default function ComptePage() {
 
       <Section title="Ma progression" note="calculée sur tes réponses aux exercices">
         <SkillProfile />
+      </Section>
+
+      <Section title="Mes informations" note="visibles par toi et ton coach uniquement">
+        <PersonalInfo />
       </Section>
 
       <Section title="Mon activité">

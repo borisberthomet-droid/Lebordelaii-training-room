@@ -340,3 +340,47 @@ create policy "users can insert their own skill attempts"
   on skill_attempts for insert
   to authenticated
   with check (auth.uid() = user_id);
+
+-- ---------------------------------------------------------------------------
+-- Informations personnelles. Table SEPAREE de `profiles` pour une raison
+-- precise : `profiles` est lisible par tout utilisateur connecte (c'est ce qui
+-- fait fonctionner les classements, qui affichent les pseudos). Y ajouter une
+-- adresse ou un telephone les rendrait visibles par tous les eleves. Ici,
+-- chacun ne lit que sa propre ligne — le coach excepte, qui a besoin des
+-- coordonnees de ses eleves.
+-- Le pseudo, lui, reste sur `profiles` : il est public par nature.
+-- L'email n'est pas stocke : il vit deja dans auth.users et se lit cote client.
+-- ---------------------------------------------------------------------------
+create table if not exists profile_private (
+  id uuid primary key references profiles(id) on delete cascade,
+  discord text,
+  telephone text,
+  adresse text,
+  rooms text,          -- pseudos utilises sur les rooms (Winamax, Stars...)
+  abi text,            -- buy-in moyen
+  formats text,        -- MTT, PKO, SNG, spins...
+  objectif text,       -- objectif de la saison
+  dispos text,         -- fuseau horaire et creneaux de coaching
+  updated_at timestamptz not null default now()
+);
+
+alter table profile_private enable row level security;
+
+create policy "users read their own private profile"
+  on profile_private for select
+  to authenticated
+  using (
+    auth.uid() = id
+    or exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'admin')
+  );
+
+create policy "users insert their own private profile"
+  on profile_private for insert
+  to authenticated
+  with check (auth.uid() = id);
+
+create policy "users update their own private profile"
+  on profile_private for update
+  to authenticated
+  using (auth.uid() = id)
+  with check (auth.uid() = id);

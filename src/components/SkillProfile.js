@@ -116,7 +116,10 @@ export default function SkillProfile() {
         ) : (
           <>
             <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap", marginBottom: 4 }}>
-              <span style={{ fontSize: 46, fontWeight: 800, color: "var(--accent)", lineHeight: 1 }}>
+              <span className="grad-text" style={{
+                fontSize: 52, fontWeight: 800, lineHeight: 1,
+                backgroundImage: "linear-gradient(135deg, #4ADE80 0%, #059669 100%)",
+              }}>
                 {profile.global ?? "—"}
               </span>
               <div>
