@@ -1,78 +1,29 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 import SiteLogo from "@/components/SiteLogo";
-import Logo from "@/components/Logo";
-import {
-  PotOddsIcon, PkoRpIcon, RangeBuilderIcon, MathTrainerIcon, ProfileIcon,
-} from "@/components/ToolIcons";
+import ThemePanels from "@/components/ThemePanels";
+import { PkoRpIcon, ProfileIcon } from "@/components/ToolIcons";
 import LogoutButton from "./logout-button";
 
-// L'accueil ne garde que les EXERCICES, groupés par compétence. Tout ce qui concerne le joueur
-// lui-même — progression, mémo, leaks, historique — vit dans /compte. Douze cartes à plat ne se
-// lisaient plus.
-const SECTIONS = [
+// L'accueil s'organise autour des QUATRE COMPÉTENCES CLÉS, une couleur chacune, avec la note du
+// moment — c'est le modèle de Boris, et ça évite de faire deviner à l'élève à quoi sert chaque
+// outil. Tout ce qui parle du joueur (progression détaillée, mémo, leaks, historique) vit dans
+// /compte.
+//
+// PKO et ICM restent à part, en bandeau discret : le PKO est déjà noté dans la fiche via le RP
+// Trainer, mais l'ICM n'a aucun exercice, donc les deux ne forment pas encore un thème à part
+// entière.
+const PKO_TOOLS = [
   {
-    title: "Lecture de range",
-    desc: "Reconstruire ce que l'adversaire peut avoir",
-    tools: [
-      {
-        href: "/find-it", Icon: () => <Logo size={24} showWordmark={false} />,
-        label: "Find It!", desc: "Devine la range du vilain sur un spot réel",
-      },
-      {
-        href: "/range-builder", Icon: () => <RangeBuilderIcon size={24} />,
-        label: "Range Builder", desc: "Dessine une stratégie et compare-la à la référence du coach",
-        inDev: true,
-      },
-    ],
+    href: "/pko-rp", Icon: () => <PkoRpIcon size={24} />,
+    label: "PKO — KO & RP", desc: "Colle une main : valeur des KO en blindes et RP par joueur",
   },
   {
-    title: "Postflop",
-    desc: "Situer sa main et décider, sur simulation résolue",
-    tools: [
-      {
-        href: "/range-position", Icon: () => <RangeBuilderIcon size={24} />,
-        label: "Où suis-je dans ma range ?",
-        desc: "Face à une mise, place ta main dans ta range — turn et river", inDev: true,
-      },
-      {
-        href: "/value-equity", Icon: () => <PotOddsIcon size={24} />,
-        label: "Quelle est ton équité ?",
-        desc: "Tu peux miser : estime ton équité et le sizing max en value", inDev: true,
-      },
-    ],
-  },
-  {
-    title: "Cotes & calcul",
-    desc: "Les nombres qu'il faut sortir sans réfléchir",
-    tools: [
-      {
-        href: "/pot-odds", Icon: () => <PotOddsIcon size={24} />,
-        label: "Pot Odds", desc: "Cotes de call, fold equity, fréquences de bluff",
-      },
-      {
-        href: "/math-trainer", Icon: () => <MathTrainerIcon size={24} />,
-        label: "Math Trainer", desc: "Calcul mental : sizings en % du pot, cotes risque/récompense",
-        inDev: true,
-      },
-    ],
-  },
-  {
-    title: "PKO & ICM",
-    desc: "Primes, Risk Premium et pression de table finale",
-    tools: [
-      {
-        href: "/pko-rp", Icon: () => <PkoRpIcon size={24} />,
-        label: "PKO — KO & RP", desc: "Colle une main : valeur des KO en blindes et RP par joueur",
-        inDev: true,
-      },
-      {
-        href: "/pko-rp/trainer", Icon: () => <PkoRpIcon size={24} />,
-        label: "RP Trainer", desc: "Estime le Risk Premium, du début de tournoi à la table finale",
-        inDev: true,
-      },
-    ],
+    href: "/pko-rp/trainer", Icon: () => <PkoRpIcon size={24} />,
+    label: "RP Trainer", desc: "Estime le Risk Premium, du début de tournoi à la table finale",
   },
 ];
 
@@ -81,31 +32,49 @@ const cardStyle = {
   border: "1px solid var(--border)", borderRadius: 12,
 };
 
-export default async function Home() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+export default function Home() {
+  // Pas de redirection forcée vers la connexion : tous les exercices du site tournent déjà sans
+  // session, et une base en veille rendait l'accueil entièrement inaccessible. On affiche donc
+  // toujours les compétences, et on invite à se connecter seulement pour synchroniser.
+  const [me, setMe] = useState(null);
+  const [checked, setChecked] = useState(false);
 
-  const { data: profile } = await supabase
-    .from("profiles").select("pseudo, role").eq("id", user.id).single();
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data } = await supabase
+            .from("profiles").select("pseudo, role").eq("id", user.id).maybeSingle();
+          setMe({ pseudo: data?.pseudo || user.email?.split("@")[0], role: data?.role });
+        }
+      } catch { /* base injoignable : mode local */ }
+      finally { setChecked(true); }
+    })();
+  }, []);
 
   return (
-    <div style={{ minHeight: "100vh", padding: 24, maxWidth: 780, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
         <SiteLogo size={22} />
-        <LogoutButton />
+        {me
+          ? <LogoutButton />
+          : checked && <Link href="/login" style={{ fontSize: 12, color: "var(--accent)" }}>Se connecter</Link>}
       </div>
 
       <div style={{ marginBottom: 22 }}>
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
-          Salut {profile?.pseudo || user.email.split("@")[0]}
+          {me ? `Salut ${me.pseudo}` : "Training Room"}
         </div>
         <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
-          {profile?.role === "admin" ? "Coach" : "Élève"} · choisis un exercice
+          {me
+            ? `${me.role === "admin" ? "Coach" : "Élève"} · choisis une compétence à travailler`
+            : "Choisis une compétence à travailler — connecte-toi pour garder ta progression"}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, marginBottom: 30 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 26 }}>
         <Link href="/train" style={{
           display: "block", padding: "18px 18px", background: "var(--accent-gradient)",
           borderRadius: 14, color: "#0B1210",
@@ -124,32 +93,23 @@ export default async function Home() {
         </Link>
       </div>
 
-      {SECTIONS.map((section) => (
-        <div key={section.title} style={{ marginBottom: 26 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.2 }}>{section.title}</span>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{section.desc}</span>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
-            {section.tools.map((tool) => (
-              <Link key={tool.label} href={tool.href} style={cardStyle}>
-                {tool.inDev && (
-                  <span style={{
-                    position: "absolute", top: 12, right: 12, fontSize: 10, fontWeight: 600,
-                    color: "#E8C547", background: "rgba(232,197,71,0.12)",
-                    border: "1px solid rgba(232,197,71,0.3)", borderRadius: 999, padding: "2px 8px",
-                  }}>
-                    En développement
-                  </span>
-                )}
-                <div style={{ marginBottom: 9 }}><tool.Icon /></div>
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3 }}>{tool.label}</div>
-                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{tool.desc}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      ))}
+      <ThemePanels />
+
+      <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.2 }}>PKO &amp; ICM</span>
+        <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+          le PKO est déjà noté dans ta fiche ; l&apos;ICM attend son exercice
+        </span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+        {PKO_TOOLS.map((tool) => (
+          <Link key={tool.label} href={tool.href} style={cardStyle}>
+            <div style={{ marginBottom: 9 }}><tool.Icon /></div>
+            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3 }}>{tool.label}</div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{tool.desc}</div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

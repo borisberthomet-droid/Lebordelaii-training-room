@@ -40,7 +40,7 @@ export default function RankingPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 520, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 520, margin: "0 auto" }}>
       <PageHeader subtitle="Classements" />
 
       <Section title="Classement général" style={{ marginBottom: 16 }}>

@@ -202,7 +202,7 @@ export default function RangeBuilderPage() {
   if (authState === "checking") return null;
   if (authState === "denied") {
     return (
-      <div style={{ minHeight: "100vh", padding: 20, maxWidth: 700, margin: "0 auto" }}>
+      <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 700, margin: "0 auto" }}>
         <PageHeader subtitle="Range Builder" />
         <Section>Connecte-toi pour accéder à cet outil.</Section>
       </div>
@@ -210,7 +210,7 @@ export default function RangeBuilderPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 900, margin: "0 auto" }}>
       <PageHeader
         subtitle={
           <span style={{ display: "flex", alignItems: "center", gap: 8 }}>

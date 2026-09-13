@@ -186,7 +186,7 @@ export default function RangePositionPage() {
 
   if (error) {
     return (
-      <div style={{ padding: 20, maxWidth: 720, margin: "0 auto" }}>
+      <div style={{ padding: 20, width: "100%", maxWidth: 720, margin: "0 auto" }}>
         <div style={{ fontSize: 14, color: "#E0645A" }}>Impossible de charger la simulation : {error}</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
@@ -198,7 +198,7 @@ export default function RangePositionPage() {
   const heroCards = combo ? [combo[0].slice(0, 2), combo[0].slice(2, 4)] : null;
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 720, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 720, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <RangeBuilderIcon size={22} />

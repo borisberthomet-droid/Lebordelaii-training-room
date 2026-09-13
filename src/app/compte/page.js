@@ -81,7 +81,7 @@ export default function ComptePage() {
   const isAdmin = me?.role === "admin";
 
   return (
-    <div style={{ minHeight: "100vh", padding: 24, maxWidth: 780, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
         <SiteLogo size={22} />
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Exercices</Link>

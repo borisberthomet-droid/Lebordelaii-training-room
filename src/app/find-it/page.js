@@ -26,7 +26,7 @@ export default async function FindItHome() {
     .single();
 
   return (
-    <div style={{ minHeight: "100vh", padding: 24, maxWidth: 780, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 780, margin: "0 auto" }}>
       <div
         style={{
           display: "flex",

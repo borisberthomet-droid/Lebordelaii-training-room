@@ -109,3 +109,18 @@ export async function listStudents() {
   if (error) throw error;
   return data || [];
 }
+
+// Source unique pour toute page qui affiche une progression : la base si elle repond, le journal
+// local sinon. Dupliquer cette bascule ferait deriver l'accueil et la fiche.
+export async function loadMySkillRows() {
+  try {
+    const rows = await getMySkillAttempts();
+    if (rows.length === 0) {
+      const local = readLocalSkillAttempts();
+      if (local.length) return { rows: local, source: "local" };
+    }
+    return { rows, source: "base" };
+  } catch {
+    return { rows: readLocalSkillAttempts(), source: "local" };
+  }
+}

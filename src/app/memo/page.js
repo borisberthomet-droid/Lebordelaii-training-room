@@ -597,7 +597,7 @@ export default function MemoPage() {
   const [tab, setTab] = useState("potodds");
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 900, margin: "0 auto" }}>
       <PageHeader subtitle="Mémo — Tableaux de référence" />
 
       <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>

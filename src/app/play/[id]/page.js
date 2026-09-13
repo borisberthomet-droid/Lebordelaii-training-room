@@ -155,7 +155,7 @@ export default function PlaySpotPage() {
   const buyInInfo = decomposeBuyIn(spot.buyIn, spot.seats);
 
   return (
-    <div style={{ padding: 20, maxWidth: 560, margin: "0 auto" }}>
+    <div style={{ padding: 20, width: "100%", maxWidth: 560, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
         <div style={{ fontSize: 16, fontWeight: 700 }}>{spot.nom}</div>
         <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 22, color: timeLeft <= 5 ? "#C4544A" : ACCENT }}>

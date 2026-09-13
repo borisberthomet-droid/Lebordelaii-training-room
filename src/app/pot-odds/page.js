@@ -58,7 +58,7 @@ export default function PotOddsPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 560, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 560, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PotOddsIcon size={22} />

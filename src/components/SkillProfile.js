@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import SkillRadar from "@/components/SkillRadar";
 import { createClient } from "@/lib/supabase/client";
-import { getMySkillAttempts, getSkillAttemptsFor, listStudents, readLocalSkillAttempts } from "@/lib/supabase/skillAttempts";
+import { getSkillAttemptsFor, listStudents, loadMySkillRows } from "@/lib/supabase/skillAttempts";
 import { buildProfile, levelFor, MIN_WEIGHT } from "@/lib/poker/skillScore";
 
 // Où chaque compétence se travaille : une fiche qui pointe un trou sans dire où aller ne sert à
@@ -60,19 +60,17 @@ export default function SkillProfile() {
     setLoading(true);
     const autreEleve = me && viewing && viewing !== me.id;
     try {
-      const rows = autreEleve ? await getSkillAttemptsFor(viewing) : await getMySkillAttempts();
-      // La base peut répondre vide parce qu'elle est en veille ou que la table n'existe pas
-      // encore : dans ce cas le journal local est la seule source, et on le dit.
-      if (rows.length === 0 && !autreEleve) {
-        const local = readLocalSkillAttempts();
-        if (local.length) { setSource("local"); setProfile(buildProfile(local)); return; }
+      if (autreEleve) {
+        setSource("base");
+        setProfile(buildProfile(await getSkillAttemptsFor(viewing)));
+        return;
       }
-      setSource("base");
+      const { rows, source: src } = await loadMySkillRows();
+      setSource(src);
       setProfile(buildProfile(rows));
     } catch {
-      if (autreEleve) { setProfile(buildProfile([])); setSource("base"); return; }
-      setSource("local");
-      setProfile(buildProfile(readLocalSkillAttempts()));
+      setProfile(buildProfile([]));
+      setSource("base");
     } finally {
       setLoading(false);
     }
@@ -132,9 +130,12 @@ export default function SkillProfile() {
               </span>
             </div>
 
-            <SkillRadar axes={profile.axes} />
+            {/* Deux colonnes dès qu'il y a la place : le radar seul laissait une page très
+                verticale et beaucoup de blanc à droite. */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, alignItems: "start", marginTop: 6 }}>
+              <SkillRadar axes={profile.axes} />
 
-            <div style={{ marginTop: 10 }}>
+              <div>
               {profile.axes.map((a) => (
                 <div key={a.id} style={{ padding: "9px 0", borderTop: "1px solid var(--border)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, marginBottom: 5 }}>
@@ -165,6 +166,7 @@ export default function SkillProfile() {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           </>
         )}

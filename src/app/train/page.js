@@ -27,7 +27,7 @@ export default function TrainPage() {
 
   if (state === "loading") {
     return (
-      <div style={{ minHeight: "100vh", padding: 20, maxWidth: 480, margin: "0 auto" }}>
+      <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 480, margin: "0 auto" }}>
         <PageHeader subtitle="Entraînement" />
         <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Sélection d&apos;un spot…</div>
       </div>
@@ -36,7 +36,7 @@ export default function TrainPage() {
 
   if (state === "error") {
     return (
-      <div style={{ minHeight: "100vh", padding: 20, maxWidth: 480, margin: "0 auto" }}>
+      <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 480, margin: "0 auto" }}>
         <PageHeader subtitle="Entraînement" />
         <div style={{ fontSize: 13, color: "#E0645A" }}>{errorMsg}</div>
       </div>
@@ -44,7 +44,7 @@ export default function TrainPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 480, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 480, margin: "0 auto" }}>
       <PageHeader subtitle="Entraînement" />
       <div
         style={{

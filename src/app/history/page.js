@@ -24,7 +24,7 @@ export default function HistoryPage() {
   const best = total ? Math.max(...history.map((h) => h.score)) : 0;
 
   return (
-    <div style={{ minHeight: "100vh", padding: 20, maxWidth: 560, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 560, margin: "0 auto" }}>
       <PageHeader subtitle="Mon historique" />
 
       {loading ? (
