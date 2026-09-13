@@ -13,9 +13,10 @@
    "BU"
   ],
   "spots": 206,
+  "value": 58,
   "turn": 53,
   "river": 153,
-  "builtAt": "2026-09-10"
+  "builtAt": "2026-09-13"
  },
  {
   "name": "ts8h5h-9c-3h",
@@ -31,9 +32,10 @@
    "BU"
   ],
   "spots": 264,
+  "value": 78,
   "turn": 82,
   "river": 182,
-  "builtAt": "2026-09-10"
+  "builtAt": "2026-09-13"
  },
  {
   "name": "ts8h5h-jc-3s",
@@ -49,9 +51,10 @@
    "BU"
   ],
   "spots": 271,
+  "value": 76,
   "turn": 80,
   "river": 191,
-  "builtAt": "2026-09-10"
+  "builtAt": "2026-09-13"
  },
  {
   "name": "ts8h5h-6c-8d",
@@ -67,8 +70,9 @@
    "BU"
   ],
   "spots": 271,
+  "value": 75,
   "turn": 79,
   "river": 192,
-  "builtAt": "2026-09-10"
+  "builtAt": "2026-09-13"
  }
 ]

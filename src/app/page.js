@@ -41,6 +41,13 @@ const TOOLS = [
     inDev: true,
   },
   {
+    href: "/value-equity",
+    Icon: () => <PotOddsIcon size={24} />,
+    label: "Quelle est ton équité ?",
+    desc: "Tu peux miser : estime ton équité contre sa range, et le sizing max en value",
+    inDev: true,
+  },
+  {
     href: "/pko-rp/trainer",
     Icon: () => <PkoRpIcon size={24} />,
     label: "RP Trainer",

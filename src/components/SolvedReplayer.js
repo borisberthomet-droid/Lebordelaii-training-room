@@ -20,7 +20,7 @@ function visibleBoardCount(street) {
 //
 // Conventions HRC, à ne pas confondre : une relance donne le TOTAL engagé sur la street, un call
 // donne le montant ADDITIONNEL. Prendre l'un pour l'autre fausse le pot et donc les cotes.
-function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB }) {
+function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, forceStreet = null }) {
   const total = {}, street = {}, action = {};
   for (const p of POSITIONS) { total[p] = anteBB; street[p] = 0; }
   total.SB += sbBB; street.SB = sbBB;
@@ -44,6 +44,14 @@ function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB }) {
       : `bet ${a.amountBB}`;
   }
 
+  // Hero premier de parole sur une nouvelle street : la dernière action appartient à la street
+  // PRÉCÉDENTE. Sans ce forçage, la table montrerait l'ancien board et des mises déjà closes.
+  if (forceStreet != null && forceStreet > currentStreet) {
+    for (const p of POSITIONS) street[p] = 0;
+    for (const k of Object.keys(action)) delete action[k];
+    currentStreet = forceStreet;
+  }
+
   const pot = POSITIONS.reduce((sum, p) => sum + total[p], 0);
   return {
     stacks: Object.fromEntries(POSITIONS.map((p) => [p, +(startBB - total[p]).toFixed(1)])),
@@ -60,7 +68,8 @@ export default function SolvedReplayer({ spot, meta, heroCards }) {
   const sbBB = meta.blinds.sb / meta.blinds.bb;
   const anteBB = meta.blinds.ante / meta.blinds.bb;
 
-  const state = replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB });
+  const atDecision = idx >= sequence.length - 1;
+  const state = replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, forceStreet: atDecision ? spot.street : null });
   const shown = spot.board.slice(0, visibleBoardCount(state.street));
 
   const seats = POSITIONS.map((p) => ({
@@ -74,10 +83,11 @@ export default function SolvedReplayer({ spot, meta, heroCards }) {
     role: p === spot.heroPos ? "hero" : p === spot.villainPos ? "villain" : undefined,
   }));
 
-  const streetsPresent = [...new Set(sequence.map((a) => a.street))];
+  const streetsPresent = [...new Set([...sequence.map((a) => a.street), spot.street].filter((x) => x != null))];
   const jumpTo = (s) => {
     const i = sequence.findIndex((a) => a.street === s);
-    if (i >= 0) setIdx(i);
+    // Street de la décision sans action encore jouée (hero premier de parole) : on va au point de décision.
+    if (i >= 0) setIdx(i); else if (s === spot.street) setIdx(sequence.length - 1);
   };
 
   const navBtn = (disabled) => ({

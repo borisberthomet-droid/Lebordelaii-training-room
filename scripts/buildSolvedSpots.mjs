@@ -69,6 +69,23 @@ function potAndToCall(sequence) {
   return { pot: closedPot + onStreet, commit, maxCommit };
 }
 
+// Engagement TOTAL de chaque joueur depuis le début de la main (antes, blinds, toutes streets).
+// Sert au tapis effectif : un sizing au-delà de ce qui reste derrière n'existe pas.
+function totalCommitted(sequence) {
+  const total = {}, street = {};
+  for (let i = 0; i < N_PLAYERS; i++) {
+    const blind = POS(i) === "SB" ? SB : POS(i) === "BB" ? BB : 0;
+    total[i] = ANTE + blind; street[i] = blind;
+  }
+  let cur = 0;
+  for (const a of sequence) {
+    if (a.street !== cur) { for (const k of Object.keys(street)) street[k] = 0; cur = a.street; }
+    if (a.type === "R") { total[a.player] += a.amount - street[a.player]; street[a.player] = a.amount; }
+    else if (a.type === "C") { total[a.player] += a.amount; street[a.player] += a.amount; }
+  }
+  return total;
+}
+
 // --- Propagation des ranges -------------------------------------------------------------------
 // Un nœud ne stocke que la range du joueur qui parle. Celle de l'adversaire se reconstitue en
 // multipliant sa range au nœud précédent par la fréquence de l'action qu'il a prise.
@@ -170,6 +187,7 @@ for (const p of players) {
 }
 
 const out = [];
+const outValue = [];
 const seen = new Set();
 const stack = [[0, startRanges]];
 let visited = 0;
@@ -282,6 +300,49 @@ while (stack.length) {
     });
   }
 
+  // --- Spots « Quelle est ton équité ? » -------------------------------------------------------
+  // Nœuds où hero PEUT miser : personne n'a misé devant lui sur cette street. C'est là que se pose
+  // la question du value bet. On y classe la range de hero par équité contre la range GLOBALE du
+  // vilain — le cadre retenu par Boris — et le seuil de value se déduit ensuite de la MDF.
+  const canBet = d.actions.some((a) => a.type === "R") && d.actions.some((a) => a.type === "X");
+  const rankedValue = playable && !facingBet && canBet && (d.street === 2 || d.street === 3)
+    ? rankRangeOnBoard({ heroWeights: heroW, villainWeights: vilW, board })
+    : null;
+  if (rankedValue && rankedValue.totalWeight >= MIN_RANGE_WEIGHT) {
+    const { pot } = potAndToCall(d.sequence);
+    const tot = totalCommitted(d.sequence);
+    const effStack = Math.min(START_STACK - tot[hero], START_STACK - tot[villain]);
+    const playedV = {};
+    for (const [c, h] of Object.entries(d.hands)) playedV[normKey(c)] = h.played;
+    const villainChecked = d.sequence.some((a) => a.street === d.street && a.player === villain && a.type === "X");
+    outValue.push({
+      kind: "value",
+      id, street: d.street, streetName: STREETS[d.street], board,
+      heroPos: POS(hero), villainPos: POS(villain),
+      situation: villainChecked ? "Après son check" : "Premier de parole",
+      line: describeLine(d.sequence),
+      potBB: +(pot / BB).toFixed(2),
+      effStackBB: +(effStack / BB).toFixed(1),
+      reachPct: +((rankedValue.totalWeight / startWeight[hero]) * 100).toFixed(1),
+      weightTotal: +rankedValue.totalWeight.toFixed(1),
+      sequence: d.sequence.map((a) => ({
+        pos: POS(a.player), type: a.type, amountBB: +(a.amount / BB).toFixed(2), street: a.street,
+      })),
+      // Pas de mise en face, donc hero n'a rien engagé sur cette street : le montant HRC d'une
+      // relance est ici directement la taille de la mise.
+      actions: d.actions.map((a) => ({
+        type: a.type, amountBB: +(a.amount / BB).toFixed(2),
+        pctPot: a.type === "R" && pot > 0 ? Math.round((a.amount / pot) * 100) : null,
+      })),
+      combos: rankedValue.combos
+        .filter((c) => c.weight >= COMBO_WEIGHT_FLOOR)
+        .map((c) => [
+          c.key, +c.weight.toFixed(3), +(c.equity * 100).toFixed(1), +c.percentile.toFixed(1),
+          (playedV[c.key] || []).map((x) => +x.toFixed(3)),
+        ]),
+    });
+  }
+
   // Enfants : on multiplie la range du joueur qui vient d'agir par la fréquence de son action,
   // puis on retire les combos bloqués par la nouvelle carte quand la street change.
   d.actions.forEach((a, ai) => {
@@ -314,8 +375,19 @@ for (const spot of out) {
   bytes += txt.length;
 }
 
+for (const spot of outValue) {
+  const txt = JSON.stringify(spot);
+  fs.writeFileSync(path.join(outDir, `v${spot.id}.json`), txt);
+  bytes += txt.length;
+}
+
 const index = {
   sim: simName,
+  valueSpots: outValue.map((s) => ({
+    id: s.id, street: s.street, streetName: s.streetName, situation: s.situation,
+    heroPos: s.heroPos, villainPos: s.villainPos, board: s.board, line: s.line,
+    potBB: s.potBB, weightTotal: s.weightTotal, reachPct: s.reachPct,
+  })),
   boardFlop: parseBoardCards(root.board || ""),
   effectiveBB: START_STACK / BB,
   blinds: { sb: SB, bb: BB, ante: ANTE },
@@ -343,6 +415,7 @@ const entry = {
   effectiveBB: START_STACK / BB,
   heroPositions: [...new Set(out.map((s) => s.heroPos))].sort(),
   spots: out.length,
+  value: outValue.length,
   turn: out.filter((s) => s.street === 2).length,
   river: out.filter((s) => s.street === 3).length,
   builtAt: new Date().toISOString().slice(0, 10),
@@ -360,3 +433,4 @@ console.log("  par archétype :", byArch);
 const byStreet = {};
 for (const s of out) byStreet[s.streetName] = (byStreet[s.streetName] || 0) + 1;
 console.log("  par street    :", byStreet);
+console.log(`  spots de value (hero peut miser) : ${outValue.length}`);
