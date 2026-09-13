@@ -33,6 +33,7 @@ export default function RangeBuilderRankingPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Link href="/range-builder" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Range Builder</Link>
+          <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>Accueil</Link>
         </div>
       </div>
 

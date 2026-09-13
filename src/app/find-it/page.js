@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
 import LogoutButton from "../logout-button";
@@ -15,15 +14,9 @@ export default async function FindItHome() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("pseudo, role")
-    .eq("id", user.id)
-    .single();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("pseudo, role").eq("id", user.id).maybeSingle()
+    : { data: null };
 
   return (
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 780, margin: "0 auto" }}>
@@ -36,15 +29,20 @@ export default async function FindItHome() {
         }}
       >
         <Logo size={30} wordmarkSize={19} />
-        <LogoutButton />
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
+          {user
+            ? <LogoutButton />
+            : <Link href="/login" style={{ fontSize: 12, color: "var(--accent)" }}>Se connecter</Link>}
+        </div>
       </div>
 
       <div style={{ marginBottom: 28 }}>
         <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
-          Salut {profile?.pseudo || user.email.split("@")[0]}
+          {user ? `Salut ${profile?.pseudo || user.email.split("@")[0]}` : "Find It!"}
         </div>
         <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
-          {profile?.role === "admin" ? "Coach" : "Élève"} · entraînement de lecture de range
+          {user ? (profile?.role === "admin" ? "Coach" : "Élève") : "Connecte-toi pour enregistrer tes résultats"} · entraînement de lecture de range
         </div>
       </div>
 

@@ -33,6 +33,7 @@ export default function PotOddsRankingPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Link href="/pot-odds" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Pot Odds</Link>
+          <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>Accueil</Link>
         </div>
       </div>
 

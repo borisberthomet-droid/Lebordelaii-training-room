@@ -125,6 +125,7 @@ export default function RpTrainerPage() {
           </span>
           <Link href="/memo" style={{ fontSize: 12, color: "var(--text-muted)" }}>Mémo</Link>
           <Link href="/pko-rp" style={{ fontSize: 12, color: "var(--text-muted)" }}>← PKO</Link>
+          <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>Accueil</Link>
         </div>
       </div>
 

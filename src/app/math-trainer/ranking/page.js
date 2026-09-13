@@ -32,6 +32,7 @@ export default function MathTrainerRankingPage() {
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Classement</span>
         </div>
         <Link href="/math-trainer" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Math Trainer</Link>
+          <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>Accueil</Link>
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 18 }}>
