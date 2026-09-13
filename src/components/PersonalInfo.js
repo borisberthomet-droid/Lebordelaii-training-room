@@ -46,13 +46,29 @@ export default function PersonalInfo() {
 
   const enregistrer = async () => {
     setEnCours(true); setMessage(null);
+    // Le pseudo part en premier et dans une autre table : il peut donc réussir alors que le reste
+    // échoue. Annoncer un échec global masquerait ce qui a bien été enregistré.
+    let pseudoEnregistre = false;
     try {
-      if (pseudo.trim() && pseudo.trim() !== compte.pseudo) await updatePseudo(pseudo.trim());
+      if (pseudo.trim() && pseudo.trim() !== compte.pseudo) {
+        await updatePseudo(pseudo.trim());
+        setCompte((c) => ({ ...c, pseudo: pseudo.trim() }));
+        pseudoEnregistre = true;
+      }
       await saveMyPrivate(valeurs);
-      setCompte((c) => ({ ...c, pseudo: pseudo.trim() || c.pseudo }));
       setMessage({ ok: true, texte: "Enregistré." });
     } catch (e) {
-      setMessage({ ok: false, texte: e.message || "Enregistrement impossible." });
+      const brut = e.message || "";
+      // PostgREST renvoie un message technique quand la table n'a pas encore été créée. On le
+      // traduit en action concrète plutôt que de laisser passer le jargon.
+      const tableAbsente = /schema cache|profile_private|does not exist/i.test(brut);
+      const detail = tableAbsente
+        ? "La table des informations personnelles n'existe pas encore : le bloc « profile_private » du schéma n'a pas été exécuté dans Supabase."
+        : brut || "Enregistrement impossible.";
+      setMessage({
+        ok: false,
+        texte: pseudoEnregistre ? `${detail} Ton pseudo, lui, a bien été enregistré.` : detail,
+      });
     } finally {
       setEnCours(false);
     }
