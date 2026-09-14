@@ -331,11 +331,13 @@ create index if not exists skill_attempts_user_created_idx
 
 alter table skill_attempts enable row level security;
 
+drop policy if exists "skill_attempts are readable by any authenticated user" on skill_attempts;
 create policy "skill_attempts are readable by any authenticated user"
   on skill_attempts for select
   to authenticated
   using (true);
 
+drop policy if exists "users can insert their own skill attempts" on skill_attempts;
 create policy "users can insert their own skill attempts"
   on skill_attempts for insert
   to authenticated
@@ -366,6 +368,7 @@ create table if not exists profile_private (
 
 alter table profile_private enable row level security;
 
+drop policy if exists "users read their own private profile" on profile_private;
 create policy "users read their own private profile"
   on profile_private for select
   to authenticated
@@ -374,11 +377,13 @@ create policy "users read their own private profile"
     or exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'admin')
   );
 
+drop policy if exists "users insert their own private profile" on profile_private;
 create policy "users insert their own private profile"
   on profile_private for insert
   to authenticated
   with check (auth.uid() = id);
 
+drop policy if exists "users update their own private profile" on profile_private;
 create policy "users update their own private profile"
   on profile_private for update
   to authenticated
