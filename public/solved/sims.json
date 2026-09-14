@@ -16,7 +16,8 @@
   "value": 58,
   "turn": 53,
   "river": 153,
-  "builtAt": "2026-09-13"
+  "builtAt": "2026-09-13",
+  "findIt": 28
  },
  {
   "name": "ts8h5h-9c-3h",
@@ -35,7 +36,8 @@
   "value": 78,
   "turn": 82,
   "river": 182,
-  "builtAt": "2026-09-13"
+  "builtAt": "2026-09-13",
+  "findIt": 25
  },
  {
   "name": "ts8h5h-jc-3s",
@@ -54,7 +56,8 @@
   "value": 76,
   "turn": 80,
   "river": 191,
-  "builtAt": "2026-09-13"
+  "builtAt": "2026-09-13",
+  "findIt": 25
  },
  {
   "name": "ts8h5h-6c-8d",
@@ -73,7 +76,8 @@
   "value": 75,
   "turn": 79,
   "river": 192,
-  "builtAt": "2026-09-13"
+  "builtAt": "2026-09-13",
+  "findIt": 29
  },
  {
   "name": "as7d2c-7h-kd",
@@ -92,7 +96,8 @@
   "value": 59,
   "turn": 56,
   "river": 118,
-  "builtAt": "2026-09-14"
+  "builtAt": "2026-09-14",
+  "findIt": 12
  },
  {
   "name": "as7d2c-qh-9c",
@@ -111,7 +116,8 @@
   "value": 63,
   "turn": 57,
   "river": 144,
-  "builtAt": "2026-09-14"
+  "builtAt": "2026-09-14",
+  "findIt": 12
  },
  {
   "name": "as7d2c-5c-4d",
@@ -130,6 +136,7 @@
   "value": 62,
   "turn": 57,
   "river": 138,
-  "builtAt": "2026-09-14"
+  "builtAt": "2026-09-14",
+  "findIt": 12
  }
 ]

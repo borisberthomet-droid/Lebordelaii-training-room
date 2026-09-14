@@ -38,6 +38,7 @@ const THEMES = [
     desc: "Reconstruire ce que l'adversaire peut avoir",
     tools: [
       { href: "/train", label: "Find It! — un spot au hasard" },
+      { href: "/find-it/sim", label: "Find It! — sur simulation" },
       { href: "/find-it", label: "Find It! — accueil" },
     ],
   },

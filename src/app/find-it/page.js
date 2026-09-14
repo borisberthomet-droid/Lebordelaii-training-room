@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import LogoutButton from "../logout-button";
 
 const NAV_ITEMS = [
+  { href: "/find-it/sim", label: "Sur simulation", desc: "Retrouve la range de mise du solveur" },
   { href: "/ranking", label: "Classements", desc: "Général et par spot" },
   { href: "/history", label: "Mon historique", desc: "Tes tentatives passées" },
 ];
