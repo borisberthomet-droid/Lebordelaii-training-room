@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import SolvedReplayer from "@/components/SolvedReplayer";
+import PivotDial from "@/components/PivotDial";
 import { RangeDecompIcon } from "@/components/ToolIcons";
 import {
   CATEGORIES, availableCategories, boardIsPaired, categorize, categoryLabel, decompose, decompositionError,
@@ -145,8 +146,11 @@ export default function RangeDecompositionPage() {
       const res = await fetch(`/solved/${sim}/${meta.id}.json`);
       if (!res.ok) throw new Error(`spot ${meta.id} introuvable`);
       const spot = await res.json();
-      const truth = decompose(spot.combos.map((c) => [c[0], c[1]]), spot.board);
-      setQ({ spot, truth, folds: foldsByCategory(spot) });
+      // Paires [clé, poids] gardées dans l'état : la molette trie la range une fois par spot, et
+      // un tableau recréé à chaque rendu relancerait ce tri à chaque cran.
+      const pairs = spot.combos.map((c) => [c[0], c[1]]);
+      const truth = decompose(pairs, spot.board);
+      setQ({ spot, pairs, truth, folds: foldsByCategory(spot) });
       setGuess(Object.fromEntries(availableCategories(spot.board).map((c) => [c.id, ""])));
     } catch (e) {
       setError(e.message);
@@ -269,7 +273,7 @@ export default function RangeDecompositionPage() {
             </span>
           </div>
 
-          <SolvedReplayer key={`${sim}-${spot.id}`} spot={spot} meta={index} heroCards={null} />
+          <SolvedReplayer key={`replay-${sim}-${spot.id}`} spot={spot} meta={index} heroCards={null} />
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18, alignItems: "start" }}>
             <div>
@@ -374,7 +378,7 @@ export default function RangeDecompositionPage() {
                     return (
                       <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border)" }}>
                         <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Et ton bluff ?</div>
-                        <Row label="Ta mise" value={`${spot.toCallBB} bb dans ${(spot.potBB - spot.toCallBB).toFixed(1)} bb`} />
+                        <Row label="Ta mise" value={`${spot.toCallBB.toFixed(2)} bb dans ${(spot.potBB - spot.toCallBB).toFixed(2)} bb`} />
                         <Row label="Fold nécessaire (bluff pur)" value={`${breakEvenPct.toFixed(1)}%`} />
                         <Row label={`Fold réel de ${spot.heroPos}`} value={`${foldPct.toFixed(1)}%`} strong />
                         <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6, lineHeight: 1.6 }}>
@@ -430,6 +434,18 @@ export default function RangeDecompositionPage() {
               )}
             </div>
           </div>
+
+          {/* Seulement après validation : la charnière révèle la composition de la range. La clé
+              remet la molette sur la taille jouée à chaque nouveau spot. */}
+          {reveal && (
+            <PivotDial
+              key={`pivot-${sim}-${spot.id}`}
+              combos={q.pairs}
+              board={spot.board}
+              playedSizePct={(spot.toCallBB / (spot.potBB - spot.toCallBB)) * 100}
+              pos={spot.heroPos}
+            />
+          )}
         </div>
       )}
     </div>
