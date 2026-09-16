@@ -13,7 +13,7 @@ const WHERE = {
   equite: [{ href: "/value-equity", label: "Quelle est ton équité ?" }, { href: "/pot-odds", label: "Pot Odds" }],
   frequence: [{ href: "/range-position", label: "Où suis-je dans ma range ?" }, { href: "/range-builder", label: "Range Builder" }],
   calcul: [{ href: "/math-trainer", label: "Math Trainer" }],
-  lecture: [{ href: "/train", label: "Find It!" }],
+  lecture: [{ href: "/train", label: "Find It!" }, { href: "/range-decomposition", label: "Décompose la range" }],
   pko: [{ href: "/pko-rp/trainer", label: "RP Trainer" }],
   icm: [],
 };

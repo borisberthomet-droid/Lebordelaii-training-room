@@ -28,7 +28,11 @@ export const AXES = [
 //   RP        4.6 points — mesuré sur 1 575 tirages du RP Trainer, réponse constante = médiane
 //                          (−8.1%). Bande beaucoup plus serrée : 2 points d'erreur sur le RP
 //                          valent donc bien plus qu'ils ne vaudraient sur une équité.
-const REF_ERROR = { equite: 26.9, rp: 4.6 };
+//   décomposition 30.9 points de range mal répartis — mesuré sur les 1 012 ranges de défenseur
+//                          des 4 textures (l'exercice ne porte que sur elles). Meilleure
+//                          décomposition constante, affinée point par point : 31% d'Air, 17% de
+//                          DP+, 0% d'overpair.
+const REF_ERROR = { equite: 26.9, rp: 4.6, decomposition: 30.9 };
 
 // --- Un exercice, son axe, sa façon d'être noté ------------------------------------------------
 // `chance` = score qu'obtient le hasard pur. 0.20 pour un choix parmi 5 quintiles (vérifié : les
@@ -38,6 +42,7 @@ export const SKILLS = {
   "range-position": { axis: "frequence", kind: "choice", chance: 0.20 },
   "math-trainer": { axis: "calcul", kind: "binary", chance: 0 },
   "find-it": { axis: "lecture", kind: "ratio", chance: 0 },
+  "range-decomposition": { axis: "lecture", kind: "estimate", refError: REF_ERROR.decomposition, chance: 0 },
   "range-builder": { axis: "frequence", kind: "ratio", chance: 0 },
   "rp-trainer": { axis: "pko", kind: "estimate", refError: REF_ERROR.rp, chance: 0 },
   // Pot Odds mélange deux compétences : l'axe dépend du type de question, pas de l'exercice.

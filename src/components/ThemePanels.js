@@ -39,6 +39,7 @@ const THEMES = [
     tools: [
       { href: "/train", label: "Find It! — un spot au hasard" },
       { href: "/find-it/sim", label: "Find It! — sur simulation" },
+      { href: "/range-decomposition", label: "Décompose la range" },
       { href: "/find-it", label: "Find It! — accueil" },
     ],
   },

@@ -76,6 +76,27 @@ export function RangeBuilderIcon({ size = 24 }) {
   );
 }
 
+// Barre empilée en segments d'opacité décroissante — une range découpée en catégories, du plus
+// fort au plus faible. Distincte de la grille du Range Builder, qui évoque le tableau 13x13.
+export function RangeDecompIcon({ size = 24 }) {
+  const segments = [6, 4, 3, 3, 2];
+  let x = 7;
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" role="img" aria-label="Décompose la range">
+      <Grad id="rd-grad" />
+      <rect x="3" y="3" width="26" height="26" rx="7" stroke="var(--border)" strokeWidth="2" fill="none" />
+      {segments.map((w, i) => {
+        const rect = (
+          <rect key={i} x={x} y="12" width={w - 0.8} height="8" rx="1.2"
+            fill={i < 4 ? "url(#rd-grad)" : "var(--border)"} opacity={i < 4 ? 1 - i * 0.2 : 0.6} />
+        );
+        x += w;
+        return rect;
+      })}
+    </svg>
+  );
+}
+
 // Symbole de division (point / barre / point) en dégradé dans un cadre — évoque le calcul
 // mental rapide (sizing, cotes), distinct des autres marques qui n'utilisent pas de symbole math.
 export function MathTrainerIcon({ size = 24 }) {
