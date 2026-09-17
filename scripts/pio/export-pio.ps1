@@ -91,7 +91,10 @@ function Lire-Noeuds($lignes) {
 }
 
 New-Item -ItemType Directory -Force -Path $Dossier | Out-Null
-$nom = [System.IO.Path]::GetFileNameWithoutExtension($Arbre)
+# Pio nomme le .cfr d'apres le board seul : le scenario (positions, profondeur) vient du dossier
+# qui le contient. On l'ajoute au nom de l'export, sinon deux scenarios du meme board s'ecrasent.
+$scenario = Split-Path -Leaf (Split-Path -Parent (Resolve-Path $Arbre).Path)
+$nom = "{0}_{1}" -f $scenario, [System.IO.Path]::GetFileNameWithoutExtension($Arbre)
 $fichier = Join-Path $Dossier "$nom.txt"
 $zip = Join-Path $Dossier "$nom.zip"
 $ecrivain = New-Object System.IO.StreamWriter($fichier, $false, (New-Object System.Text.UTF8Encoding($false)))
