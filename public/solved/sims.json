@@ -1,1 +1,302 @@
-[]
+[
+ {
+  "name": "as6h3d-8s-jh",
+  "board": [
+   "As",
+   "6h",
+   "3d"
+  ],
+  "fullBoard": "As 6h 3d 8s Jh",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 90,
+  "value": 42,
+  "turn": 31,
+  "river": 59,
+  "builtAt": "2026-09-18",
+  "findIt": 19
+ },
+ {
+  "name": "as6h3d-4c-5d",
+  "board": [
+   "As",
+   "6h",
+   "3d"
+  ],
+  "fullBoard": "As 6h 3d 4c 5d",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 132,
+  "value": 47,
+  "turn": 34,
+  "river": 98,
+  "builtAt": "2026-09-18",
+  "findIt": 18
+ },
+ {
+  "name": "as6h3d-6c-2h",
+  "board": [
+   "As",
+   "6h",
+   "3d"
+  ],
+  "fullBoard": "As 6h 3d 6c 2h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 102,
+  "value": 37,
+  "turn": 22,
+  "river": 80,
+  "builtAt": "2026-09-18",
+  "findIt": 20
+ },
+ {
+  "name": "asah8d-2s-6h",
+  "board": [
+   "As",
+   "Ah",
+   "8d"
+  ],
+  "fullBoard": "As Ah 8d 2s 6h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 405,
+  "value": 101,
+  "turn": 103,
+  "river": 302,
+  "builtAt": "2026-09-18",
+  "findIt": 12
+ },
+ {
+  "name": "asah8d-7c-6d",
+  "board": [
+   "As",
+   "Ah",
+   "8d"
+  ],
+  "fullBoard": "As Ah 8d 7c 6d",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 390,
+  "value": 98,
+  "turn": 99,
+  "river": 291,
+  "builtAt": "2026-09-18",
+  "findIt": 13
+ },
+ {
+  "name": "asah8d-kd-5c",
+  "board": [
+   "As",
+   "Ah",
+   "8d"
+  ],
+  "fullBoard": "As Ah 8d Kd 5c",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 389,
+  "value": 95,
+  "turn": 89,
+  "river": 300,
+  "builtAt": "2026-09-18",
+  "findIt": 10
+ },
+ {
+  "name": "asqh2s-6h-7d",
+  "board": [
+   "As",
+   "Qh",
+   "2s"
+  ],
+  "fullBoard": "As Qh 2s 6h 7d",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 166,
+  "value": 77,
+  "turn": 56,
+  "river": 110,
+  "builtAt": "2026-09-18",
+  "findIt": 16
+ },
+ {
+  "name": "asqh2s-9s-4h",
+  "board": [
+   "As",
+   "Qh",
+   "2s"
+  ],
+  "fullBoard": "As Qh 2s 9s 4h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 190,
+  "value": 68,
+  "turn": 52,
+  "river": 138,
+  "builtAt": "2026-09-18",
+  "findIt": 10
+ },
+ {
+  "name": "asqh2s-qd-5c",
+  "board": [
+   "As",
+   "Qh",
+   "2s"
+  ],
+  "fullBoard": "As Qh 2s Qd 5c",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 198,
+  "value": 74,
+  "turn": 55,
+  "river": 143,
+  "builtAt": "2026-09-18",
+  "findIt": 19
+ },
+ {
+  "name": "jsth8d-2s-3h",
+  "board": [
+   "Js",
+   "Th",
+   "8d"
+  ],
+  "fullBoard": "Js Th 8d 2s 3h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 235,
+  "value": 82,
+  "turn": 67,
+  "river": 168,
+  "builtAt": "2026-09-18",
+  "findIt": 14
+ },
+ {
+  "name": "jsth8d-9c-4h",
+  "board": [
+   "Js",
+   "Th",
+   "8d"
+  ],
+  "fullBoard": "Js Th 8d 9c 4h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 210,
+  "value": 69,
+  "turn": 50,
+  "river": 160,
+  "builtAt": "2026-09-18",
+  "findIt": 19
+ },
+ {
+  "name": "jsth8d-jh-3c",
+  "board": [
+   "Js",
+   "Th",
+   "8d"
+  ],
+  "fullBoard": "Js Th 8d Jh 3c",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 215,
+  "value": 81,
+  "turn": 63,
+  "river": 152,
+  "builtAt": "2026-09-18",
+  "findIt": 18
+ },
+ {
+  "name": "ks9h4d-2s-7h",
+  "board": [
+   "Ks",
+   "9h",
+   "4d"
+  ],
+  "fullBoard": "Ks 9h 4d 2s 7h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 255,
+  "value": 94,
+  "turn": 90,
+  "river": 165,
+  "builtAt": "2026-09-18",
+  "findIt": 17
+ },
+ {
+  "name": "ks9h4d-6h-7h",
+  "board": [
+   "Ks",
+   "9h",
+   "4d"
+  ],
+  "fullBoard": "Ks 9h 4d 6h 7h",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 225,
+  "value": 85,
+  "turn": 72,
+  "river": 153,
+  "builtAt": "2026-09-18",
+  "findIt": 18
+ },
+ {
+  "name": "ks9h4d-9s-2c",
+  "board": [
+   "Ks",
+   "9h",
+   "4d"
+  ],
+  "fullBoard": "Ks 9h 4d 9s 2c",
+  "effectiveBB": 47,
+  "heroPositions": [
+   "BB",
+   "BU"
+  ],
+  "spots": 255,
+  "value": 94,
+  "turn": 83,
+  "river": 172,
+  "builtAt": "2026-09-18",
+  "findIt": 23
+ }
+]

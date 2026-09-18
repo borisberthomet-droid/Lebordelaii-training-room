@@ -87,7 +87,10 @@ function GridCell({
   const bg = weight <= 0 ? 'transparent' : `rgba(${ACCENT_RGB},${0.05 + weight * 0.55})`;
   const classFullyExcluded = excludedCards && excludedCards.length
     ? getClassCombos(cls).every(({ key }) => comboOverlapsCards(key, excludedCards)) : false;
-  const showPct = mode === 'admin' && weight > 0;
+  // Les poids sont la réponse : cachés pendant que l'élève dessine (mode play), montrés une fois
+  // l'exercice validé (mode reveal) pour qu'il voie les fréquences, donc quels bluffs sont choisis.
+  const montrerPoids = mode === 'admin' || mode === 'reveal';
+  const showPct = montrerPoids && weight > 0;
   const touchTimer = useRef(null);
   const longPressFired = useRef(false);
   const clearTouchTimer = () => { if (touchTimer.current) { clearTimeout(touchTimer.current); touchTimer.current = null; } };
@@ -152,7 +155,7 @@ function GridCell({
             boxShadow: '0 8px 24px rgba(0,0,0,0.5)', width: 180,
           }}>
           <div style={{ fontFamily: "var(--font-space-grotesk), sans-serif", fontSize: 10, color: '#9C9691', marginBottom: 6 }}>
-            {cls} — {mode === 'admin' ? 'poids par combo' : 'sélection par combo'}
+            {cls} — {montrerPoids ? 'poids par combo' : 'sélection par combo'}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
             {getClassCombos(cls).map(({ pair, key }) => {
@@ -168,7 +171,7 @@ function GridCell({
                     onComboDragStart(key);
                   }}
                   onMouseEnter={(e) => { if (!locked && e.buttons === 1) onComboDragEnter(key); }}
-                  title={excluded ? 'Carte déjà connue' : filteredOut ? 'Écarté par le filtre de couleur' : (mode === 'admin' && w > 0 ? formatPct(w) : undefined)}
+                  title={excluded ? 'Carte déjà connue' : filteredOut ? 'Écarté par le filtre de couleur' : (montrerPoids && w > 0 ? formatPct(w) : undefined)}
                   style={{
                     background: excluded ? '#0A0C0E' : (w > 0 ? `rgba(${ACCENT_RGB},${0.05 + w * 0.55})` : '#1A1918'),
                     border: `1px solid ${filteredOut ? '#242220' : '#302D2A'}`, borderRadius: 4, padding: '3px 2px',
@@ -177,7 +180,7 @@ function GridCell({
                     userSelect: 'none', fontFamily: "var(--font-ibm-plex-mono), monospace",
                   }}>
                   {pair.map((c, idx) => <span key={idx} style={{ color: SUIT_COLOR[c[1]] }}>{c[0]}{SUIT_SYMBOL[c[1]]}</span>)}
-                  {mode === 'admin' && w > 0 && (
+                  {montrerPoids && w > 0 && (
                     <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.65)', marginTop: 1 }}>{formatPct(w)}</div>
                   )}
                 </div>

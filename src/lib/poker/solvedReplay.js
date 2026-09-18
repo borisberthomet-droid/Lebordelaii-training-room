@@ -39,9 +39,15 @@ export function buildSteps(sequence, decisionStreet = null) {
 //
 // Conventions HRC, à ne pas confondre : une relance donne le TOTAL engagé sur la street, un call
 // donne le montant ADDITIONNEL. Prendre l'un pour l'autre fausse le pot et donc les cotes.
-export function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, forceStreet = null }) {
+// `startBB` : un tapis unique, ou un tapis par position quand ils diffèrent (avec une ante de big
+// blind, la BB part de plus haut puisqu'elle la paie).
+// `anteType` : "BB" = une seule ante payée par la big blind (usage MTT actuel), sinon une ante
+// par joueur. Les deux existent dans les sims du site, et les confondre fausse pot et tapis.
+export function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, anteType = "REGULAR", forceStreet = null }) {
   const total = {}, street = {}, action = {};
-  for (const p of POSITIONS) { total[p] = anteBB; street[p] = 0; }
+  const depart = (p) => (typeof startBB === "number" ? startBB : startBB?.[p] ?? 0);
+  for (const p of POSITIONS) { total[p] = anteType === "BB" ? 0 : anteBB; street[p] = 0; }
+  if (anteType === "BB") total.BB += anteBB;
   total.SB += sbBB; street.SB = sbBB;
   total.BB += bbBB; street.BB = bbBB;
 
@@ -71,12 +77,17 @@ export function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, forceStre
     currentStreet = forceStreet;
   }
 
-  const pot = POSITIONS.reduce((sum, p) => sum + total[p], 0);
+  // Pot affiché au centre : ce qui est DÉJÀ ramassé, sans les jetons de la street en cours — ils
+  // sont posés devant les joueurs. Signalé par Boris : une mise river de 6bb gonflait le pot
+  // affiché à 15.1bb alors qu'il valait 9.1bb avant la mise.
+  const total_ = POSITIONS.reduce((sum, p) => sum + total[p], 0);
+  const pot = total_ - POSITIONS.reduce((sum, p) => sum + street[p], 0);
   return {
-    stacks: Object.fromEntries(POSITIONS.map((p) => [p, +(startBB - total[p]).toFixed(1)])),
+    stacks: Object.fromEntries(POSITIONS.map((p) => [p, +(depart(p) - total[p]).toFixed(1)])),
     bets: Object.fromEntries(POSITIONS.filter((p) => street[p] > 0).map((p) => [p, +street[p].toFixed(1)])),
     streetCommit: { ...street },
-    action, pot: +pot.toFixed(2), street: currentStreet,
+    // `potTotal` garde tout, mises de la street comprises : c'est lui qui sert aux contrôles.
+    action, pot: +pot.toFixed(2), potTotal: +total_.toFixed(2), street: currentStreet,
   };
 }
 

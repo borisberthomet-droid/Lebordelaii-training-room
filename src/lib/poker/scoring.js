@@ -1,4 +1,4 @@
-import { RANKS, SUITS } from './constants';
+import { RANKS, SUITS } from './constants.js';
 
 export function comboOverlapsCards(key, cards) {
   if (!cards || !cards.length) return false;

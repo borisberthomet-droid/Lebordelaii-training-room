@@ -9,6 +9,7 @@ import RangeGrid from "@/components/RangeGrid";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { scoreAttempt, knownCards } from "@/lib/poker/scoring";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
+import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // Find It sur simulation résolue. Même exercice que le Find It classique — reconstruire la range
 // adverse — mais la référence n'est plus une range dessinée à la main : c'est celle que le
@@ -57,13 +58,11 @@ function drawWeighted(entries) {
   return entries[entries.length - 1][0];
 }
 
+// Textures utilisables ici : celles qui contiennent des ranges de mise à reconstruire.
+const A_DES_SPOTS = (s) => (s.findIt || 0) > 0;
+
 export default function FindItSimPage() {
-  const [sims, setSims] = useState(null);
-  const [sim, setSim] = useState(null);
-  const [index, setIndex] = useState(null);
-  const [error, setError] = useState(null);
-  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
-  const [empty, setEmpty] = useState(false);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, empty } = useSolvedSims(A_DES_SPOTS);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);          // { spot, villainWeights, heroCards, villainKey }
   const [selection, setSelection] = useState({});
@@ -71,31 +70,12 @@ export default function FindItSimPage() {
   const [stats, setStats] = useState({ found: 0, total: 0, somme: 0 });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("/solved/sims.json")
-      .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
-      .then((list) => {
-        const utiles = list.filter((s) => s.findIt > 0);
-        if (!utiles.length) { setEmpty(true); return; }
-        setSims(utiles);
-        setSim(utiles[0].name);
-      })
-      .catch((e) => setError(e.message));
-  }, []);
+  const tousSpots = useMemo(() => rassembler((idx) => idx.findItSpots), [rassembler]);
 
-  useEffect(() => {
-    if (!sim) return;
-    setIndex(null); setQ(null); setReveal(null); setSelection({});
-    fetch(`/solved/${sim}/index.json`)
-      .then((r) => { if (!r.ok) throw new Error(`index de ${sim} introuvable`); return r.json(); })
-      .then(setIndex)
-      .catch((e) => setError(e.message));
-  }, [sim]);
-
-  const pool = useMemo(() => {
-    if (!index?.findItSpots) return [];
-    return index.findItSpots.filter((s) => streets.includes(s.streetName));
-  }, [index, streets]);
+  const pool = useMemo(
+    () => tousSpots.filter((s) => streets.includes(s.streetName)),
+    [tousSpots, streets]
+  );
 
   const nouveau = async () => {
     if (!pool.length) return;
@@ -103,8 +83,8 @@ export default function FindItSimPage() {
     try {
       const pick = pool[Math.floor(Math.random() * pool.length)];
       const [spot, ref] = await Promise.all([
-        fetch(`/solved/${sim}/${pick.id}.json`).then((r) => r.json()),
-        fetch(`/solved/${sim}/r${pick.id}.json`).then((r) => r.json()),
+        fetch(`/solved/${pick.sim}/${pick.id}.json`).then((r) => r.json()),
+        fetch(`/solved/${pick.sim}/r${pick.id}.json`).then((r) => r.json()),
       ]);
       const villainWeights = Object.fromEntries(ref.villainCombos);
       // La main de l'élève est tirée dans SA range au nœud, celle du vilain dans la range à
@@ -114,7 +94,7 @@ export default function FindItSimPage() {
       const possibles = ref.villainCombos.filter(
         ([k]) => !heroCards.includes(k.slice(0, 2)) && !heroCards.includes(k.slice(2, 4))
       );
-      setQ({ spot, villainWeights, heroCards, villainKey: drawWeighted(possibles) });
+      setQ({ spot, villainWeights, heroCards, villainKey: drawWeighted(possibles), meta: indexes[pick.sim], sim: pick.sim });
     } catch (e) {
       setError(e.message);
     } finally {
@@ -135,7 +115,7 @@ export default function FindItSimPage() {
     setStats((s) => ({ found: s.found + (found ? 1 : 0), total: s.total + 1, somme: s.somme + score }));
     recordSkillAttempt({
       exercise: "find-it", outcome: { ratio: score / 100 },
-      meta: { sim, spot: q.spot.id, found, selectedCount: selected.length, source: "solveur" },
+      meta: { sim: q.sim, spot: q.spot.id, found, selectedCount: selected.length, source: "solveur" },
     }).catch(() => {});
   };
 
@@ -175,18 +155,17 @@ export default function FindItSimPage() {
           range dessinée à la main : c&apos;est exactement ce que ton adversaire mise à ce nœud.
         </div>
 
-        {sims && sims.length > 1 && (
+        {sims && sims.length > 0 && (
           <div style={{ marginBottom: 12 }}>
             <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim || ""} onChange={(e) => setSim(e.target.value)} style={{
+            <select value={sim} onChange={(e) => { setSim(e.target.value); setQ(null); setReveal(null); setSelection({}); }} style={{
               width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
               color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
             }}>
-              {sims.map((s) => (
-                <option key={s.name} value={s.name}>
-                  {s.fullBoard || s.board.join(" ")} — {s.effectiveBB} bb — {s.findIt} spots
-                </option>
-              ))}
+              <option value={TOUTES}>
+                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.findIt || 0), 0)} spots
+              </option>
+              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.findIt)}</option>)}
             </select>
           </div>
         )}
@@ -197,7 +176,7 @@ export default function FindItSimPage() {
               style={chip(streets.includes(s))}>
               {s}
               <span style={{ opacity: 0.65, marginLeft: 6, fontSize: 10 }}>
-                {(index?.findItSpots || []).filter((x) => x.streetName === s).length}
+                {tousSpots.filter((x) => x.streetName === s).length}
               </span>
             </button>
           ))}
@@ -221,7 +200,7 @@ export default function FindItSimPage() {
             </span>
           </div>
 
-          <SolvedReplayer spot={spot} meta={index} heroCards={q.heroCards} />
+          <SolvedReplayer spot={spot} meta={q.meta} heroCards={q.heroCards} />
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 18, alignItems: "start" }}>
             <div>

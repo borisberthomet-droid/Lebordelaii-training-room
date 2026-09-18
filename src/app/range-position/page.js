@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import SimsEnPreparation from "@/components/SimsEnPreparation";
+import RangeGrid from "@/components/RangeGrid";
 import MiniCard from "@/components/MiniCard";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { BUCKETS, bucketFor } from "@/lib/poker/relativeStrength";
 import { RangeBuilderIcon } from "@/components/ToolIcons";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
+import { knownCards } from "@/lib/poker/scoring";
+import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // Les simulations disponibles sont découvertes à l'exécution via public/solved/sims.json, que le
 // script de build tient à jour. Écrire un nom de sim en dur ici obligerait à toucher au code à
@@ -102,13 +105,12 @@ function readOut(combo, spot) {
   return `Action tranchée : ${chiffres}, soit ${ecart > 0 ? "+" : ""}${ecart.toFixed(1)} points d'écart.${suite}`;
 }
 
+// Textures utilisables par cet exercice : celles qui contiennent des spots où hero fait face à
+// une mise. Fonction définie ici, hors du composant, pour rester stable d'un rendu à l'autre.
+const A_DES_SPOTS = (s) => (s.spots || 0) > 0;
+
 export default function RangePositionPage() {
-  const [sims, setSims] = useState(null);
-  const [sim, setSim] = useState(null);
-  const [index, setIndex] = useState(null);
-  const [error, setError] = useState(null);
-  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
-  const [empty, setEmpty] = useState(false);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, empty } = useSolvedSims(A_DES_SPOTS);
   // Deux sens pour la même question. À un nœud, hero est TOUJOURS celui qui fait face à la mise,
   // donc le défenseur : seule la formulation change, la bonne réponse est la même.
   //   "moi" — je défends, où est MA main dans MA range ?
@@ -116,56 +118,41 @@ export default function RangePositionPage() {
   //           bluffs passent et si l'adversaire respecte sa MDF.
   const [mode, setMode] = useState("moi");
   const [streets, setStreets] = useState(["turn", "river"]);
-  const [archetypes, setArchetypes] = useState([]);
-  const [q, setQ] = useState(null);       // { spot, combo }
+  // null = tous les types de nœud. Une liste figée devrait être recalculée à chaque changement
+  // de texture ; ce sentinelle évite de remettre l'état à jour depuis un effet.
+  const [archetypesChoisis, setArchetypesChoisis] = useState(null);
+  const [q, setQ] = useState(null);       // { spot, combo, meta, sim }
   const [answer, setAnswer] = useState(null);
   const [stats, setStats] = useState({ good: 0, total: 0 });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("/solved/sims.json")
-      .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
-      .then((list) => {
-        if (!list.length) { setEmpty(true); return; }
-        setSims(list);
-        setSim(list[0].name);
-      })
-      .catch((e) => setError(e.message));
-  }, []);
+  const tousSpots = useMemo(() => rassembler((idx) => idx.spots), [rassembler]);
+  // Blindes, tapis et flop d'affichage : toutes les textures d'un même scénario les partagent.
+  const apercu = sim === TOUTES ? Object.values(indexes)[0] : indexes[sim];
+  const allArchetypes = useMemo(() => [...new Set(tousSpots.map((s) => s.archetype))].sort(), [tousSpots]);
+  const archetypes = archetypesChoisis ?? allArchetypes;
 
-  // Changer de texture recharge l'index et remet la question à zéro : garder une question d'une
-  // autre sim à l'écran afficherait un board qui ne correspond plus aux filtres.
-  useEffect(() => {
-    if (!sim) return;
-    setIndex(null); setQ(null); setAnswer(null);
-    fetch(`/solved/${sim}/index.json`)
-      .then((r) => { if (!r.ok) throw new Error(`index de ${sim} introuvable (${r.status})`); return r.json(); })
-      .then((idx) => { setIndex(idx); setArchetypes([...new Set(idx.spots.map((s) => s.archetype))].sort()); })
-      .catch((e) => setError(e.message));
-  }, [sim]);
-
-  const allArchetypes = useMemo(() => {
-    if (!index) return [];
-    return [...new Set(index.spots.map((s) => s.archetype))].sort();
-  }, [index]);
-
-  const pool = useMemo(() => {
-    if (!index) return [];
-    return index.spots.filter((s) => streets.includes(s.streetName) && archetypes.includes(s.archetype));
-  }, [index, streets, archetypes]);
+  const pool = useMemo(
+    () => tousSpots.filter((s) => streets.includes(s.streetName) && archetypes.includes(s.archetype)),
+    [tousSpots, streets, archetypes]
+  );
 
   const toggle = (list, setList, v) =>
     setList(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const toggleArchetype = (a) =>
+    setArchetypesChoisis(archetypes.includes(a) ? archetypes.filter((x) => x !== a) : [...archetypes, a]);
 
   const newQuestion = async () => {
     if (!pool.length) return;
     setLoading(true); setAnswer(null);
     try {
+      // Chaque spot porte sa texture d'origine : c'est elle qui dit où chercher le fichier et
+      // quelles blindes afficher, puisque l'élève peut s'entraîner sur toutes les textures.
       const pick = pool[Math.floor(Math.random() * pool.length)];
-      const res = await fetch(`/solved/${sim}/${pick.id}.json`);
+      const res = await fetch(`/solved/${pick.sim}/${pick.id}.json`);
       if (!res.ok) throw new Error(`spot ${pick.id} introuvable`);
       const spot = await res.json();
-      setQ({ spot, combo: drawCombo(spot.combos) });
+      setQ({ spot, combo: drawCombo(spot.combos), meta: indexes[pick.sim], sim: pick.sim });
     } catch (e) {
       setError(e.message);
     } finally {
@@ -183,7 +170,7 @@ export default function RangePositionPage() {
     recordSkillAttempt({
       exercise: "range-position",
       outcome: { correct: bucketId === truth },
-      meta: { sim, spot: q.spot.id, street: q.spot.streetName, archetype: q.spot.archetype },
+      meta: { sim: q.sim, spot: q.spot.id, street: q.spot.streetName, archetype: q.spot.archetype },
     }).catch(() => {});
   };
 
@@ -233,29 +220,31 @@ export default function RangePositionPage() {
             : "C'est toi qui attaques. Situe la main de ton adversaire dans SA range de défense : c'est ce qui dit si tes bluffs passent, et s'il respecte sa MDF."}
         </div>
 
-        {sims && sims.length > 1 && (
+        {sims && sims.length > 0 && (
           <div style={{ marginBottom: 12 }}>
             <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim || ""} onChange={(e) => setSim(e.target.value)} style={{
+            <select value={sim} onChange={(e) => { setSim(e.target.value); setQ(null); setAnswer(null); }} style={{
               width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
               color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
             }}>
-              {sims.map((s) => (
-                <option key={s.name} value={s.name}>
-                  {s.fullBoard || s.board.join(" ")} — {s.effectiveBB} bb — {s.spots} spots
-                </option>
-              ))}
+              <option value={TOUTES}>
+                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.spots || 0), 0)} spots
+              </option>
+              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.spots)}</option>)}
             </select>
           </div>
         )}
 
-        {!index ? (
-          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement de la simulation…</div>
+        {!prets ? (
+          <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement des simulations…</div>
         ) : (
           <>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10, lineHeight: 1.6 }}>
-              Simulation HRC · flop {index.boardFlop.join(" ")} · {index.effectiveBB} bb effectifs ·
-              blinds {index.blinds.sb}/{index.blinds.bb} ante {index.blinds.ante} · ICM de MTT.
+              {apercu && <>
+                Simulations de solveur · {sim === TOUTES ? `${sims.length} textures` : `flop ${apercu.boardFlop.join(" ")}`} ·
+                {" "}{apercu.effectiveBB} bb de départ · blinds {apercu.blinds.sb}/{apercu.blinds.bb} ante {apercu.blinds.ante}.
+                {" "}
+              </>}
               Le classement est calculé par équité face à la range réelle de l&apos;adversaire à ce nœud,
               turn et river énumérés exhaustivement.
             </div>
@@ -266,7 +255,7 @@ export default function RangePositionPage() {
                 <button key={s} onClick={() => toggle(streets, setStreets, s)} style={chip(streets.includes(s))}>
                   {s}
                   <span style={{ opacity: 0.65, marginLeft: 6, fontSize: 10 }}>
-                    {index.spots.filter((x) => x.streetName === s).length}
+                    {tousSpots.filter((x) => x.streetName === s).length}
                   </span>
                 </button>
               ))}
@@ -275,17 +264,17 @@ export default function RangePositionPage() {
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>Type de nœud</div>
             <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
               {allArchetypes.map((a) => (
-                <button key={a} onClick={() => toggle(archetypes, setArchetypes, a)} style={chip(archetypes.includes(a))}>
+                <button key={a} onClick={() => toggleArchetype(a)} style={chip(archetypes.includes(a))}>
                   {a}
                   <span style={{ opacity: 0.65, marginLeft: 6, fontSize: 10 }}>
-                    {index.spots.filter((x) => x.archetype === a).length}
+                    {tousSpots.filter((x) => x.archetype === a).length}
                   </span>
                 </button>
               ))}
             </div>
             <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-              <button onClick={() => { setStreets(["turn", "river"]); setArchetypes(allArchetypes); }} style={ghost}>Tout</button>
-              <button onClick={() => setArchetypes([])} style={ghost}>Aucun</button>
+              <button onClick={() => { setStreets(["turn", "river"]); setArchetypesChoisis(null); }} style={ghost}>Tout</button>
+              <button onClick={() => setArchetypesChoisis([])} style={ghost}>Aucun</button>
             </div>
 
             <button onClick={newQuestion} style={btn} disabled={!pool.length || loading}>
@@ -310,7 +299,7 @@ export default function RangePositionPage() {
           </div>
 
           {spot.sequence
-            ? <SolvedReplayer spot={spot} meta={index} heroCards={heroCards} />
+            ? <SolvedReplayer spot={spot} meta={q.meta} heroCards={heroCards} />
             : (
               <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ fontSize: 11, color: "var(--text-muted)", marginRight: 4 }}>Board</span>
@@ -427,6 +416,27 @@ export default function RangePositionPage() {
                   {readOut(combo, spot)}
                 </div>
               </div>
+
+              {/* La range du solveur, après coup : c'est là qu'on voit ce que la range contient
+                  vraiment, et à quelle fréquence chaque combo y arrive. */}
+              <div style={{ marginTop: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 6, color: "var(--text)" }}>
+                  La range de {spot.heroPos} à ce nœud
+                </div>
+                <RangeGrid
+                  comboWeights={Object.fromEntries(spot.combos.map((c) => [c[0], c[1]]))}
+                  setComboWeights={() => {}}
+                  mode="reveal"
+                  excludedCards={knownCards([], spot.board.join(" "))}
+                  resultReveal={{ villainKey: combo[0], found: answer.ok }}
+                  showFilters={false}
+                />
+                <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 6, lineHeight: 1.6 }}>
+                  Les pourcentages sont les fréquences du solveur. Clic droit sur une case pour le
+                  détail combo par combo. Le cadre marque la main tirée.
+                </div>
+              </div>
+
               <button onClick={newQuestion} style={{ ...btn, marginTop: 12 }}>Question suivante →</button>
             </div>
           )}

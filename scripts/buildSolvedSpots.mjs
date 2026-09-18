@@ -32,7 +32,13 @@ const BB = settings.handdata.blinds[0];
 const SB = settings.handdata.blinds[1];
 const ANTE = settings.handdata.blinds[2];
 const N_PLAYERS = settings.handdata.stacks.length;
-const START_STACK = settings.handdata.stacks[0];
+const STACKS = settings.handdata.stacks;
+const START_STACK = STACKS[0];
+// Deux formats d'ante coexistent dans les sims du site : l'ante classique, payée par tous (sims
+// HRC), et l'ante de big blind des MTT actuels, payée par la seule BB (sims Pio). Les confondre
+// fausse le pot et les tapis.
+const ANTE_TYPE = settings.handdata.anteType === "BB" ? "BB" : "REGULAR";
+const anteDe = (i) => (ANTE_TYPE === "BB" ? (POS(i) === "BB" ? ANTE : 0) : ANTE);
 const POSITION_ORDER = ["UTG", "HJ", "CO", "BU", "SB", "BB"];
 const POS = (i) => POSITION_ORDER[i] ?? `P${i}`;
 const STREETS = { 1: "flop", 2: "turn", 3: "river" };
@@ -50,7 +56,7 @@ const MIN_RANGE_WEIGHT = 20;
 // à mettre. Confondre les deux fausse le pot, donc les cotes affichées à l'élève.
 function potAndToCall(sequence) {
   const commit = {};           // engagement total par joueur, sur la street courante
-  let closedPot = ANTE * N_PLAYERS;
+  let closedPot = ANTE_TYPE === "BB" ? ANTE : ANTE * N_PLAYERS;
   let street = 0;
   const blindOf = (p) => (POS(p) === "SB" ? SB : POS(p) === "BB" ? BB : 0);
   for (let i = 0; i < N_PLAYERS; i++) commit[i] = blindOf(i);
@@ -75,7 +81,7 @@ function totalCommitted(sequence) {
   const total = {}, street = {};
   for (let i = 0; i < N_PLAYERS; i++) {
     const blind = POS(i) === "SB" ? SB : POS(i) === "BB" ? BB : 0;
-    total[i] = ANTE + blind; street[i] = blind;
+    total[i] = anteDe(i) + blind; street[i] = blind;
   }
   let cur = 0;
   for (const a of sequence) {
@@ -311,7 +317,7 @@ while (stack.length) {
   if (rankedValue && rankedValue.totalWeight >= MIN_RANGE_WEIGHT) {
     const { pot } = potAndToCall(d.sequence);
     const tot = totalCommitted(d.sequence);
-    const effStack = Math.min(START_STACK - tot[hero], START_STACK - tot[villain]);
+    const effStack = Math.min(STACKS[hero] - tot[hero], STACKS[villain] - tot[villain]);
     const playedV = {};
     for (const [c, h] of Object.entries(d.hands)) playedV[normKey(c)] = h.played;
     const villainChecked = d.sequence.some((a) => a.street === d.street && a.player === villain && a.type === "X");
@@ -390,7 +396,8 @@ const index = {
   })),
   boardFlop: parseBoardCards(root.board || ""),
   effectiveBB: START_STACK / BB,
-  blinds: { sb: SB, bb: BB, ante: ANTE },
+  blinds: { sb: SB, bb: BB, ante: ANTE, anteType: ANTE_TYPE },
+  stacks: Object.fromEntries(STACKS.map((v, i) => [POS(i), +(v / BB).toFixed(2)])),
   nPlayers: N_PLAYERS,
   prizes: settings.eqmodel?.structure?.prizes || null,
   spots: out.map((s) => ({

@@ -28,7 +28,10 @@ export default function SolvedReplayer({ spot, meta, heroCards }) {
 
   const startBB = meta.effectiveBB;
   const state = stateAtStep(sequence, steps[k], {
-    startBB, bbBB: 1, sbBB: meta.blinds.sb / meta.blinds.bb, anteBB: meta.blinds.ante / meta.blinds.bb,
+    // meta.stacks existe quand les tapis different d'un siege a l'autre (ante de big blind).
+    startBB: meta.stacks || startBB,
+    bbBB: 1, sbBB: meta.blinds.sb / meta.blinds.bb, anteBB: meta.blinds.ante / meta.blinds.bb,
+    anteType: meta.blinds.anteType,
   });
   const shown = spot.board.slice(0, visibleBoardCount(state.street));
 

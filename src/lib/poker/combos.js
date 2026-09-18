@@ -1,4 +1,4 @@
-import { RANKS, SUITS } from './constants';
+import { RANKS, SUITS } from './constants.js';
 
 export function classId(i, j) {
   if (i === j) return RANKS[i] + RANKS[i];

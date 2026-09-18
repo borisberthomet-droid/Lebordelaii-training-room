@@ -3,11 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import SimsEnPreparation from "@/components/SimsEnPreparation";
+import RangeGrid from "@/components/RangeGrid";
 import MiniCard from "@/components/MiniCard";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { potOddsRow } from "@/lib/poker/memoTables";
 import { PotOddsIcon } from "@/components/ToolIcons";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
+import { knownCards } from "@/lib/poker/scoring";
+import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // « Quelle est ton équité ? » — sur un nœud où tu peux miser, estime ton équité contre la range
 // GLOBALE de l'adversaire, puis déduis-en jusqu'à quel sizing tu peux miser en value.
@@ -75,13 +78,11 @@ function actionLabel(a) {
   return a.type;
 }
 
+// Textures utilisables ici : celles qui contiennent des spots où hero peut miser.
+const A_DES_SPOTS = (s) => (s.value || 0) > 0;
+
 export default function ValueEquityPage() {
-  const [sims, setSims] = useState(null);
-  const [sim, setSim] = useState(null);
-  const [index, setIndex] = useState(null);
-  const [error, setError] = useState(null);
-  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
-  const [empty, setEmpty] = useState(false);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, empty } = useSolvedSims(A_DES_SPOTS);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [situations, setSituations] = useState(["Après son check", "Premier de parole"]);
   const [q, setQ] = useState(null);         // { spot, combo }
@@ -90,31 +91,14 @@ export default function ValueEquityPage() {
   const [stats, setStats] = useState({ exact: 0, close: 0, total: 0 });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("/solved/sims.json")
-      .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
-      .then((list) => {
-        const usable = list.filter((s) => s.value > 0);
-        if (!usable.length) { setEmpty(true); return; }
-        setSims(usable);
-        setSim(usable[0].name);
-      })
-      .catch((e) => setError(e.message));
-  }, []);
+  const tousSpots = useMemo(() => rassembler((idx) => idx.valueSpots), [rassembler]);
+  // Blindes et tapis : communs à toutes les textures d'un même scénario.
+  const apercu = sim === TOUTES ? Object.values(indexes)[0] : indexes[sim];
 
-  useEffect(() => {
-    if (!sim) return;
-    setIndex(null); setQ(null); setResult(null); setGuess("");
-    fetch(`/solved/${sim}/index.json`)
-      .then((r) => { if (!r.ok) throw new Error(`index de ${sim} introuvable (${r.status})`); return r.json(); })
-      .then(setIndex)
-      .catch((e) => setError(e.message));
-  }, [sim]);
-
-  const pool = useMemo(() => {
-    if (!index?.valueSpots) return [];
-    return index.valueSpots.filter((s) => streets.includes(s.streetName) && situations.includes(s.situation));
-  }, [index, streets, situations]);
+  const pool = useMemo(
+    () => tousSpots.filter((s) => streets.includes(s.streetName) && situations.includes(s.situation)),
+    [tousSpots, streets, situations]
+  );
 
   const toggle = (list, setList, v) =>
     setList(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
@@ -124,10 +108,10 @@ export default function ValueEquityPage() {
     setLoading(true); setResult(null); setGuess("");
     try {
       const pick = pool[Math.floor(Math.random() * pool.length)];
-      const res = await fetch(`/solved/${sim}/v${pick.id}.json`);
+      const res = await fetch(`/solved/${pick.sim}/v${pick.id}.json`);
       if (!res.ok) throw new Error(`spot ${pick.id} introuvable`);
       const spot = await res.json();
-      setQ({ spot, combo: drawCombo(spot.combos) });
+      setQ({ spot, combo: drawCombo(spot.combos), meta: indexes[pick.sim], sim: pick.sim });
     } catch (e) {
       setError(e.message);
     } finally {
@@ -150,7 +134,7 @@ export default function ValueEquityPage() {
     recordSkillAttempt({
       exercise: "value-equity",
       outcome: { error: delta },
-      meta: { sim, spot: q.spot.id, street: q.spot.streetName, situation: q.spot.situation },
+      meta: { sim: q.sim, spot: q.spot.id, street: q.spot.streetName, situation: q.spot.situation },
     }).catch(() => {});
   };
 
@@ -193,23 +177,22 @@ export default function ValueEquityPage() {
           l&apos;adversaire : c&apos;est elle qui dit si tu as de la value, et jusqu&apos;à quel sizing.
         </div>
 
-        {sims && sims.length > 1 && (
+        {sims && sims.length > 0 && (
           <div style={{ marginBottom: 12 }}>
             <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim || ""} onChange={(e) => setSim(e.target.value)} style={{
+            <select value={sim} onChange={(e) => { setSim(e.target.value); setQ(null); setResult(null); setGuess(""); }} style={{
               width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
               color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
             }}>
-              {sims.map((s) => (
-                <option key={s.name} value={s.name}>
-                  {s.fullBoard || s.board.join(" ")} — {s.effectiveBB} bb — {s.value} spots
-                </option>
-              ))}
+              <option value={TOUTES}>
+                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.value || 0), 0)} spots
+              </option>
+              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.value)}</option>)}
             </select>
           </div>
         )}
 
-        {!index ? (
+        {!prets ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement de la simulation…</div>
         ) : (
           <>
@@ -219,7 +202,7 @@ export default function ValueEquityPage() {
                 <button key={s} onClick={() => toggle(streets, setStreets, s)} style={chip(streets.includes(s))}>
                   {s}
                   <span style={{ opacity: 0.65, marginLeft: 6, fontSize: 10 }}>
-                    {(index.valueSpots || []).filter((x) => x.streetName === s).length}
+                    {tousSpots.filter((x) => x.streetName === s).length}
                   </span>
                 </button>
               ))}
@@ -231,7 +214,7 @@ export default function ValueEquityPage() {
                 <button key={s} onClick={() => toggle(situations, setSituations, s)} style={chip(situations.includes(s))}>
                   {s}
                   <span style={{ opacity: 0.65, marginLeft: 6, fontSize: 10 }}>
-                    {(index.valueSpots || []).filter((x) => x.situation === s).length}
+                    {tousSpots.filter((x) => x.situation === s).length}
                   </span>
                 </button>
               ))}
@@ -257,7 +240,7 @@ export default function ValueEquityPage() {
             </span>
           </div>
 
-          <SolvedReplayer spot={spot} meta={index} heroCards={heroCards} />
+          <SolvedReplayer spot={spot} meta={q.meta} heroCards={heroCards} />
 
           <div style={{ background: "var(--panel-2)", borderRadius: 10, padding: 14, fontSize: 12, marginBottom: 14 }}>
             <Row label="Déroulé" value={spot.line} />
@@ -378,6 +361,26 @@ export default function ValueEquityPage() {
                 <div style={{ marginTop: 10, fontSize: 11 }}>
                   Modèle théorique : il paie exactement sa MDF avec le haut de sa range, et tu bats tout
                   ce qu&apos;il couche. En jeu, adapte selon ce que tu sais de lui.
+                </div>
+
+                {/* Ta range au moment de miser, avec les fréquences du solveur : de quoi voir avec
+                    quoi il value bet et avec quoi il bluffe. */}
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontSize: 11, color: "var(--text)", fontWeight: 600, marginBottom: 6 }}>
+                    Ta range à ce nœud
+                  </div>
+                  <RangeGrid
+                    comboWeights={Object.fromEntries(spot.combos.map((c) => [c[0], c[1]]))}
+                    setComboWeights={() => {}}
+                    mode="reveal"
+                    excludedCards={knownCards([], spot.board.join(" "))}
+                    resultReveal={{ villainKey: combo[0], found: result.grade !== "loin" }}
+                    showFilters={false}
+                  />
+                  <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 6, lineHeight: 1.6 }}>
+                    Les pourcentages sont les fréquences du solveur. Clic droit sur une case pour le
+                    détail combo par combo. Le cadre marque ta main.
+                  </div>
                 </div>
               </div>
             </div>
