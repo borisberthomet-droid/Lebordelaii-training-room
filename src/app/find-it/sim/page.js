@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import SimsEnPreparation from "@/components/SimsEnPreparation";
 import Logo from "@/components/Logo";
 import MiniCard from "@/components/MiniCard";
 import RangeGrid from "@/components/RangeGrid";
@@ -61,6 +62,8 @@ export default function FindItSimPage() {
   const [sim, setSim] = useState(null);
   const [index, setIndex] = useState(null);
   const [error, setError] = useState(null);
+  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
+  const [empty, setEmpty] = useState(false);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);          // { spot, villainWeights, heroCards, villainKey }
   const [selection, setSelection] = useState({});
@@ -73,7 +76,7 @@ export default function FindItSimPage() {
       .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
       .then((list) => {
         const utiles = list.filter((s) => s.findIt > 0);
-        if (!utiles.length) throw new Error("aucune simulation ne contient de spots Find It");
+        if (!utiles.length) { setEmpty(true); return; }
         setSims(utiles);
         setSim(utiles[0].name);
       })
@@ -135,6 +138,8 @@ export default function FindItSimPage() {
       meta: { sim, spot: q.spot.id, found, selectedCount: selected.length, source: "solveur" },
     }).catch(() => {});
   };
+
+  if (empty) return <SimsEnPreparation title="Find It — sur simulation" />;
 
   if (error) {
     return (

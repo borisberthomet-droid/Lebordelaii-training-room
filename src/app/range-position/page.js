@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import SimsEnPreparation from "@/components/SimsEnPreparation";
 import MiniCard from "@/components/MiniCard";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { BUCKETS, bucketFor } from "@/lib/poker/relativeStrength";
@@ -106,6 +107,8 @@ export default function RangePositionPage() {
   const [sim, setSim] = useState(null);
   const [index, setIndex] = useState(null);
   const [error, setError] = useState(null);
+  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
+  const [empty, setEmpty] = useState(false);
   // Deux sens pour la même question. À un nœud, hero est TOUJOURS celui qui fait face à la mise,
   // donc le défenseur : seule la formulation change, la bonne réponse est la même.
   //   "moi" — je défends, où est MA main dans MA range ?
@@ -123,7 +126,7 @@ export default function RangePositionPage() {
     fetch("/solved/sims.json")
       .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
       .then((list) => {
-        if (!list.length) throw new Error("aucune simulation construite");
+        if (!list.length) { setEmpty(true); return; }
         setSims(list);
         setSim(list[0].name);
       })
@@ -183,6 +186,8 @@ export default function RangePositionPage() {
       meta: { sim, spot: q.spot.id, street: q.spot.streetName, archetype: q.spot.archetype },
     }).catch(() => {});
   };
+
+  if (empty) return <SimsEnPreparation title="Où suis-je dans ma range ?" />;
 
   if (error) {
     return (

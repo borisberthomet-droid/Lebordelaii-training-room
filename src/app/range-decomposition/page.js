@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import SimsEnPreparation from "@/components/SimsEnPreparation";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import PivotDial from "@/components/PivotDial";
 import { RangeDecompIcon } from "@/components/ToolIcons";
@@ -99,6 +100,8 @@ export default function RangeDecompositionPage() {
   const [sim, setSim] = useState(null);
   const [index, setIndex] = useState(null);
   const [error, setError] = useState(null);
+  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
+  const [empty, setEmpty] = useState(false);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);             // { spot, truth, folds }
   const [guess, setGuess] = useState({});
@@ -110,7 +113,7 @@ export default function RangeDecompositionPage() {
     fetch("/solved/sims.json")
       .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
       .then((list) => {
-        if (!list.length) throw new Error("aucune simulation construite");
+        if (!list.length) { setEmpty(true); return; }
         setSims(list);
         setSim(list[0].name);
       })
@@ -176,6 +179,8 @@ export default function RangeDecompositionPage() {
       meta: { sim, spot: q.spot.id, street: q.spot.streetName },
     }).catch(() => {});
   };
+
+  if (empty) return <SimsEnPreparation title="Décompose la range" />;
 
   if (error) {
     return (

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import SimsEnPreparation from "@/components/SimsEnPreparation";
 import MiniCard from "@/components/MiniCard";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { potOddsRow } from "@/lib/poker/memoTables";
@@ -79,6 +80,8 @@ export default function ValueEquityPage() {
   const [sim, setSim] = useState(null);
   const [index, setIndex] = useState(null);
   const [error, setError] = useState(null);
+  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
+  const [empty, setEmpty] = useState(false);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [situations, setSituations] = useState(["Après son check", "Premier de parole"]);
   const [q, setQ] = useState(null);         // { spot, combo }
@@ -92,7 +95,7 @@ export default function ValueEquityPage() {
       .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
       .then((list) => {
         const usable = list.filter((s) => s.value > 0);
-        if (!usable.length) throw new Error("aucune simulation ne contient de spots de value");
+        if (!usable.length) { setEmpty(true); return; }
         setSims(usable);
         setSim(usable[0].name);
       })
@@ -150,6 +153,8 @@ export default function ValueEquityPage() {
       meta: { sim, spot: q.spot.id, street: q.spot.streetName, situation: q.spot.situation },
     }).catch(() => {});
   };
+
+  if (empty) return <SimsEnPreparation title="Quelle est ton équité ?" />;
 
   if (error) {
     return (
