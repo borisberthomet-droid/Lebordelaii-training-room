@@ -62,7 +62,7 @@ function drawWeighted(entries) {
 const A_DES_SPOTS = (s) => (s.findIt || 0) > 0;
 
 export default function FindItSimPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, empty } = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);          // { spot, villainWeights, heroCards, villainKey }
   const [selection, setSelection] = useState({});

@@ -110,7 +110,7 @@ function readOut(combo, spot) {
 const A_DES_SPOTS = (s) => (s.spots || 0) > 0;
 
 export default function RangePositionPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, empty } = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
   // Deux sens pour la même question. À un nœud, hero est TOUJOURS celui qui fait face à la mise,
   // donc le défenseur : seule la formulation change, la bonne réponse est la même.
   //   "moi" — je défends, où est MA main dans MA range ?
@@ -309,7 +309,7 @@ export default function RangePositionPage() {
 
           <div style={{ background: "var(--panel-2)", borderRadius: 10, padding: 14, fontSize: 12, marginBottom: 14 }}>
             <Row label="Déroulé" value={spot.line} />
-            <Row label="Pot" value={`${spot.potBB} bb`} />
+            <Row label="Pot (mise incluse)" value={`${spot.potBB} bb`} />
             <Row label="À payer" value={`${spot.toCallBB} bb — cote ${spot.potOddsPct}%`} />
             <Row label="Taille de la range ici" value={`${spot.weightTotal} combos pondérés`} />
             <Row

@@ -82,7 +82,7 @@ function actionLabel(a) {
 const A_DES_SPOTS = (s) => (s.value || 0) > 0;
 
 export default function ValueEquityPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, empty } = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [situations, setSituations] = useState(["Après son check", "Premier de parole"]);
   const [q, setQ] = useState(null);         // { spot, combo }
@@ -244,7 +244,7 @@ export default function ValueEquityPage() {
 
           <div style={{ background: "var(--panel-2)", borderRadius: 10, padding: 14, fontSize: 12, marginBottom: 14 }}>
             <Row label="Déroulé" value={spot.line} />
-            <Row label="Pot" value={`${spot.potBB} bb`} />
+            <Row label="Pot (mise incluse)" value={`${spot.potBB} bb`} />
             <Row label="Tapis effectif" value={`${spot.effStackBB} bb`} />
           </div>
 

@@ -11,6 +11,9 @@ import {
 } from "@/lib/poker/handCategory";
 import { attemptScore, skillFor } from "@/lib/poker/skillScore";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
+import RangeGrid from "@/components/RangeGrid";
+import { knownCards } from "@/lib/poker/scoring";
+import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // Décompose la range du DÉFENSEUR : l'élève mise, et estime la part de chaque catégorie de main
 // (DP+, overpair, TP…) dans la range qui fait face à sa mise. C'est l'usage de Boris : savoir ce
@@ -95,13 +98,11 @@ function foldsByCategory(spot) {
   };
 }
 
+// Textures utilisables ici : celles qui ont des spots où un joueur fait face à une mise.
+const A_DES_SPOTS = (s) => (s.spots || 0) > 0;
+
 export default function RangeDecompositionPage() {
-  const [sims, setSims] = useState(null);
-  const [sim, setSim] = useState(null);
-  const [index, setIndex] = useState(null);
-  const [error, setError] = useState(null);
-  // Catalogue vide : sims retirées le temps d'en préparer de nouvelles, ce n'est pas une panne.
-  const [empty, setEmpty] = useState(false);
+  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);             // { spot, truth, folds }
   const [guess, setGuess] = useState({});
@@ -109,36 +110,15 @@ export default function RangeDecompositionPage() {
   const [stats, setStats] = useState({ n: 0, sumError: 0 });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("/solved/sims.json")
-      .then((r) => { if (!r.ok) throw new Error(`catalogue introuvable (${r.status})`); return r.json(); })
-      .then((list) => {
-        if (!list.length) { setEmpty(true); return; }
-        setSims(list);
-        setSim(list[0].name);
-      })
-      .catch((e) => setError(e.message));
-  }, []);
-
-  // La remise à zéro se fait dans le gestionnaire du menu, pas ici : l'effet ne fait que charger.
-  // `ignore` écarte la réponse d'une texture quittée entre-temps.
-  useEffect(() => {
-    if (!sim) return;
-    let ignore = false;
-    fetch(`/solved/${sim}/index.json`)
-      .then((r) => { if (!r.ok) throw new Error(`index de ${sim} introuvable (${r.status})`); return r.json(); })
-      .then((idx) => { if (!ignore) setIndex(idx); })
-      .catch((e) => { if (!ignore) setError(e.message); });
-    return () => { ignore = true; };
-  }, [sim]);
+  const tousSpots = useMemo(() => rassembler((idx) => idx.spots), [rassembler]);
 
   const changeSim = (name) => {
-    setSim(name); setIndex(null); setQ(null); setReveal(null);
+    setSim(name); setQ(null); setReveal(null);
   };
 
   const pool = useMemo(
-    () => (index?.spots || []).filter((s) => streets.includes(s.streetName)),
-    [index, streets]
+    () => tousSpots.filter((s) => streets.includes(s.streetName)),
+    [tousSpots, streets]
   );
 
   const newQuestion = async () => {
@@ -146,14 +126,14 @@ export default function RangeDecompositionPage() {
     setLoading(true); setReveal(null);
     try {
       const meta = pool[Math.floor(Math.random() * pool.length)];
-      const res = await fetch(`/solved/${sim}/${meta.id}.json`);
+      const res = await fetch(`/solved/${meta.sim}/${meta.id}.json`);
       if (!res.ok) throw new Error(`spot ${meta.id} introuvable`);
       const spot = await res.json();
       // Paires [clé, poids] gardées dans l'état : la molette trie la range une fois par spot, et
       // un tableau recréé à chaque rendu relancerait ce tri à chaque cran.
       const pairs = spot.combos.map((c) => [c[0], c[1]]);
       const truth = decompose(pairs, spot.board);
-      setQ({ spot, pairs, truth, folds: foldsByCategory(spot) });
+      setQ({ spot, pairs, truth, folds: foldsByCategory(spot), meta: indexes[meta.sim], sim: meta.sim });
       setGuess(Object.fromEntries(availableCategories(spot.board).map((c) => [c.id, ""])));
     } catch (e) {
       setError(e.message);
@@ -176,7 +156,7 @@ export default function RangeDecompositionPage() {
     recordSkillAttempt({
       exercise: "range-decomposition",
       outcome: { error: err },
-      meta: { sim, spot: q.spot.id, street: q.spot.streetName },
+      meta: { sim: q.sim, spot: q.spot.id, street: q.spot.streetName },
     }).catch(() => {});
   };
 
@@ -225,23 +205,22 @@ export default function RangeDecompositionPage() {
           qui dit si ton bluff passe. La référence est la range réelle du solveur à ce nœud.
         </div>
 
-        {sims && sims.length > 1 && (
+        {sims && sims.length > 0 && (
           <div style={{ marginBottom: 12 }}>
             <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
             <select value={sim || ""} onChange={(e) => changeSim(e.target.value)} style={{
               width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
               color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
             }}>
-              {sims.map((s) => (
-                <option key={s.name} value={s.name}>
-                  {s.fullBoard || s.board.join(" ")} — {s.effectiveBB} bb — {s.spots} spots
-                </option>
-              ))}
+              <option value={TOUTES}>
+                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.spots || 0), 0)} spots
+              </option>
+              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.spots)}</option>)}
             </select>
           </div>
         )}
 
-        {!index ? (
+        {!prets ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement de la simulation…</div>
         ) : (
           <>
@@ -252,7 +231,7 @@ export default function RangeDecompositionPage() {
                   style={chip(streets.includes(s))}>
                   {s}
                   <span style={{ opacity: 0.65, marginLeft: 6, fontSize: 10 }}>
-                    {index.spots.filter((x) => x.streetName === s).length}
+                    {tousSpots.filter((x) => x.streetName === s).length}
                   </span>
                 </button>
               ))}
@@ -278,13 +257,14 @@ export default function RangeDecompositionPage() {
             </span>
           </div>
 
-          <SolvedReplayer key={`replay-${sim}-${spot.id}`} spot={spot} meta={index} heroCards={null} />
+          <SolvedReplayer key={`replay-${q.sim}-${spot.id}`} spot={spot} meta={q.meta} heroCards={null} />
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18, alignItems: "start" }}>
             <div>
               <div style={{ background: "var(--panel-2)", borderRadius: 10, padding: 14, fontSize: 12, marginBottom: 14 }}>
                 <Row label="Déroulé" value={spot.line} />
-                <Row label="Pot" value={`${spot.potBB} bb`} />
+                <Row label="Pot avant ta mise" value={`${(spot.potBB - spot.toCallBB).toFixed(1)} bb`} />
+                <Row label="Ta mise" value={`${spot.toCallBB.toFixed(1)} bb`} />
                 <Row label={`Range de ${spot.heroPos}`} value={`${q.truth.total.toFixed(0)} combos pondérés`} />
                 <Row
                   label="Fréquence de ce nœud"
@@ -434,6 +414,23 @@ export default function RangeDecompositionPage() {
                     })}
                   </div>
 
+                  <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border)" }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 6 }}>
+                      La range de {spot.heroPos} sur la grille
+                    </div>
+                    <RangeGrid
+                      comboWeights={Object.fromEntries(q.pairs)}
+                      setComboWeights={() => {}}
+                      mode="reveal"
+                      excludedCards={knownCards([], spot.board.join(" "))}
+                      showFilters={false}
+                    />
+                    <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 6, lineHeight: 1.6 }}>
+                      Les pourcentages sont les fréquences du solveur. Clic droit sur une case pour le
+                      détail combo par combo.
+                    </div>
+                  </div>
+
                   <button onClick={newQuestion} style={{ ...btn, marginTop: 8 }}>Range suivante →</button>
                 </div>
               )}
@@ -444,7 +441,7 @@ export default function RangeDecompositionPage() {
               remet la molette sur la taille jouée à chaque nouveau spot. */}
           {reveal && (
             <PivotDial
-              key={`pivot-${sim}-${spot.id}`}
+              key={`pivot-${q.sim}-${spot.id}`}
               combos={q.pairs}
               board={spot.board}
               playedSizePct={(spot.toCallBB / (spot.potBB - spot.toCallBB)) * 100}

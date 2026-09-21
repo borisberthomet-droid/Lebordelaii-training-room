@@ -63,7 +63,7 @@ export function useSolvedSims(aDesSpots) {
     [noms, indexes]
   );
 
-  return { sims, sim, setSim, indexes, prets, rassembler, error, empty };
+  return { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty };
 }
 
 // Libellé d'une texture dans le menu déroulant.
