@@ -102,6 +102,11 @@ function clashes(key, board) {
   return board.includes(key.slice(0, 2)) || board.includes(key.slice(2, 4));
 }
 
+// Part d'une range encore vivante à un nœud, rapportée à sa range de départ.
+function partDe(poids, depart) {
+  return depart > 0 ? Object.values(poids).reduce((a, b) => a + b, 0) / depart : 0;
+}
+
 function weightsOf(node) {
   const out = {};
   for (const [c, h] of Object.entries(node.hands)) if (h.weight > 1e-9) out[normKey(c)] = h.weight;
@@ -112,11 +117,16 @@ function weightsOf(node) {
 function describeLine(seq) {
   const parts = [];
   let street = 0;
+  let miseEnCours = false;   // quelqu'un a déjà misé sur cette street
   for (const a of seq) {
     if (a.street === 0) continue;
-    if (a.street !== street) { if (parts.length) parts.push("—"); street = a.street; }
+    if (a.street !== street) { if (parts.length) parts.push("—"); street = a.street; miseEnCours = false; }
+    // Une mise qui répond à une mise est une relance. Les deux s'écrivent pareil dans l'export
+    // (le total engagé sur la street) : sans cette distinction, une ligne « BB bet 1.8, BU bet
+    // 8.8 » cache un raise, et c'est justement ce qu'on demande de lire à l'élève.
     const verb = a.type === "X" ? "check" : a.type === "C" ? "call" : a.type === "F" ? "fold"
-      : `bet ${(a.amount / BB).toFixed(1)}bb`;
+      : `${miseEnCours ? "raise" : "bet"} ${(a.amount / BB).toFixed(1)}bb`;
+    if (a.type === "R") miseEnCours = true;
     parts.push(`${POS(a.player)} ${verb}`);
   }
   return parts.join(", ");
@@ -130,27 +140,48 @@ function preflopAggressor(seq) {
   return pfa;
 }
 
-// Nom de la ligne, à partir du MOTIF de mise du vilain street par street.
-//
-// La première version comptait seulement sur combien de streets il avait misé : une ligne
-// « flop check-check, turn bet, river bet » sortait en « 2e barrel » alors que c'est un delay
-// cbet suivi d'une mise river. Un barrel suppose d'avoir cbet le flop ; sans ça le vocabulaire
-// est faux, et c'est justement sur ces noms que se fait le choix de ce qu'on entraîne.
+// Ce qui s'est passé sur chaque street : qui a misé le premier, et si elle s'est bouclée sans
+// mise. C'est ce qui sépare un donk (on mise DANS l'agresseur de la street précédente) d'un probe
+// (on mise après qu'il a checké derrière) — deux spots que rien ne rapproche, et que la version
+// précédente confondait : elle ne regardait que sur COMBIEN de streets le vilain avait misé.
+// Signalé par Boris, qui a filtré « probe river » et est tombé sur des donks et des raises.
+function streetStories(seq) {
+  const info = {};
+  for (const s of [1, 2, 3]) info[s] = { premierMiseur: null, jouee: false };
+  for (const a of seq) {
+    if (a.street < 1) continue;
+    info[a.street].jouee = true;
+    if (a.type === "R" && info[a.street].premierMiseur === null) info[a.street].premierMiseur = a.player;
+  }
+  // Une street jouée sans personne pour miser s'est bouclée en check-check. Ne vaut que pour les
+  // streets TERMINÉES : la street en cours peut encore voir une mise.
+  for (const s of [1, 2, 3]) info[s].checkThrough = info[s].jouee && info[s].premierMiseur === null;
+  return info;
+}
+
+// Nom de la ligne : ce que hero a en face de lui, dit avec le vocabulaire du joueur.
 function lineArchetype(seq, street, heroIdx) {
   const post = seq.filter((a) => a.street >= 1);
   const pfa = preflopAggressor(seq);
+  const info = streetStories(seq);
+  const villain = post.map((a) => a.player).find((p) => p !== heroIdx);
+  const nom = (s) => STREETS[s];
 
   // Hero a misé sur cette street et se retrouve à parler : c'est qu'on l'a relancé.
   if (post.some((a) => a.street === street && a.player === heroIdx && a.type === "R")) {
-    return "Face à un raise";
+    return info[street].premierMiseur === heroIdx ? `Face à un raise ${nom(street)}` : `Face à un 3-bet ${nom(street)}`;
   }
 
-  const streetsMisees = [...new Set(post.filter((a) => a.player !== heroIdx && a.type === "R").map((a) => a.street))].sort();
-  const motif = streetsMisees.join("");
   const villainEstPfa = heroIdx !== pfa;
+  const misesVilain = [1, 2, 3].filter((s) => s <= street && info[s].premierMiseur === villain);
+  // Hero a mené une street précédente : le vocabulaire de l'agresseur ne s'applique plus, sa
+  // mise n'est ni un cbet ni un barrel mais une réponse à ce lead.
+  const heroAMene = [1, 2, 3].some((s) => s < street && info[s].premierMiseur === heroIdx);
 
   if (villainEstPfa) {
-    // Vocabulaire de l'agresseur préflop.
+    if (heroAMene) return `Bet ${nom(street)} après ton lead`;
+    // Le motif suffit ici : hero n'ayant jamais misé, toute street sans mise du vilain s'est
+    // bouclée en check-check.
     return {
       "1": "Cbet flop",
       "12": "2e barrel",
@@ -159,18 +190,20 @@ function lineArchetype(seq, street, heroIdx) {
       "2": "Delay cbet turn",
       "23": "Delay cbet + bet river",
       "3": "Bet river après deux checks",
-    }[motif] || "Face à une mise";
+    }[misesVilain.join("")] || `Mise ${nom(street)}`;
   }
-  // Le vilain n'est pas l'agresseur : il mise dans la range de celui qui a relancé.
-  return {
-    "1": "Donk flop",
-    "12": "Donk flop + bet turn",
-    "123": "Donk sur les trois streets",
-    "2": "Probe turn",
-    "23": "Probe turn + bet river",
-    "3": "Probe river",
-    "13": "Donk flop, check turn, bet river",
-  }[motif] || "Face à une mise";
+
+  // Le vilain n'est pas l'agresseur préflop : il mène dans la range de celui qui a relancé.
+  // Chaque street où il mène se nomme d'après ce qui vient de se passer.
+  const mots = misesVilain.map((s) => {
+    if (s === 1) return "donk flop";
+    const avant = info[s - 1];
+    if (avant.premierMiseur === villain) return `barrel ${nom(s)}`;   // il menait déjà
+    if (avant.checkThrough) return `probe ${nom(s)}`;                 // l'agresseur a checké derrière
+    return `donk ${nom(s)}`;                                          // il mise dans l'agresseur
+  });
+  const phrase = mots.join(" + ") || `mise ${nom(street)}`;
+  return phrase.charAt(0).toUpperCase() + phrase.slice(1);
 }
 
 // --- Parcours de l'arbre -------------------------------------------------------------------------
@@ -260,12 +293,20 @@ while (stack.length) {
     // HRC converge les lignes principales, pas les feuilles.
     const reachPct = +((Object.values(heroW).reduce((a, b) => a + b, 0) / startWeight[hero]) * 100).toFixed(1);
 
+    // Fréquence de la LIGNE : la probabilité que ce nœud arrive, les deux ranges prises ensemble.
+    // `reachPct` ne regarde que hero, et se laisse tromper : un défenseur qui paie large affiche
+    // 80% sur une ligne que l'adversaire ne joue qu'une fois sur cent. Signalé par Boris — « BB
+    // donk bet flop sur AA8, ça n'existe PAS DU TOUT » — sur un spot affiché comme fréquent.
+    // C'est ce produit qui dit la vérité, et c'est lui qui pondère le tirage.
+    const lineFreqPct = +(partDe(heroW, startWeight[hero]) * partDe(vilW, startWeight[villain]) * 100).toFixed(3);
+
     out.push({
       id,
       street: d.street,
       streetName: STREETS[d.street],
       board,
       reachPct,
+      lineFreqPct,
       heroPos: POS(hero),
       villainPos: POS(villain),
       line: describeLine(d.sequence),
@@ -330,6 +371,7 @@ while (stack.length) {
       potBB: +(pot / BB).toFixed(2),
       effStackBB: +(effStack / BB).toFixed(1),
       reachPct: +((rankedValue.totalWeight / startWeight[hero]) * 100).toFixed(1),
+      lineFreqPct: +(partDe(heroW, startWeight[hero]) * partDe(vilW, startWeight[villain]) * 100).toFixed(3),
       weightTotal: +rankedValue.totalWeight.toFixed(1),
       sequence: d.sequence.map((a) => ({
         pos: POS(a.player), type: a.type, amountBB: +(a.amount / BB).toFixed(2), street: a.street,
@@ -392,8 +434,9 @@ const index = {
   valueSpots: outValue.map((s) => ({
     id: s.id, street: s.street, streetName: s.streetName, situation: s.situation,
     heroPos: s.heroPos, villainPos: s.villainPos, board: s.board, line: s.line,
-    potBB: s.potBB, weightTotal: s.weightTotal, reachPct: s.reachPct,
+    potBB: s.potBB, weightTotal: s.weightTotal, reachPct: s.reachPct, lineFreqPct: s.lineFreqPct,
   })),
+  scenario: settings.source?.scenario || null,
   boardFlop: parseBoardCards(root.board || ""),
   effectiveBB: START_STACK / BB,
   blinds: { sb: SB, bb: BB, ante: ANTE, anteType: ANTE_TYPE },
@@ -403,6 +446,7 @@ const index = {
   spots: out.map((s) => ({
     id: s.id, street: s.street, streetName: s.streetName, archetype: s.archetype,
     heroPos: s.heroPos, villainPos: s.villainPos, board: s.board, reachPct: s.reachPct,
+    lineFreqPct: s.lineFreqPct,
     line: s.line, potBB: s.potBB, toCallBB: s.toCallBB, combos: s.combos.length,
     weightTotal: s.weightTotal, mdfPct: s.mdfPct, defendPct: s.defendPct,
   })),
@@ -416,6 +460,7 @@ const catalogPath = path.join("public", "solved", "sims.json");
 const catalog = fs.existsSync(catalogPath) ? JSON.parse(fs.readFileSync(catalogPath, "utf8")) : [];
 const entry = {
   name: simName,
+  scenario: settings.source?.scenario || null,
   board: parseBoardCards(root.board || ""),
   // Board final atteint par la sim : c'est ce qui distingue deux textures à l'œil.
   fullBoard: [...new Set(out.map((s) => s.board.join(" ")))].sort((a, b) => b.length - a.length)[0] || "",

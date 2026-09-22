@@ -10,6 +10,9 @@ import { BUCKETS, bucketFor } from "@/lib/poker/relativeStrength";
 import { RangeBuilderIcon } from "@/components/ToolIcons";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { knownCards } from "@/lib/poker/scoring";
+import FiltreSims from "@/components/FiltreSims";
+import MoletteCharniere from "@/components/MoletteCharniere";
+import { frequence, lignesJouees, tirerPondere } from "@/lib/poker/tirage";
 import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // Les simulations disponibles sont découvertes à l'exécution via public/solved/sims.json, que le
@@ -110,7 +113,8 @@ function readOut(combo, spot) {
 const A_DES_SPOTS = (s) => (s.spots || 0) > 0;
 
 export default function RangePositionPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
+  const etat = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, indexes, prets, rassembler, error, setError, empty } = etat;
   // Deux sens pour la même question. À un nœud, hero est TOUJOURS celui qui fait face à la mise,
   // donc le défenseur : seule la formulation change, la bonne réponse est la même.
   //   "moi" — je défends, où est MA main dans MA range ?
@@ -133,7 +137,7 @@ export default function RangePositionPage() {
   const archetypes = archetypesChoisis ?? allArchetypes;
 
   const pool = useMemo(
-    () => tousSpots.filter((s) => streets.includes(s.streetName) && archetypes.includes(s.archetype)),
+    () => lignesJouees(tousSpots.filter((s) => streets.includes(s.streetName) && archetypes.includes(s.archetype))),
     [tousSpots, streets, archetypes]
   );
 
@@ -148,7 +152,9 @@ export default function RangePositionPage() {
     try {
       // Chaque spot porte sa texture d'origine : c'est elle qui dit où chercher le fichier et
       // quelles blindes afficher, puisque l'élève peut s'entraîner sur toutes les textures.
-      const pick = pool[Math.floor(Math.random() * pool.length)];
+      // Le tirage suit la fréquence réelle des lignes : un 2e barrel doit sortir cent fois plus
+      // souvent qu'un donk river joué 0.1% du temps.
+      const pick = tirerPondere(pool);
       const res = await fetch(`/solved/${pick.sim}/${pick.id}.json`);
       if (!res.ok) throw new Error(`spot ${pick.id} introuvable`);
       const spot = await res.json();
@@ -174,7 +180,7 @@ export default function RangePositionPage() {
     }).catch(() => {});
   };
 
-  if (empty) return <SimsEnPreparation title="Où suis-je dans ma range ?" />;
+  if (empty) return <SimsEnPreparation title="Vs AGG" />;
 
   if (error) {
     return (
@@ -194,7 +200,8 @@ export default function RangePositionPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <RangeBuilderIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Où suis-je dans ma range ?</span>
+          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Vs AGG</span>
+          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>où suis-je dans ma range ?</span>
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--text-muted)" }}>
@@ -220,20 +227,7 @@ export default function RangePositionPage() {
             : "C'est toi qui attaques. Situe la main de ton adversaire dans SA range de défense : c'est ce qui dit si tes bluffs passent, et s'il respecte sa MDF."}
         </div>
 
-        {sims && sims.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim} onChange={(e) => { setSim(e.target.value); setQ(null); setAnswer(null); }} style={{
-              width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
-              color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
-            }}>
-              <option value={TOUTES}>
-                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.spots || 0), 0)} spots
-              </option>
-              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.spots)}</option>)}
-            </select>
-          </div>
-        )}
+        <FiltreSims etat={etat} compte={(s) => s.spots} onReset={() => { setQ(null); setAnswer(null); }} />
 
         {!prets ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement des simulations…</div>
@@ -312,9 +306,12 @@ export default function RangePositionPage() {
             <Row label="Pot (mise incluse)" value={`${spot.potBB} bb`} />
             <Row label="À payer" value={`${spot.toCallBB} bb — cote ${spot.potOddsPct}%`} />
             <Row label="Taille de la range ici" value={`${spot.weightTotal} combos pondérés`} />
+            {/* Fréquence de la LIGNE, les deux ranges prises ensemble : c'est la seule qui dise
+                si le spot arrive vraiment. Celle de hero seul reste large sur des lignes que
+                l'adversaire ne prend jamais. */}
             <Row
-              label="Fréquence de ce nœud"
-              value={`${spot.reachPct}% ${spot.reachPct >= 25 ? "— stratégie bien convergée" : "— branche rare, stratégie approximative"}`}
+              label="Fréquence de la ligne"
+              value={`${frequence(spot)}% ${frequence(spot) >= 1 ? "— ligne courante" : "— ligne peu fréquente"}`}
             />
           </div>
 
@@ -436,6 +433,17 @@ export default function RangePositionPage() {
                   détail combo par combo. Le cadre marque la main tirée.
                 </div>
               </div>
+
+              {/* Molette de défense : à quelle taille de mise cette main devient-elle un fold ?
+                  Le repère noir sur la barre est la main tirée. */}
+              <MoletteCharniere
+                key={`mdf-${q.sim}-${spot.id}`}
+                combos={spot.combos}
+                board={spot.board}
+                mode="defense"
+                playedSizePct={(spot.toCallBB / (spot.potBB - spot.toCallBB)) * 100}
+                heroKey={combo[0]}
+              />
 
               <button onClick={newQuestion} style={{ ...btn, marginTop: 12 }}>Question suivante →</button>
             </div>

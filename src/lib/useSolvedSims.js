@@ -8,6 +8,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 // sa difficulté, et un board familier ne fait plus travailler grand-chose. Le choix d'une texture
 // précise reste disponible — c'est utile au coach pour travailler un board avec un élève.
 //
+// Un cran au-dessus de la texture il y a le scénario — « SRP BTN vs BB 45bb », « P3B BB vs BU »…
+// C'est un arbre de solveur différent, donc des ranges sans rapport : les mélanger ferait passer
+// l'élève d'un monde à l'autre sans prévenir. Le menu n'apparaît qu'à partir de deux scénarios.
+//
 // Les index sont chargés une fois puis gardés en mémoire ; seuls les spots eux-mêmes sont
 // rechargés à chaque question.
 
@@ -16,7 +20,8 @@ export const TOUTES = "*";
 // `aDesSpots` doit être une fonction STABLE (définie au niveau du module), sinon l'effet de
 // chargement se relance à chaque rendu.
 export function useSolvedSims(aDesSpots) {
-  const [sims, setSims] = useState(null);       // catalogue, déjà filtré
+  const [catalogue, setCatalogue] = useState(null);   // catalogue complet, déjà filtré
+  const [scenario, setScenario] = useState(TOUTES);
   const [sim, setSim] = useState(TOUTES);
   const [indexes, setIndexes] = useState({});   // nom de sim -> index.json
   const [error, setError] = useState(null);
@@ -31,16 +36,33 @@ export function useSolvedSims(aDesSpots) {
         const utiles = aDesSpots ? liste.filter(aDesSpots) : liste;
         // Catalogue vide : les sims sont en préparation, ce n'est pas une panne.
         if (!utiles.length) setEmpty(true);
-        else setSims(utiles);
+        else setCatalogue(utiles);
       })
       .catch((e) => { if (!ignore) setError(e.message); });
     return () => { ignore = true; };
   }, [aDesSpots]);
 
+  // Scénarios présents. Une texture construite avant ce champ n'en déclare aucun : la liste reste
+  // vide, le menu reste caché, et rien n'est filtré.
+  const scenarios = useMemo(
+    () => [...new Set((catalogue || []).map((s) => s.scenario).filter(Boolean))].sort(),
+    [catalogue]
+  );
+
+  const sims = useMemo(() => {
+    if (!catalogue) return null;
+    return scenario === TOUTES ? catalogue : catalogue.filter((s) => s.scenario === scenario);
+  }, [catalogue, scenario]);
+
+  // Changer de scénario peut retirer du menu la texture choisie : on retombe alors sur « toutes ».
+  // Déduit au rendu plutôt que corrigé dans un effet — remettre l'état à jour ferait un aller-
+  // retour de rendu pendant lequel la page chercherait une texture qui n'est plus proposée.
+  const simChoisie = sim !== TOUTES && sims && !sims.some((s) => s.name === sim) ? TOUTES : sim;
+
   const noms = useMemo(() => {
     if (!sims) return [];
-    return sim === TOUTES ? sims.map((s) => s.name) : [sim];
-  }, [sims, sim]);
+    return simChoisie === TOUTES ? sims.map((s) => s.name) : [simChoisie];
+  }, [sims, simChoisie]);
 
   useEffect(() => {
     const manquants = noms.filter((n) => !indexes[n]);
@@ -63,7 +85,10 @@ export function useSolvedSims(aDesSpots) {
     [noms, indexes]
   );
 
-  return { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty };
+  return {
+    sims, sim: simChoisie, setSim, scenarios, scenario, setScenario,
+    indexes, prets, rassembler, error, setError, empty,
+  };
 }
 
 // Libellé d'une texture dans le menu déroulant.

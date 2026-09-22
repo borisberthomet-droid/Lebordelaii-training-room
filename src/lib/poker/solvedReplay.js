@@ -59,6 +59,10 @@ export function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, anteType 
       for (const k of Object.keys(action)) delete action[k];
       currentStreet = a.street;
     }
+    // Une mise qui répond à une mise est une relance : sans la distinction, le replayer affiche
+    // « bet 8.8 » sur ce qui est en réalité un raise, et la ligne devient illisible. Préflop, les
+    // blindes tiennent déjà lieu de mise.
+    const dejaMise = a.street === 0 || POSITIONS.some((p) => p !== a.pos && street[p] > 0);
     let delta = 0;
     if (a.type === "R") { delta = a.amountBB - street[a.pos]; street[a.pos] = a.amountBB; }
     else if (a.type === "C") { delta = a.amountBB; street[a.pos] += delta; }
@@ -66,7 +70,7 @@ export function replayTo(sequence, idx, { startBB, sbBB, bbBB, anteBB, anteType 
     action[a.pos] = a.type === "F" ? "fold"
       : a.type === "X" ? "check"
       : a.type === "C" ? "call"
-      : `bet ${a.amountBB}`;
+      : `${dejaMise ? "raise" : "bet"} ${a.amountBB}`;
   }
 
   // Carte qui tombe : la street avance sans action rejouée, les mises de la street close

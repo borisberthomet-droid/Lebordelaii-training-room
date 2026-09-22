@@ -28,7 +28,8 @@ const THEMES = [
     axis: "frequence", color2: "#7ED0F0", label: "Fréquence", color: "#4FA8E0",
     desc: "Savoir à quelle fréquence défendre, miser, bluffer",
     tools: [
-      { href: "/range-position", label: "Où suis-je dans ma range ?" },
+      { href: "/range-position", label: "Vs AGG — où suis-je dans ma range ?" },
+      { href: "/dois-je-bluffer", label: "Dois-je bluffer ? — as AGG" },
       { href: "/range-builder", label: "Range Builder" },
       { href: "/pot-odds", label: "Pot Odds" },
     ],

@@ -10,6 +10,9 @@ import { potOddsRow } from "@/lib/poker/memoTables";
 import { PotOddsIcon } from "@/components/ToolIcons";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { knownCards } from "@/lib/poker/scoring";
+import FiltreSims from "@/components/FiltreSims";
+import MoletteEquite from "@/components/MoletteEquite";
+import { lignesJouees, tirerPondere } from "@/lib/poker/tirage";
 import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // « Quelle est ton équité ? » — sur un nœud où tu peux miser, estime ton équité contre la range
@@ -78,11 +81,17 @@ function actionLabel(a) {
   return a.type;
 }
 
+// Equite minimale pour qu'une main soit proposee ici : en dessous de 50% contre la range
+// globale, aucune taille ne garde de la value et la question devient celle du bluff, traitee
+// dans « Dois-je bluffer ? ».
+const EQUITE_MINI = 50;
+
 // Textures utilisables ici : celles qui contiennent des spots où hero peut miser.
 const A_DES_SPOTS = (s) => (s.value || 0) > 0;
 
 export default function ValueEquityPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
+  const etat = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, indexes, prets, rassembler, error, setError, empty } = etat;
   const [streets, setStreets] = useState(["turn", "river"]);
   const [situations, setSituations] = useState(["Après son check", "Premier de parole"]);
   const [q, setQ] = useState(null);         // { spot, combo }
@@ -96,7 +105,7 @@ export default function ValueEquityPage() {
   const apercu = sim === TOUTES ? Object.values(indexes)[0] : indexes[sim];
 
   const pool = useMemo(
-    () => tousSpots.filter((s) => streets.includes(s.streetName) && situations.includes(s.situation)),
+    () => lignesJouees(tousSpots.filter((s) => streets.includes(s.streetName) && situations.includes(s.situation))),
     [tousSpots, streets, situations]
   );
 
@@ -107,11 +116,19 @@ export default function ValueEquityPage() {
     if (!pool.length) return;
     setLoading(true); setResult(null); setGuess("");
     try {
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      const res = await fetch(`/solved/${pick.sim}/v${pick.id}.json`);
-      if (!res.ok) throw new Error(`spot ${pick.id} introuvable`);
-      const spot = await res.json();
-      setQ({ spot, combo: drawCombo(spot.combos), meta: indexes[pick.sim], sim: pick.sim });
+      // Tirage pondere par la frequence reelle de la ligne, puis une main de value potentielle
+      // dans cette range. Un noeud peut n'en contenir aucune : on retente ailleurs.
+      for (let essai = 0; essai < 6; essai++) {
+        const pick = tirerPondere(pool);
+        const res = await fetch(`/solved/${pick.sim}/v${pick.id}.json`);
+        if (!res.ok) throw new Error(`spot ${pick.id} introuvable`);
+        const spot = await res.json();
+        const candidats = spot.combos.filter((c) => c[2] >= EQUITE_MINI);
+        if (!candidats.length) continue;
+        setQ({ spot, combo: drawCombo(candidats), meta: indexes[pick.sim], sim: pick.sim });
+        return;
+      }
+      setError("aucune main de value trouvée sur ces filtres");
     } catch (e) {
       setError(e.message);
     } finally {
@@ -175,22 +192,10 @@ export default function ValueEquityPage() {
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12, lineHeight: 1.6 }}>
           Tu peux miser. Estime ton équité contre la <strong style={{ color: "var(--text)" }}>range globale</strong> de
           l&apos;adversaire : c&apos;est elle qui dit si tu as de la value, et jusqu&apos;à quel sizing.
+          Seules des mains de value potentielle te sont proposées — au moins {EQUITE_MINI}% d&apos;équité.
         </div>
 
-        {sims && sims.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim} onChange={(e) => { setSim(e.target.value); setQ(null); setResult(null); setGuess(""); }} style={{
-              width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
-              color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
-            }}>
-              <option value={TOUTES}>
-                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.value || 0), 0)} spots
-              </option>
-              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.value)}</option>)}
-            </select>
-          </div>
-        )}
+        <FiltreSims etat={etat} compte={(s) => s.value} onReset={() => { setQ(null); setResult(null); setGuess(""); }} />
 
         {!prets ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement de la simulation…</div>
@@ -382,6 +387,15 @@ export default function ValueEquityPage() {
                     détail combo par combo. Le cadre marque ta main.
                   </div>
                 </div>
+
+                {/* Le lien entre l'équité, la place dans la range et la taille qu'elle supporte :
+                    on glisse sur l'équité et la charnière suit. */}
+                <MoletteEquite
+                  key={`eq-${q.sim}-${spot.id}`}
+                  combos={spot.combos}
+                  board={spot.board}
+                  heroKey={combo[0]}
+                />
               </div>
             </div>
           )}

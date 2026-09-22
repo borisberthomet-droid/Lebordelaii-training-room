@@ -41,10 +41,24 @@ if (iOOP < 0 || iIP < 0) throw new Error("positions inconnues");
 // Pio termine chaque ligne par une espace : sans le trim, un 1327e jeton vide apparaît.
 const nombres = (ligne) => ligne.trim().split(/\s+/).map(Number);
 
+// Scenario : l'arbre d'ou sortent ces ranges. Deux arbres differents (SRP, pot 3-bet...) n'ont
+// aucun rapport entre eux, melanger leurs spots ferait passer l'eleve d'un monde a l'autre sans
+// prevenir. Par defaut on lit le nom du dossier de l'arbre sur le serveur — « BTNvsBB_SRP_45bb »
+// devient « SRP BTN vs BB 45bb » — et --scenario a le dernier mot.
+const dossierArbre = (chemin) => {
+  const parties = String(chemin).split(/[\\/]/).filter(Boolean);
+  return parties.length >= 3 ? parties[parties.length - 3] : "";
+};
+const joliScenario = (nom) => {
+  const m = /^([A-Z]{2,3})vs([A-Z]{2,3})_([A-Za-z0-9]+)_(\d+)bb$/.exec(nom);
+  return m ? `${m[3].toUpperCase()} ${m[1]} vs ${m[2]} ${m[4]}bb` : nom.replace(/_/g, " ");
+};
+
 const noeuds = new Map();
-let mains = [], infoArbre = [];
+let mains = [], infoArbre = [], cheminArbre = "";
 {
   const lignes = fs.readFileSync(source, "utf8").split(/\r?\n/);
+  cheminArbre = (lignes.find((l) => l.startsWith("arbre=")) || "").slice(6).trim();
   let section = null, cible = null, tampon = [];
   const vider = () => {
     if (!section) return;
@@ -260,7 +274,11 @@ const settings = {
     skipSb: false, movingBu: true, anteType: "BB", straddleType: "OFF",
   },
   eqmodel: { id: "chipev", structure: null },
-  source: { solveur: "PioSOLVER", export: path.basename(source) },
+  source: {
+    solveur: "PioSOLVER",
+    export: path.basename(source),
+    scenario: opt("scenario", joliScenario(dossierArbre(cheminArbre))),
+  },
 };
 
 fs.mkdirSync(sortie, { recursive: true });

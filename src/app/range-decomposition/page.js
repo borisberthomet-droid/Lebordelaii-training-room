@@ -13,6 +13,8 @@ import { attemptScore, skillFor } from "@/lib/poker/skillScore";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import RangeGrid from "@/components/RangeGrid";
 import { knownCards } from "@/lib/poker/scoring";
+import FiltreSims from "@/components/FiltreSims";
+import { frequence, lignesJouees, tirerPondere } from "@/lib/poker/tirage";
 import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // Décompose la range du DÉFENSEUR : l'élève mise, et estime la part de chaque catégorie de main
@@ -102,7 +104,8 @@ function foldsByCategory(spot) {
 const A_DES_SPOTS = (s) => (s.spots || 0) > 0;
 
 export default function RangeDecompositionPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
+  const etat = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, indexes, prets, rassembler, error, setError, empty } = etat;
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);             // { spot, truth, folds }
   const [guess, setGuess] = useState({});
@@ -112,12 +115,8 @@ export default function RangeDecompositionPage() {
 
   const tousSpots = useMemo(() => rassembler((idx) => idx.spots), [rassembler]);
 
-  const changeSim = (name) => {
-    setSim(name); setQ(null); setReveal(null);
-  };
-
   const pool = useMemo(
-    () => tousSpots.filter((s) => streets.includes(s.streetName)),
+    () => lignesJouees(tousSpots.filter((s) => streets.includes(s.streetName))),
     [tousSpots, streets]
   );
 
@@ -125,7 +124,8 @@ export default function RangeDecompositionPage() {
     if (!pool.length) return;
     setLoading(true); setReveal(null);
     try {
-      const meta = pool[Math.floor(Math.random() * pool.length)];
+      // Les lignes sortent a la frequence ou elles arrivent vraiment dans les strategies.
+      const meta = tirerPondere(pool);
       const res = await fetch(`/solved/${meta.sim}/${meta.id}.json`);
       if (!res.ok) throw new Error(`spot ${meta.id} introuvable`);
       const spot = await res.json();
@@ -205,20 +205,7 @@ export default function RangeDecompositionPage() {
           qui dit si ton bluff passe. La référence est la range réelle du solveur à ce nœud.
         </div>
 
-        {sims && sims.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim || ""} onChange={(e) => changeSim(e.target.value)} style={{
-              width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
-              color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
-            }}>
-              <option value={TOUTES}>
-                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.spots || 0), 0)} spots
-              </option>
-              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.spots)}</option>)}
-            </select>
-          </div>
-        )}
+        <FiltreSims etat={etat} compte={(s) => s.spots} onReset={() => { setQ(null); setReveal(null); }} />
 
         {!prets ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Chargement de la simulation…</div>
@@ -267,8 +254,8 @@ export default function RangeDecompositionPage() {
                 <Row label="Ta mise" value={`${spot.toCallBB.toFixed(1)} bb`} />
                 <Row label={`Range de ${spot.heroPos}`} value={`${q.truth.total.toFixed(0)} combos pondérés`} />
                 <Row
-                  label="Fréquence de ce nœud"
-                  value={`${spot.reachPct}% ${spot.reachPct >= 25 ? "— bien convergé" : "— branche rare"}`}
+                  label="Fréquence de la ligne"
+                  value={`${frequence(spot)}% ${frequence(spot) >= 1 ? "— ligne courante" : "— ligne peu fréquente"}`}
                 />
               </div>
 

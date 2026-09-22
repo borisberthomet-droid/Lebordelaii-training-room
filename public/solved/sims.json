@@ -1,6 +1,7 @@
 [
  {
   "name": "as6h3d-8s-jh",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "6h",
@@ -16,11 +17,12 @@
   "value": 42,
   "turn": 31,
   "river": 59,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 19
  },
  {
   "name": "as6h3d-4c-5d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "6h",
@@ -36,11 +38,12 @@
   "value": 47,
   "turn": 34,
   "river": 98,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 18
  },
  {
   "name": "as6h3d-6c-2h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "6h",
@@ -56,11 +59,12 @@
   "value": 37,
   "turn": 22,
   "river": 80,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 20
  },
  {
   "name": "asah8d-2s-6h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Ah",
@@ -76,11 +80,12 @@
   "value": 101,
   "turn": 103,
   "river": 302,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 12
  },
  {
   "name": "asah8d-7c-6d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Ah",
@@ -96,11 +101,12 @@
   "value": 98,
   "turn": 99,
   "river": 291,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 13
  },
  {
   "name": "asah8d-kd-5c",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Ah",
@@ -116,11 +122,12 @@
   "value": 95,
   "turn": 89,
   "river": 300,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 10
  },
  {
   "name": "asqh2s-6h-7d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Qh",
@@ -136,11 +143,12 @@
   "value": 77,
   "turn": 56,
   "river": 110,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 16
  },
  {
   "name": "asqh2s-9s-4h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Qh",
@@ -156,11 +164,12 @@
   "value": 68,
   "turn": 52,
   "river": 138,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 10
  },
  {
   "name": "asqh2s-qd-5c",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Qh",
@@ -176,11 +185,12 @@
   "value": 74,
   "turn": 55,
   "river": 143,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 19
  },
  {
   "name": "jsth8d-2s-3h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Js",
    "Th",
@@ -196,11 +206,12 @@
   "value": 82,
   "turn": 67,
   "river": 168,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 14
  },
  {
   "name": "jsth8d-9c-4h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Js",
    "Th",
@@ -216,11 +227,12 @@
   "value": 69,
   "turn": 50,
   "river": 160,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 19
  },
  {
   "name": "jsth8d-jh-3c",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Js",
    "Th",
@@ -236,11 +248,12 @@
   "value": 81,
   "turn": 63,
   "river": 152,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 18
  },
  {
   "name": "ks9h4d-2s-7h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ks",
    "9h",
@@ -256,11 +269,12 @@
   "value": 94,
   "turn": 90,
   "river": 165,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 17
  },
  {
   "name": "ks9h4d-6h-7h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ks",
    "9h",
@@ -276,11 +290,12 @@
   "value": 85,
   "turn": 72,
   "river": 153,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 18
  },
  {
   "name": "ks9h4d-9s-2c",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ks",
    "9h",
@@ -296,11 +311,12 @@
   "value": 94,
   "turn": 83,
   "river": 172,
-  "builtAt": "2026-09-18",
+  "builtAt": "2026-09-22",
   "findIt": 23
  },
  {
   "name": "asjh5d-2s-6h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Jh",
@@ -316,11 +332,12 @@
   "value": 55,
   "turn": 43,
   "river": 76,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 13
  },
  {
   "name": "asjh5d-3s-4s",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Jh",
@@ -336,11 +353,12 @@
   "value": 50,
   "turn": 38,
   "river": 85,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 12
  },
  {
   "name": "asjh5d-5s-6h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Jh",
@@ -356,11 +374,12 @@
   "value": 40,
   "turn": 21,
   "river": 75,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 12
  },
  {
   "name": "asqh5s-2h-6d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Qh",
@@ -376,11 +395,12 @@
   "value": 54,
   "turn": 41,
   "river": 103,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 18
  },
  {
   "name": "asqh5s-2s-3h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Qh",
@@ -396,11 +416,12 @@
   "value": 49,
   "turn": 37,
   "river": 94,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 13
  },
  {
   "name": "asqh5s-5h-6d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Qh",
@@ -416,11 +437,12 @@
   "value": 45,
   "turn": 31,
   "river": 68,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 11
  },
  {
   "name": "asth3s-2h-6d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Th",
@@ -436,11 +458,12 @@
   "value": 68,
   "turn": 53,
   "river": 98,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 12
  },
  {
   "name": "asth3s-2s-4h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Th",
@@ -456,11 +479,12 @@
   "value": 46,
   "turn": 37,
   "river": 84,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 10
  },
  {
   "name": "asth3s-3h-6d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "As",
    "Th",
@@ -476,11 +500,12 @@
   "value": 57,
   "turn": 38,
   "river": 92,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 14
  },
  {
   "name": "js9s3h-2s-4h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Js",
    "9s",
@@ -496,11 +521,12 @@
   "value": 65,
   "turn": 61,
   "river": 144,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 19
  },
  {
   "name": "js9s3h-3d-2h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Js",
    "9s",
@@ -516,11 +542,12 @@
   "value": 64,
   "turn": 55,
   "river": 133,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 21
  },
  {
   "name": "js9s3h-6h-ad",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Js",
    "9s",
@@ -536,11 +563,12 @@
   "value": 69,
   "turn": 64,
   "river": 131,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 25
  },
  {
   "name": "kskhjs-2h-3d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ks",
    "Kh",
@@ -556,11 +584,12 @@
   "value": 50,
   "turn": 37,
   "river": 115,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 22
  },
  {
   "name": "kskhjs-2s-3h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ks",
    "Kh",
@@ -576,11 +605,12 @@
   "value": 54,
   "turn": 48,
   "river": 146,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 23
  },
  {
   "name": "kskhjs-ah-2d",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ks",
    "Kh",
@@ -596,11 +626,12 @@
   "value": 47,
   "turn": 42,
   "river": 104,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 17
  },
  {
   "name": "qsth4d-2s-7h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Qs",
    "Th",
@@ -616,11 +647,12 @@
   "value": 87,
   "turn": 76,
   "river": 159,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 22
  },
  {
   "name": "qsth4d-4s-2h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Qs",
    "Th",
@@ -636,11 +668,12 @@
   "value": 85,
   "turn": 71,
   "river": 159,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 18
  },
  {
   "name": "qsth4d-9s-js",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Qs",
    "Th",
@@ -656,11 +689,12 @@
   "value": 72,
   "turn": 65,
   "river": 153,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 15
  },
  {
   "name": "ts4h2d-2s-7h",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ts",
    "4h",
@@ -676,11 +710,12 @@
   "value": 106,
   "turn": 79,
   "river": 232,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 36
  },
  {
   "name": "ts4h2d-3s-5s",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ts",
    "4h",
@@ -696,11 +731,12 @@
   "value": 107,
   "turn": 90,
   "river": 260,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 24
  },
  {
   "name": "ts4h2d-7s-qh",
+  "scenario": "SRP BTN vs BB 45bb",
   "board": [
    "Ts",
    "4h",
@@ -716,7 +752,7 @@
   "value": 95,
   "turn": 77,
   "river": 185,
-  "builtAt": "2026-09-20",
+  "builtAt": "2026-09-22",
   "findIt": 27
  }
 ]

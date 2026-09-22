@@ -44,6 +44,8 @@ export const SKILLS = {
   "find-it": { axis: "lecture", kind: "ratio", chance: 0 },
   "range-decomposition": { axis: "lecture", kind: "estimate", refError: REF_ERROR.decomposition, chance: 0 },
   "range-builder": { axis: "frequence", kind: "ratio", chance: 0 },
+  // Bluffer ou checker : deux réponses possibles, donc le hasard en a une sur deux.
+  "bluff-check": { axis: "frequence", kind: "binary", chance: 0.5 },
   "rp-trainer": { axis: "pko", kind: "estimate", refError: REF_ERROR.rp, chance: 0 },
   // Pot Odds mélange deux compétences : l'axe dépend du type de question, pas de l'exercice.
   "pot-odds:call_equity": { axis: "equite", kind: "binary", chance: 0 },

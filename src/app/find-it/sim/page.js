@@ -9,6 +9,9 @@ import RangeGrid from "@/components/RangeGrid";
 import SolvedReplayer from "@/components/SolvedReplayer";
 import { scoreAttempt, knownCards } from "@/lib/poker/scoring";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
+import FiltreSims from "@/components/FiltreSims";
+import Chrono from "@/components/Chrono";
+import { lignesJouees, tirerPondere } from "@/lib/poker/tirage";
 import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // Find It sur simulation résolue. Même exercice que le Find It classique — reconstruire la range
@@ -62,7 +65,8 @@ function drawWeighted(entries) {
 const A_DES_SPOTS = (s) => (s.findIt || 0) > 0;
 
 export default function FindItSimPage() {
-  const { sims, sim, setSim, indexes, prets, rassembler, error, setError, empty } = useSolvedSims(A_DES_SPOTS);
+  const etat = useSolvedSims(A_DES_SPOTS);
+  const { sims, sim, indexes, prets, rassembler, error, setError, empty } = etat;
   const [streets, setStreets] = useState(["turn", "river"]);
   const [q, setQ] = useState(null);          // { spot, villainWeights, heroCards, villainKey }
   const [selection, setSelection] = useState({});
@@ -73,7 +77,7 @@ export default function FindItSimPage() {
   const tousSpots = useMemo(() => rassembler((idx) => idx.findItSpots), [rassembler]);
 
   const pool = useMemo(
-    () => tousSpots.filter((s) => streets.includes(s.streetName)),
+    () => lignesJouees(tousSpots.filter((s) => streets.includes(s.streetName))),
     [tousSpots, streets]
   );
 
@@ -81,7 +85,8 @@ export default function FindItSimPage() {
     if (!pool.length) return;
     setLoading(true); setReveal(null); setSelection({});
     try {
-      const pick = pool[Math.floor(Math.random() * pool.length)];
+      // Les lignes sortent a la frequence ou elles arrivent vraiment dans les strategies.
+      const pick = tirerPondere(pool);
       const [spot, ref] = await Promise.all([
         fetch(`/solved/${pick.sim}/${pick.id}.json`).then((r) => r.json()),
         fetch(`/solved/${pick.sim}/r${pick.id}.json`).then((r) => r.json()),
@@ -102,13 +107,13 @@ export default function FindItSimPage() {
     }
   };
 
-  const valider = () => {
+  const valider = (tempsEcoule = false) => {
     if (!q || reveal) return;
     const selected = Object.entries(selection).filter(([, v]) => v > 0).map(([k]) => k);
     const { found, score } = scoreAttempt(selected, q.villainWeights, q.villainKey);
     const poids = Object.values(q.villainWeights);
     setReveal({
-      found, score, selectedCount: selected.length,
+      found, score, selectedCount: selected.length, tempsEcoule,
       referenceCount: poids.length,
       referenceWeighted: poids.reduce((a, b) => a + b, 0),
     });
@@ -155,20 +160,7 @@ export default function FindItSimPage() {
           range dessinée à la main : c&apos;est exactement ce que ton adversaire mise à ce nœud.
         </div>
 
-        {sims && sims.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 11, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Texture</label>
-            <select value={sim} onChange={(e) => { setSim(e.target.value); setQ(null); setReveal(null); setSelection({}); }} style={{
-              width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
-              color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
-            }}>
-              <option value={TOUTES}>
-                Toutes les textures — {sims.length} boards, {sims.reduce((a, s) => a + (s.findIt || 0), 0)} spots
-              </option>
-              {sims.map((s) => <option key={s.name} value={s.name}>{libelleSim(s, s.findIt)}</option>)}
-            </select>
-          </div>
-        )}
+        <FiltreSims etat={etat} compte={(s) => s.findIt} onReset={() => { setQ(null); setReveal(null); setSelection({}); }} />
 
         <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
           {["turn", "river"].map((s) => (
@@ -220,7 +212,11 @@ export default function FindItSimPage() {
                   <div style={{ fontSize: 13, marginBottom: 10 }}>
                     Sélectionne les combos avec lesquels <strong>{spot.villainPos}</strong> mise ici.
                   </div>
-                  <button onClick={valider} style={btn}
+                  {/* Cinq minutes par spot : a zero, la selection en cours part a la validation,
+                      comme un temps de parole qui s'epuise. */}
+                  <Chrono key={`${q.sim}-${spot.id}`} secondes={300} actif={!reveal}
+                    onTempsEcoule={() => valider(true)} />
+                  <button onClick={() => valider(false)} style={{ ...btn, marginTop: 8 }}
                     disabled={!Object.values(selection).some((v) => v > 0)}>
                     Valider ma range
                   </button>
@@ -233,8 +229,10 @@ export default function FindItSimPage() {
                 }}>
                   <div style={{ fontWeight: 700, marginBottom: 10, color: reveal.found ? "#34D399" : "#E0645A" }}>
                     {reveal.found
-                      ? `Trouvé — ${reveal.score}/100`
-                      : "Raté — sa main n'était pas dans ta sélection"}
+                      ? `Trouvé — ${reveal.score}/100${reveal.tempsEcoule ? " (temps écoulé)" : ""}`
+                      : reveal.tempsEcoule
+                        ? "Temps écoulé — sa main n'était pas dans ta sélection"
+                        : "Raté — sa main n'était pas dans ta sélection"}
                   </div>
                   <div style={{ color: "var(--text-muted)", lineHeight: 1.9 }}>
                     <Row label="Sa main" value={`${q.villainKey.slice(0, 2)} ${q.villainKey.slice(2, 4)}`} strong />

@@ -25,6 +25,11 @@ if (!srcDir || !simName) {
 const MAX_SPOTS = Number(nStr) || 40;
 // En dessous, la range à deviner est trop maigre pour que l'exercice ait du sens.
 const MIN_VILLAIN_WEIGHT = 30;
+// Fréquence minimale de la ligne, les deux ranges prises ensemble. Mesuré sur As Ah 8d Kd 5c :
+// ce seuil écarte les 88% de nœuds qui n'arrivent presque jamais tout en gardant 97% de la
+// probabilité de jeu. Sans lui, un donk flop joué une fois sur cent mille sort aussi souvent
+// qu'un cbet.
+const MIN_LINE_FREQ_PCT = 0.05;
 const COMBO_WEIGHT_FLOOR = 0.001;
 
 const outDir = path.join("public", "solved", simName);
@@ -101,8 +106,10 @@ if (ecartMax > 0.01) {
 }
 
 // --- Sélection ------------------------------------------------------------------------------------
-// On garde les nœuds les plus souvent atteints : ce sont aussi les mieux convergés par le solveur,
-// et les plus utiles à travailler. Un nœud joué 2% du temps n'apprend rien et sa range est bruitée.
+// On garde les lignes les plus souvent jouées : ce sont aussi les mieux convergées par le solveur,
+// et les plus utiles à travailler. Le classement se fait sur la fréquence de la LIGNE (les deux
+// ranges), pas sur celle de hero seul : un défenseur qui paie large reste large sur une ligne que
+// l'adversaire ne prend presque jamais.
 const candidats = [];
 for (const [id, meta] of dejaConstruits) {
   const d = nodes.get(id);
@@ -112,7 +119,9 @@ for (const [id, meta] of dejaConstruits) {
   const vil = r[villain] || {};
   const poids = Object.values(vil).reduce((a, b) => a + b, 0);
   if (poids < MIN_VILLAIN_WEIGHT) continue;
-  candidats.push({ id, meta, vil, poids, reach: meta.reachPct ?? 0 });
+  const freq = meta.lineFreqPct ?? meta.reachPct ?? 0;
+  if (freq < MIN_LINE_FREQ_PCT) continue;
+  candidats.push({ id, meta, vil, poids, reach: freq });
 }
 candidats.sort((a, b) => b.reach - a.reach);
 const retenus = candidats.slice(0, MAX_SPOTS);
@@ -130,7 +139,8 @@ for (const c of retenus) {
 index.findItSpots = retenus.map((c) => ({
   id: c.id, street: c.meta.street, streetName: c.meta.streetName, archetype: c.meta.archetype,
   heroPos: c.meta.heroPos, villainPos: c.meta.villainPos, board: c.meta.board, line: c.meta.line,
-  potBB: c.meta.potBB, reachPct: c.meta.reachPct, villainWeight: +c.poids.toFixed(1),
+  potBB: c.meta.potBB, reachPct: c.meta.reachPct, lineFreqPct: c.meta.lineFreqPct,
+  villainWeight: +c.poids.toFixed(1),
 }));
 fs.writeFileSync(indexPath, JSON.stringify(index));
 
