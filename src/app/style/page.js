@@ -84,7 +84,7 @@ function Demo({ jetons, titre, note }) {
       <div style={{
         position: "relative", borderRadius: 14, overflow: "hidden", marginBottom: 14,
         minHeight: 130, display: "flex", alignItems: "flex-end",
-        backgroundImage: "url(/photos/table-lunettes-bandeau.jpg)", backgroundSize: "cover", backgroundPosition: "center 40%",
+        backgroundImage: "url(/photos/coaching-bandeau.jpg)", backgroundSize: "cover", backgroundPosition: "center 45%",
       }}>
         <div style={{
           position: "absolute", inset: 0,
