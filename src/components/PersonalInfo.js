@@ -9,6 +9,8 @@ import { getMyAccount, updatePseudo, saveMyPrivate } from "@/lib/supabase/profil
 // session ou sans base, on le dit et on n'affiche pas de formulaire trompeur.
 
 const CHAMPS = [
+  { id: "prenom", label: "Prénom", placeholder: "Boris", aide: null },
+  { id: "nom", label: "Nom", placeholder: "Berthomet", aide: null },
   { id: "discord", label: "Pseudo Discord", placeholder: "lebordelaii#0000", aide: "pour les sessions de coaching" },
   { id: "rooms", label: "Pseudos sur les rooms", placeholder: "Winamax : nutsR · Stars : …", aide: "pour retrouver tes mains" },
   { id: "abi", label: "Buy-in moyen", placeholder: "50 €", aide: "sert à calibrer les spots travaillés" },

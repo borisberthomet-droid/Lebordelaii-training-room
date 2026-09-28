@@ -37,7 +37,7 @@ export async function updatePseudo(pseudo) {
   }
 }
 
-const CHAMPS_PRIVES = ["discord", "telephone", "adresse", "rooms", "abi", "formats", "objectif", "dispos"];
+const CHAMPS_PRIVES = ["prenom", "nom", "discord", "telephone", "adresse", "rooms", "abi", "formats", "objectif", "dispos"];
 
 export async function saveMyPrivate(values) {
   const supabase = createClient();

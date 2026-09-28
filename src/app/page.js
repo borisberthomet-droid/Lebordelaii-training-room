@@ -82,6 +82,15 @@ export default function Home() {
           <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>S&apos;entraîner</div>
           <div style={{ fontSize: 12, opacity: 0.75 }}>Un spot au hasard, théorique ou exploit</div>
         </Link>
+        <Link href="/carriere" style={{ ...cardStyle, padding: "18px 18px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <ProfileIcon size={22} />
+            <span style={{ fontSize: 17, fontWeight: 700 }}>Gestion de carrière</span>
+          </div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+            Mes axes, mes objectifs, ma semaine, mes coachings
+          </div>
+        </Link>
         <Link href="/compte" style={{ ...cardStyle, padding: "18px 18px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
             <ProfileIcon size={22} />
