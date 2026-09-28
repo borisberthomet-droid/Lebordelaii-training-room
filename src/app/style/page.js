@@ -30,6 +30,7 @@ const SOMBRE = {
   "--d-voile": "rgba(11,18,16,0.86)",
   "--d-voile-fin": "rgba(11,18,16,0.20)",
   "--d-sur-photo": "#ECEEF1",
+  "--d-sur-plein": "#0B1210",
   "--d-titre": "var(--font-space-grotesk), sans-serif",
   "--d-corps": "var(--font-space-grotesk), sans-serif",
 };
@@ -55,6 +56,7 @@ const CHAUD = {
   "--d-voile": "rgba(58,42,28,0.82)",
   "--d-voile-fin": "rgba(58,42,28,0.12)",
   "--d-sur-photo": "#F3EEEA",
+  "--d-sur-plein": "#F3EEEA",
   "--d-titre": "var(--font-essai-serif), Georgia, serif",
   "--d-corps": "var(--font-essai-sans), sans-serif",
 };
@@ -72,7 +74,7 @@ function Demo({ jetons, titre, note }) {
 
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/demo/logo-essai.png" alt="" style={{ width: 38, height: 36, objectFit: "cover", borderRadius: 8 }} />
+        <img src="/marque/logo-192.png" alt="" style={{ height: 40, width: "auto", display: "block" }} />
         <span style={{ fontFamily: "var(--d-titre)", fontSize: 15, fontWeight: 700 }}>Training Room</span>
       </div>
 
@@ -142,8 +144,11 @@ function Demo({ jetons, titre, note }) {
                   position: "absolute", left: 0, right: 0, bottom: 0, height: `${p * 100}%`,
                   background: `color-mix(in srgb, var(--d-accent) ${22 + p * 78}%, var(--d-panel-2))`,
                 }} />
-                <div style={{ position: "relative", fontSize: 11, fontWeight: 600 }}>{m}</div>
-                <div style={{ position: "relative", fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 9, opacity: 0.75 }}>
+                <div style={{ position: "relative", fontSize: 11, fontWeight: 600, color: p > 0.5 ? "var(--d-sur-plein)" : "var(--d-text)" }}>{m}</div>
+                <div style={{
+                  position: "relative", fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 9,
+                  color: p > 0.5 ? "var(--d-sur-plein)" : "var(--d-muted)",
+                }}>
                   {Math.round(p * 100)}%
                 </div>
               </div>
