@@ -12,16 +12,18 @@ import { buildProfile } from "@/lib/poker/skillScore";
 // Les couleurs sont prises dans la palette déjà utilisée ailleurs (niveaux d'élasticité, couleurs
 // de cartes), pas inventées : le rouge en est écarté, il signale une erreur partout dans le site.
 //
-// Pot Odds apparaît dans deux thèmes, et c'est voulu : ses questions de cote de call nourrissent
-// l'axe Équité, ses questions de fréquence de bluff nourrissent l'axe Fréquence. La fiche fait
-// déjà cette distinction question par question.
+// Pot Odds est rangé dans Calcul mental — c'est là que l'élève le cherche : on y applique des
+// formules. Mais sa NOTE, elle, continue d'aller là où elle doit : cote de call et équité de value
+// bet nourrissent l'axe Équité, fold equity et ratio de bluff nourrissent l'axe Fréquence. Un même
+// exercice peut se ranger à un endroit et mesurer autre chose ; c'est la fiche qui fait foi, pas
+// la carte.
 const THEMES = [
   {
     axis: "equite", color2: "#8A8C43", label: "Équité", color: "#4F5220",
     desc: "Estimer sa force brute face à une range",
     tools: [
       { href: "/value-equity", label: "Quelle est ton équité ?" },
-      { href: "/pot-odds", label: "Pot Odds" },
+      { href: "/pot-odds?axe=equite", label: "Pot Odds — équité" },
     ],
   },
   {
@@ -30,18 +32,22 @@ const THEMES = [
     tools: [
       { href: "/range-position", label: "Vs AGG — où suis-je dans ma range ?" },
       { href: "/dois-je-bluffer", label: "Dois-je bluffer ? — as AGG" },
-      { href: "/range-builder", label: "Range Builder" },
-      { href: "/pot-odds", label: "Pot Odds" },
+      { href: "/pot-odds?axe=frequence", label: "Pot Odds — fréquence" },
     ],
   },
   {
     axis: "lecture", color2: "#A9741F", label: "Lecture de range", color: "#7A4E12",
     desc: "Reconstruire ce que l'adversaire peut avoir",
     tools: [
-      { href: "/train", label: "Find It! — un spot au hasard" },
-      { href: "/find-it/sim", label: "Find It! — sur simulation" },
+      { href: "/find-it", label: "Find It!" },
       { href: "/range-decomposition", label: "Décompose la range" },
-      { href: "/find-it", label: "Find It! — accueil" },
+    ],
+  },
+  {
+    axis: "construction", color2: "#6E5A8C", label: "Construction de range", color: "#4E3E66",
+    desc: "Dessiner la range que le spot demande",
+    tools: [
+      { href: "/range-builder", label: "Range Builder" },
     ],
   },
   {
@@ -49,6 +55,7 @@ const THEMES = [
     desc: "Sortir les nombres sans hésiter",
     tools: [
       { href: "/math-trainer", label: "Math Trainer" },
+      { href: "/pot-odds", label: "Pot Odds — tout" },
     ],
   },
 ];

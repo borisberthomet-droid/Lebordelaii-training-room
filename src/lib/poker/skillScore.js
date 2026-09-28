@@ -15,6 +15,7 @@ export const AXES = [
   { id: "frequence", label: "Fréquence", desc: "Savoir à quelle fréquence défendre, miser, bluffer" },
   { id: "calcul", label: "Calcul mental", desc: "Pots, cotes et sizings sans hésiter" },
   { id: "lecture", label: "Lecture de range", desc: "Reconstruire la range de l'adversaire" },
+  { id: "construction", label: "Construction de range", desc: "Dessiner la range que le spot demande" },
   { id: "pko", label: "PKO", desc: "Risk Premium et valeur des primes" },
   { id: "icm", label: "ICM / TF", desc: "Pression de table finale" },
 ];
@@ -43,7 +44,7 @@ export const SKILLS = {
   "math-trainer": { axis: "calcul", kind: "binary", chance: 0 },
   "find-it": { axis: "lecture", kind: "ratio", chance: 0 },
   "range-decomposition": { axis: "lecture", kind: "estimate", refError: REF_ERROR.decomposition, chance: 0 },
-  "range-builder": { axis: "frequence", kind: "ratio", chance: 0 },
+  "range-builder": { axis: "construction", kind: "ratio", chance: 0 },
   // Bluffer ou checker : deux réponses possibles, donc le hasard en a une sur deux.
   "bluff-check": { axis: "frequence", kind: "binary", chance: 0.5 },
   "rp-trainer": { axis: "pko", kind: "estimate", refError: REF_ERROR.rp, chance: 0 },
@@ -52,6 +53,7 @@ export const SKILLS = {
   "pot-odds:value_bet_equity": { axis: "equite", kind: "binary", chance: 0 },
   "pot-odds:bluff_fold_equity": { axis: "frequence", kind: "binary", chance: 0 },
   "pot-odds:bluff_ratio": { axis: "frequence", kind: "binary", chance: 0 },
+  "pot-odds:bluff_combos": { axis: "frequence", kind: "binary", chance: 0 },
 };
 
 export function skillFor(exercise, questionType) {

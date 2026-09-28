@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import SiteLogo from "@/components/SiteLogo";
+import Banniere, { PHOTOS } from "@/components/Banniere";
 import ThemePanels from "@/components/ThemePanels";
 import { PkoRpIcon, ProfileIcon } from "@/components/ToolIcons";
 import LogoutButton from "./logout-button";
@@ -63,16 +64,15 @@ export default function Home() {
           : checked && <Link href="/login" style={{ fontSize: 12, color: "var(--accent)" }}>Se connecter</Link>}
       </div>
 
-      <div style={{ marginBottom: 22 }}>
-        <div className="titre" style={{ fontSize: 24, fontWeight: 700 }}>
-          {me ? `Salut ${me.pseudo}` : "Training Room"}
-        </div>
-        <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
-          {me
-            ? `${me.role === "admin" ? "Coach" : "Élève"} · choisis une compétence à travailler`
-            : "Choisis une compétence à travailler — connecte-toi pour garder ta progression"}
-        </div>
-      </div>
+      <Banniere
+        photo={PHOTOS.table}
+        titre={me ? `Salut ${me.pseudo}` : "Training Room"}
+        sous={me
+          ? `${me.role === "admin" ? "Coach" : "Élève"} · choisis une compétence à travailler`
+          : "Choisis une compétence à travailler — connecte-toi pour garder ta progression"}
+        hauteur={170}
+        position="center 38%"
+      />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 26 }}>
         <Link href="/train" style={{

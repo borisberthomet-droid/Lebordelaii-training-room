@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import FicheJoueur from "@/components/carriere/FicheJoueur";
+import Banniere, { PHOTOS } from "@/components/Banniere";
 import { Vide } from "@/components/carriere/Blocs";
 import { chargerFiche, monCompte } from "@/lib/supabase/carriere";
 
@@ -47,13 +48,13 @@ export default function CarrierePage() {
 
   return (
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1000, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
-        <div>
-          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Gestion de carrière</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
-            {compte ? `${compte.pseudo} — où j'en suis, ce que je travaille, ce que je fais aujourd'hui` : " "}
-          </div>
-        </div>
+      <Banniere
+        photo={PHOTOS.coaching}
+        titre="Gestion de carrière"
+        sous={compte ? `${compte.pseudo} — où j'en suis, ce que je travaille, ce que je fais aujourd'hui` : ""}
+        position="center 45%"
+      />
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           {compte?.role === "admin" && (
             <Link href="/admin/joueurs" style={{ fontSize: 12, color: "var(--accent)" }}>Vue coach</Link>

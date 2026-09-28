@@ -16,12 +16,21 @@ const BET_SIZES_PCT = [33, 50, 66, 75, 100, 125, 150, 200];
 
 export const QUESTION_TYPES = ["call_equity", "bluff_fold_equity", "bluff_ratio", "value_bet_equity", "bluff_combos"];
 
-export function generateSpot() {
+// Quelles questions travaillent quelle competence. Un meme exercice peut nourrir deux axes : la
+// cote de call releve de l'equite, le ratio de bluff de la frequence.
+export const TYPES_PAR_AXE = {
+  equite: ["call_equity", "value_bet_equity"],
+  frequence: ["bluff_fold_equity", "bluff_ratio", "bluff_combos"],
+};
+
+// `types` restreint le tirage a une famille de questions ; sans argument, tout peut sortir.
+export function generateSpot(types = QUESTION_TYPES) {
   const pot = Math.round((20 + Math.random() * 180) / 5) * 5;
   const betPct = BET_SIZES_PCT[Math.floor(Math.random() * BET_SIZES_PCT.length)];
   const bet = Math.max(5, Math.round((pot * betPct) / 100 / 5) * 5);
   const isRaise = Math.random() < 0.4;
-  const questionType = QUESTION_TYPES[Math.floor(Math.random() * QUESTION_TYPES.length)];
+  const choix = types.length ? types : QUESTION_TYPES;
+  const questionType = choix[Math.floor(Math.random() * choix.length)];
   // Utilisés seulement par bluff_combos, générés systématiquement (coût nul) pour rester
   // cohérent avec le reste du spot si jamais le type de question change après coup.
   const valueCombos = 4 + Math.floor(Math.random() * 57); // 4..60

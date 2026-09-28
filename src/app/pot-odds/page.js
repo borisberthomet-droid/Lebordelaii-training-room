@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { generateSpot, computeAnswer, QUESTION_META } from "@/lib/poker/potOdds";
+import { generateSpot, computeAnswer, QUESTION_META, QUESTION_TYPES, TYPES_PAR_AXE } from "@/lib/poker/potOdds";
 import { getMyPotOddsStats, insertPotOddsAttempt } from "@/lib/supabase/potOddsAttempts";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { PotOddsIcon } from "@/components/ToolIcons";
@@ -28,9 +28,16 @@ export default function PotOddsPage() {
   const [guess, setGuess] = useState("");
   const [reveal, setReveal] = useState(null); // { correct, answer }
   const [stats, setStats] = useState({ score: 0, total_questions: 0 });
+  // Famille de questions : « ?axe=equite » ou « ?axe=frequence ». Lu depuis l'URL plutot que par
+  // useSearchParams, qui obligerait a envelopper la page dans un Suspense pour un seul parametre.
+  const [axe, setAxe] = useState(null);
+  const types = TYPES_PAR_AXE[axe] || QUESTION_TYPES;
 
   useEffect(() => {
-    setSpot(generateSpot());
+    const demande = new URLSearchParams(window.location.search).get("axe");
+    const famille = TYPES_PAR_AXE[demande] ? demande : null;
+    setAxe(famille);
+    setSpot(generateSpot(TYPES_PAR_AXE[famille] || QUESTION_TYPES));
     getMyPotOddsStats().then(setStats).catch(() => {});
   }, []);
 
@@ -52,7 +59,7 @@ export default function PotOddsPage() {
   };
 
   const handleNext = () => {
-    setSpot(generateSpot());
+    setSpot(generateSpot(types));
     setGuess("");
     setReveal(null);
   };
@@ -66,7 +73,9 @@ export default function PotOddsPage() {
             Pot Odds
           </span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
-          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Bet &amp; raise river</span>
+          <span style={{ fontSize: 14, color: "var(--text-muted)" }}>
+            {axe === "equite" ? "équité" : axe === "frequence" ? "fréquence" : "bet & raise river"}
+          </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: stats.score >= 0 ? "var(--accent)" : "var(--erreur)" }}>

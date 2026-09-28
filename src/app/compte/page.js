@@ -5,6 +5,7 @@ import Link from "next/link";
 import SiteLogo from "@/components/SiteLogo";
 import SkillProfile from "@/components/SkillProfile";
 import PersonalInfo from "@/components/PersonalInfo";
+import Banniere, { PHOTOS } from "@/components/Banniere";
 import { createClient } from "@/lib/supabase/client";
 import { MemoIcon, LeakAnalyzerIcon, LeakfinderIcon, PotOddsIcon, ProfileIcon } from "@/components/ToolIcons";
 
@@ -91,12 +92,12 @@ export default function ComptePage() {
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
         <ProfileIcon size={30} />
         <div>
-          <div className="titre" style={{ fontSize: 24, fontWeight: 700 }}>
-            {me?.pseudo || "Mon espace"}
-          </div>
-          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 2 }}>
-            {me ? `${isAdmin ? "Coach" : "Élève"} · mon espace` : checked ? "Non connecté · progression lue sur ce navigateur" : "…"}
-          </div>
+          <Banniere
+            photo={PHOTOS.portrait}
+            titre={me?.pseudo || "Mon espace"}
+            sous={me ? `${isAdmin ? "Coach" : "Élève"} · ma progression, mes fiches mémo, mes leaks` : checked ? "Non connecté · progression lue sur ce navigateur" : "…"}
+            position="center 30%"
+          />
         </div>
       </div>
 
