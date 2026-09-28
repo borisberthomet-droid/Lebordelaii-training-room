@@ -73,7 +73,7 @@ export default function PivotDial({ combos, board, playedSizePct, pos }) {
         type="range" min={0} max={stops.length - 1} step={1} value={idx}
         onChange={(e) => setIdx(Number(e.target.value))}
         aria-label="Taille de mise"
-        style={{ width: "100%", accentColor: "#34D399", margin: "6px 0 14px" }}
+        style={{ width: "100%", accentColor: "var(--accent)", margin: "6px 0 14px" }}
       />
 
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
@@ -108,7 +108,7 @@ export default function PivotDial({ combos, board, playedSizePct, pos }) {
         }} />
         <div style={{
           position: "absolute", top: 0, bottom: 0, left: `calc(${mdf * 100}% - 1px)`, width: 2,
-          background: "#ECEEF1",
+          background: "var(--text)",
         }} />
       </div>
       <div style={{ position: "relative", height: 10 }}>

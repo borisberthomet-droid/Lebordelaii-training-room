@@ -20,7 +20,7 @@ import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 // chaque nouvelle texture.
 
 const btn = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 const ghost = {
@@ -185,7 +185,7 @@ export default function RangePositionPage() {
   if (error) {
     return (
       <div style={{ padding: 20, width: "100%", maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ fontSize: 14, color: "#E0645A" }}>Impossible de charger la simulation : {error}</div>
+        <div style={{ fontSize: 14, color: "var(--erreur)" }}>Impossible de charger la simulation : {error}</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
     );
@@ -200,7 +200,7 @@ export default function RangePositionPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <RangeBuilderIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Vs AGG</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Vs AGG</span>
           <span style={{ fontSize: 12, color: "var(--text-muted)" }}>où suis-je dans ma range ?</span>
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
@@ -274,7 +274,7 @@ export default function RangePositionPage() {
             <button onClick={newQuestion} style={btn} disabled={!pool.length || loading}>
               {loading ? "…" : "Nouvelle question"}
             </button>
-            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "#E0645A", marginLeft: 12 }}>
+            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "var(--erreur)", marginLeft: 12 }}>
               {pool.length ? `${pool.length} spots correspondent` : "Aucun spot : élargis les filtres."}
             </span>
           </>
@@ -335,7 +335,7 @@ export default function RangePositionPage() {
                 : isTruth ? "rgba(52,211,153,0.18)"
                 : chosen ? "rgba(224,100,90,0.18)" : "var(--panel-2)";
               const border = !answer ? "var(--border)"
-                : isTruth ? "var(--accent)" : chosen ? "#E0645A" : "var(--border)";
+                : isTruth ? "var(--accent)" : chosen ? "var(--erreur)" : "var(--border)";
               return (
                 <button key={b.id} onClick={() => submit(b.id)} disabled={!!answer}
                   style={{
@@ -356,7 +356,7 @@ export default function RangePositionPage() {
               background: answer.ok ? "rgba(52,211,153,0.12)" : "rgba(224,100,90,0.12)",
               border: `1px solid ${answer.ok ? "rgba(52,211,153,0.35)" : "rgba(224,100,90,0.35)"}`,
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 10, color: answer.ok ? "#34D399" : "#E0645A" }}>
+              <div style={{ fontWeight: 700, marginBottom: 10, color: answer.ok ? "var(--accent)" : "var(--erreur)" }}>
                 {answer.ok ? "Exact" : `Raté — c'était ${BUCKETS.find((b) => b.id === answer.truth).label}`}
               </div>
               <div style={{ color: "var(--text-muted)", lineHeight: 1.9 }}>

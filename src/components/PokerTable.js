@@ -7,7 +7,7 @@
 
 const ROLE_COLORS = {
   hero: { border: "var(--accent)", text: "var(--accent)", bg: "rgba(52,211,153,0.12)" },
-  jam: { border: "#E89A47", text: "#E89A47", bg: "rgba(232,154,71,0.12)" },
+  jam: { border: "var(--attention)", text: "var(--attention)", bg: "rgba(232,154,71,0.12)" },
   toAct: { border: "var(--border)", text: "var(--text)", bg: "var(--panel-2)" },
   folded: { border: "var(--border)", text: "var(--text-muted)", bg: "transparent" },
   // En table finale on décrit une confrontation, pas une séquence d'action : les autres joueurs

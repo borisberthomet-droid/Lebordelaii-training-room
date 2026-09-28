@@ -35,7 +35,7 @@ function useAction(onRafraichir) {
 
 function Erreur({ message }) {
   if (!message) return null;
-  return <div style={{ fontSize: 12, color: "#E0645A", marginTop: 10, lineHeight: 1.6 }}>{message}</div>;
+  return <div style={{ fontSize: 12, color: "var(--erreur)", marginTop: 10, lineHeight: 1.6 }}>{message}</div>;
 }
 
 // --- Axes prioritaires ---------------------------------------------------------------------------
@@ -422,7 +422,7 @@ export function PanneauCoachings({ fiche, coachId, onRafraichir }) {
                       <option value="paye">payé</option>
                       <option value="pack">sur pack</option>
                     </select>
-                    <Pastille couleur={c.synthese_statut === "valide" ? "#34D399" : "#E8C547"}>
+                    <Pastille couleur={c.synthese_statut === "valide" ? "var(--accent)" : "var(--attention)"}>
                       {c.synthese_statut === "valide" ? "synthèse validée" : "brouillon"}
                     </Pastille>
                     <button style={btnFantome} onClick={() => ouvrir(c)}>

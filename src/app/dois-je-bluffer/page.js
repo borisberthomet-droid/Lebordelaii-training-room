@@ -31,7 +31,7 @@ import { useSolvedSims } from "@/lib/useSolvedSims";
 const PERCENTILE_MINI = 40;
 
 const btn = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 const ghost = {
@@ -142,7 +142,7 @@ export default function DoisJeBlufferPage() {
   if (error) {
     return (
       <div style={{ padding: 20, width: "100%", maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ fontSize: 14, color: "#E0645A", marginBottom: 8 }}>Impossible de charger les données : {error}</div>
+        <div style={{ fontSize: 14, color: "var(--erreur)", marginBottom: 8 }}>Impossible de charger les données : {error}</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
     );
@@ -170,7 +170,7 @@ export default function DoisJeBlufferPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PotOddsIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Dois-je bluffer ?</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Dois-je bluffer ?</span>
           <span style={{ fontSize: 12, color: "var(--text-muted)" }}>as AGG, en bluff</span>
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
@@ -228,7 +228,7 @@ export default function DoisJeBlufferPage() {
             <button onClick={nouvelle} style={btn} disabled={!pool.length || loading}>
               {loading ? "…" : "Nouvelle main"}
             </button>
-            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "#E0645A", marginLeft: 12 }}>
+            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "var(--erreur)", marginLeft: 12 }}>
               {pool.length ? `${pool.length} spots disponibles` : "Aucun spot : élargis les filtres."}
             </span>
           </>
@@ -269,7 +269,7 @@ export default function DoisJeBlufferPage() {
               const bg = !answer ? "var(--panel-2)"
                 : vrai ? "rgba(52,211,153,0.18)"
                 : choisi ? "rgba(224,100,90,0.18)" : "var(--panel-2)";
-              const border = !answer ? "var(--border)" : vrai ? "var(--accent)" : choisi ? "#E0645A" : "var(--border)";
+              const border = !answer ? "var(--border)" : vrai ? "var(--accent)" : choisi ? "var(--erreur)" : "var(--border)";
               return (
                 <button key={b.id} onClick={() => repondre(b.id)} disabled={!!answer} style={{
                   padding: "10px 18px", borderRadius: 8, border: `1px solid ${border}`, background: bg,
@@ -287,7 +287,7 @@ export default function DoisJeBlufferPage() {
               background: answer.ok ? "rgba(52,211,153,0.12)" : "rgba(224,100,90,0.12)",
               border: `1px solid ${answer.ok ? "rgba(52,211,153,0.35)" : "rgba(224,100,90,0.35)"}`,
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 10, color: answer.ok ? "#34D399" : "#E0645A" }}>
+              <div style={{ fontWeight: 700, marginBottom: 10, color: answer.ok ? "var(--accent)" : "var(--erreur)" }}>
                 {answer.ok ? "Exact" : `Raté — le solveur ${answer.verite === "bluff" ? "mise" : "checke"} cette main`}
               </div>
 

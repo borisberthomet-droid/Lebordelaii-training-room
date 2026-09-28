@@ -14,7 +14,7 @@ const inputStyle = {
 };
 
 const primaryButtonStyle = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 
@@ -62,14 +62,14 @@ export default function PotOddsPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PotOddsIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>
             Pot Odds
           </span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Bet &amp; raise river</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: stats.score >= 0 ? "var(--accent)" : "#E0645A" }}>
+          <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: stats.score >= 0 ? "var(--accent)" : "var(--erreur)" }}>
             {stats.score >= 0 ? "+" : ""}{stats.score} pts
           </span>
           <Link href="/pot-odds/ranking" style={{ fontSize: 12, color: "var(--text-muted)" }}>Classement</Link>
@@ -111,7 +111,7 @@ export default function PotOddsPage() {
                 background: reveal.correct ? "rgba(52,211,153,0.12)" : "rgba(224,100,90,0.12)",
                 border: `1px solid ${reveal.correct ? "rgba(52,211,153,0.35)" : "rgba(224,100,90,0.35)"}`,
               }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: reveal.correct ? "#34D399" : "#E0645A", marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: reveal.correct ? "var(--accent)" : "var(--erreur)", marginBottom: 4 }}>
                   {reveal.correct ? "✓ Correct" : `✗ Réponse : ${reveal.answer.toFixed(1)} ${meta.unit}`}
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>

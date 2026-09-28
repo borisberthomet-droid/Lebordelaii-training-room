@@ -7,7 +7,7 @@ export default function SimsEnPreparation({ title }) {
   return (
     <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 720, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, gap: 10, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>{title}</span>
+        <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>{title}</span>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 22 }}>

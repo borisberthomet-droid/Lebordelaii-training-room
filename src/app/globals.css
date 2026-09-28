@@ -1,18 +1,49 @@
+/* ---------------------------------------------------------------------------
+   Habillage de la Training Room, aligné sur le site de coaching de Boris.
+   Les quatre couleurs de marque sont relevées au pixel sur ses maquettes :
+   crème #E6DFDB (le fond), olive #7E7B45 (les aplats), brun #583A1E (les
+   titres), lavande #C1BFCB (les boutons secondaires).
+
+   Deux familles de jetons, à ne pas confondre :
+     - l'habillage (fond, panneaux, bordures, texte) : ça, c'est du goût ;
+     - les couleurs de DONNÉES (accent, erreur, attention, info) : elles portent
+       de l'information — une fréquence de solveur, une réponse fausse, un
+       retard. Elles sont donc choisies pour leur lisibilité sur crème, pas pour
+       leur élégance, et l'olive de la charte y descend d'un cran : trop clair,
+       l'écart entre 55% et 100% ne se voyait plus.
+   --------------------------------------------------------------------------- */
 :root {
-  --accent: #34D399;
-  --accent-dark: #059669;
-  --accent-gradient: linear-gradient(135deg, #4ADE80 0%, #059669 100%);
-  --bg: #121413;
-  --panel: #1A1D1B;
-  --panel-2: #20241F;
-  --border: #272B28;
-  --text: #ECEEF1;
-  --text-muted: #8E968F;
+  /* Données */
+  --accent: #5F6127;
+  --accent-dark: #474A1C;
+  --accent-clair: #7E7B45;
+  --accent-gradient: linear-gradient(135deg, #7E7B45 0%, #5F6127 100%);
+  --sur-accent: #F5F1ED;          /* texte posé sur un aplat d'accent */
+  --erreur: #B0402F;
+  --attention: #8F5E15;
+  --info: #3E6E93;
+
+  /* Habillage */
+  --bg: #E6DFDB;
+  --panel: #F2EDEA;
+  --panel-2: #DCD3CE;
+  --border: #CBBFB8;
+  --text: #3A2A1C;
+  --text-muted: #8A7563;
+  --brun: #583A1E;
+  --lavande: #C1BFCB;
+
+  /* Photos : voile posé sous un titre, pour que la lisibilité ne dépende
+     jamais de l'image. */
+  --voile: rgba(58,42,28,0.82);
+  --voile-fin: rgba(58,42,28,0.12);
+  --sur-photo: #F3EEEA;
+  --sur-sombre: #F3EEEA;   /* texte pose sur la table de poker, qui reste sombre */
 }
 
 html {
   height: 100%;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -27,11 +58,11 @@ body {
   flex-direction: column;
   color: var(--text);
   background:
-    radial-gradient(ellipse 60% 50% at 85% -10%, rgba(52,211,153,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 0% 100%, rgba(52,211,153,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 85% -10%, rgba(126,123,69,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 0% 100%, rgba(88,58,30,0.10) 0%, transparent 60%),
     var(--bg);
   background-attachment: fixed;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-corps), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -48,12 +79,20 @@ a {
 }
 
 input, select, textarea {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-corps), sans-serif;
 }
 
 button {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-corps), sans-serif;
   cursor: pointer;
+}
+
+/* Titres de page : le serif de la marque. Les pages posent la classe plutôt
+   qu'une famille en dur, pour qu'un changement de police reste un seul endroit. */
+.titre {
+  font-family: var(--font-titre), Georgia, serif;
+  color: var(--brun);
+  letter-spacing: -0.2px;
 }
 
 /* ---------------------------------------------------------------------------

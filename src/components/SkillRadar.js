@@ -47,12 +47,12 @@ export default function SkillRadar({ axes }) {
           quand elle est petite. */}
       <defs>
         <linearGradient id="radar-fill" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#4ADE80" stopOpacity="0.42" />
-          <stop offset="1" stopColor="#059669" stopOpacity="0.14" />
+          <stop offset="0" stopColor="var(--accent-clair)" stopOpacity="0.42" />
+          <stop offset="1" stopColor="var(--accent-dark)" stopOpacity="0.14" />
         </linearGradient>
         <linearGradient id="radar-stroke" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#4ADE80" />
-          <stop offset="1" stopColor="#059669" />
+          <stop offset="0" stopColor="var(--accent-clair)" />
+          <stop offset="1" stopColor="var(--accent-dark)" />
         </linearGradient>
       </defs>
       <polygon points={polygon(values, n)}

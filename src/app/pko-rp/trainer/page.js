@@ -15,7 +15,7 @@ const inputStyle = {
 };
 
 const primaryButtonStyle = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 
@@ -115,7 +115,7 @@ export default function RpTrainerPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PkoRpIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>RP Trainer</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>RP Trainer</span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Risk Premium par stade</span>
         </div>
@@ -184,7 +184,7 @@ export default function RpTrainerPage() {
           Nouvelle question
         </button>
         {selected.length === 0 && (
-          <span style={{ fontSize: 11, color: "#E0645A", marginLeft: 12 }}>Sélectionne au moins un stade.</span>
+          <span style={{ fontSize: 11, color: "var(--erreur)", marginLeft: 12 }}>Sélectionne au moins un stade.</span>
         )}
       </div>
 
@@ -198,7 +198,7 @@ export default function RpTrainerPage() {
             </span>
           </div>
           <div style={{
-            fontSize: 10, color: question.confidence.solid ? "var(--text-muted)" : "#E89A47",
+            fontSize: 10, color: question.confidence.solid ? "var(--text-muted)" : "var(--attention)",
             marginBottom: 14, lineHeight: 1.5,
           }}>
             <strong>{question.confidence.engine}</strong> — {question.confidence.note}
@@ -267,7 +267,7 @@ export default function RpTrainerPage() {
             }}>
               <div style={{
                 fontWeight: 700, marginBottom: 10,
-                color: result.grade === "exact" ? "#34D399" : result.grade === "proche" ? "#E8C547" : "#E0645A",
+                color: result.grade === "exact" ? "var(--accent)" : result.grade === "proche" ? "var(--attention)" : "var(--erreur)",
               }}>
                 {result.grade === "exact" ? "✓ Exact" : result.grade === "proche" ? "≈ Proche" : "✗ Loin"}
                 {" — ta réponse "}{result.given.toFixed(1)}%, RP réel {question.answer.toFixed(1)}%

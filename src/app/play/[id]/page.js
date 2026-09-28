@@ -132,7 +132,7 @@ export default function PlaySpotPage() {
   }
   if (state === "error") {
     return (
-      <div style={{ padding: 20, fontSize: 13, color: "#E0645A" }}>
+      <div style={{ padding: 20, fontSize: 13, color: "var(--erreur)" }}>
         {errorMsg} — <Link href="/train" style={{ color: "var(--accent)" }}>essayer un autre spot</Link>
       </div>
     );
@@ -145,7 +145,7 @@ export default function PlaySpotPage() {
           Ce spot exploit a déjà été joué. Il sera de nouveau disponible le{" "}
           <span style={{ color: ACCENT }}>{new Date(lockedUntil + 30 * 24 * 3600 * 1000).toLocaleDateString("fr-FR")}</span>.
         </div>
-        <button onClick={goToNext} disabled={nextLoading} style={{ display: "inline-block", marginTop: 16, padding: "8px 16px", background: "var(--accent-gradient)", color: "#0B1210", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, opacity: nextLoading ? 0.6 : 1 }}>
+        <button onClick={goToNext} disabled={nextLoading} style={{ display: "inline-block", marginTop: 16, padding: "8px 16px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, opacity: nextLoading ? 0.6 : 1 }}>
           {nextLoading ? "…" : "Spot suivant"}
         </button>
       </div>
@@ -158,7 +158,7 @@ export default function PlaySpotPage() {
     <div style={{ padding: 20, width: "100%", maxWidth: 560, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
         <div style={{ fontSize: 16, fontWeight: 700 }}>{spot.nom}</div>
-        <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 22, color: timeLeft <= 5 ? "#C4544A" : ACCENT }}>
+        <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 22, color: timeLeft <= 5 ? "var(--erreur)" : ACCENT }}>
           {fmtTime(timeLeft)}
         </div>
       </div>
@@ -187,8 +187,8 @@ export default function PlaySpotPage() {
       {!reveal ? (
         <>
           {spot.villainInfo && spot.villainInfo.trim() && (
-            <div style={{ marginBottom: 14, background: "var(--panel)", border: "1px solid #E0645A", borderRadius: 8, padding: "10px 14px" }}>
-              <div style={{ fontSize: 12, color: "#E0645A", fontWeight: 700, marginBottom: 4 }}>🕵️ Sur l&apos;adversaire</div>
+            <div style={{ marginBottom: 14, background: "var(--panel)", border: "1px solid var(--erreur)", borderRadius: 8, padding: "10px 14px" }}>
+              <div style={{ fontSize: 12, color: "var(--erreur)", fontWeight: 700, marginBottom: 4 }}>🕵️ Sur l&apos;adversaire</div>
               <div style={{ fontSize: 13, color: "var(--text)", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{spot.villainInfo}</div>
             </div>
           )}
@@ -211,7 +211,7 @@ export default function PlaySpotPage() {
                     padding: "6px 16px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer",
                     border: `1px solid ${studentAnswer === v ? ACCENT : "var(--border)"}`,
                     background: studentAnswer === v ? ACCENT : "var(--panel-2)",
-                    color: studentAnswer === v ? "#0B1210" : "var(--text)",
+                    color: studentAnswer === v ? "var(--sur-accent)" : "var(--text)",
                   }}>
                     {label}
                   </button>
@@ -219,7 +219,7 @@ export default function PlaySpotPage() {
               </div>
             </div>
           )}
-          <button onClick={submit} style={{ marginTop: 14, padding: "10px 20px", background: "var(--accent-gradient)", color: "#0B1210", border: "none", borderRadius: 8, fontWeight: 700 }}>
+          <button onClick={submit} style={{ marginTop: 14, padding: "10px 20px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 700 }}>
             Valider
           </button>
         </>
@@ -232,12 +232,12 @@ export default function PlaySpotPage() {
             return (
               <div style={{ marginTop: 14, fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 20 }}>{msg.emoji}</span>
-                <span style={{ color: reveal.found ? "#6FCF97" : "#C4544A" }}>{msg.text}</span>
+                <span style={{ color: reveal.found ? "var(--accent-clair)" : "var(--erreur)" }}>{msg.text}</span>
               </div>
             );
           })()}
           <div style={{ marginTop: 8, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: reveal.found ? "#6FCF97" : "#C4544A", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: reveal.found ? "var(--accent-clair)" : "var(--erreur)", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
               {reveal.score} pts
             </div>
             <div style={{ fontSize: 13, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6 }}>
@@ -253,9 +253,9 @@ export default function PlaySpotPage() {
                 {studentAnswer == null ? (
                   <span style={{ color: "var(--text-muted)" }}>Tu n&apos;as pas répondu — la bonne réponse était <b>{spot.questionAnswer === "oui" ? "Oui" : "Non"}</b>.</span>
                 ) : studentAnswer === spot.questionAnswer ? (
-                  <span style={{ color: "#6FCF97" }}>✅ Bonne réponse !</span>
+                  <span style={{ color: "var(--accent-clair)" }}>✅ Bonne réponse !</span>
                 ) : (
-                  <span style={{ color: "#C4544A" }}>❌ Raté — la bonne réponse était <b>{spot.questionAnswer === "oui" ? "Oui" : "Non"}</b>.</span>
+                  <span style={{ color: "var(--erreur)" }}>❌ Raté — la bonne réponse était <b>{spot.questionAnswer === "oui" ? "Oui" : "Non"}</b>.</span>
                 )}
               </div>
               {spot.questionAvis && spot.questionAvis.trim() && (
@@ -290,7 +290,7 @@ export default function PlaySpotPage() {
             </div>
           </div>
           <div style={{ marginTop: 16, display: "flex", gap: 10, alignItems: "center" }}>
-            <button onClick={goToNext} disabled={nextLoading} style={{ padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, opacity: nextLoading ? 0.6 : 1 }}>
+            <button onClick={goToNext} disabled={nextLoading} style={{ padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, opacity: nextLoading ? 0.6 : 1 }}>
               {nextLoading ? "…" : "Spot suivant"}
             </button>
             <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>

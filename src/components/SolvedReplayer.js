@@ -55,7 +55,7 @@ export default function SolvedReplayer({ spot, meta, heroCards }) {
   };
 
   const navBtn = (disabled) => ({
-    padding: "6px 12px", background: disabled ? "#211F1D" : "#302D2A", color: "#ECEEF1",
+    padding: "6px 12px", background: disabled ? "#211F1D" : "#302D2A", color: "var(--sur-sombre)",
     border: "1px solid #302D2A", borderRadius: 6, opacity: disabled ? 0.4 : 1,
     cursor: disabled ? "default" : "pointer",
   });
@@ -80,7 +80,7 @@ export default function SolvedReplayer({ spot, meta, heroCards }) {
             style={{
               padding: "5px 9px", fontSize: 10, borderRadius: 6, border: "1px solid #302D2A",
               background: state.street === s ? ACCENT : "#211F1D",
-              color: state.street === s ? "#1A1918" : "#ECEEF1",
+              color: state.street === s ? "var(--sur-accent)" : "var(--sur-sombre)",
               opacity: streetsPresent.includes(s) ? 1 : 0.3,
               cursor: streetsPresent.includes(s) ? "pointer" : "default",
             }}>

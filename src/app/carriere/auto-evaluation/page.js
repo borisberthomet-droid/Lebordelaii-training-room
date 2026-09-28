@@ -107,7 +107,7 @@ export default function AutoEvaluationPage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Auto-évaluation</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Auto-évaluation</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             Note-toi de 0 à 100. À refaire tous les trois à six mois, pas plus souvent.
           </div>
@@ -120,7 +120,7 @@ export default function AutoEvaluationPage() {
         <Vide>Connecte-toi pour t&apos;auto-évaluer. <Link href="/login" style={{ color: "var(--accent)" }}>Se connecter</Link></Vide>
       )}
       {erreur && (
-        <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14, lineHeight: 1.7 }}>{erreur}</div>
+        <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14, lineHeight: 1.7 }}>{erreur}</div>
       )}
 
       {etat === "pret" && !saisie && (
@@ -151,7 +151,7 @@ export default function AutoEvaluationPage() {
                           <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                             <span style={{ fontFamily: MONO, fontWeight: 700 }}>{v ?? "—"}</span>
                             {delta != null && delta !== 0 && (
-                              <Pastille couleur={delta > 0 ? "#34D399" : "#E0645A"}>
+                              <Pastille couleur={delta > 0 ? "var(--accent)" : "var(--erreur)"}>
                                 {delta > 0 ? "+" : ""}{delta}
                               </Pastille>
                             )}
@@ -225,7 +225,7 @@ export default function AutoEvaluationPage() {
                         type="range" min={0} max={100} step={5} value={saisie[c.id]}
                         onChange={(e) => setSaisie((s) => ({ ...s, [c.id]: Number(e.target.value) }))}
                         aria-label={c.libelle}
-                        style={{ width: "100%", accentColor: "#34D399" }}
+                        style={{ width: "100%", accentColor: "var(--accent)" }}
                       />
                     </div>
                   ))}

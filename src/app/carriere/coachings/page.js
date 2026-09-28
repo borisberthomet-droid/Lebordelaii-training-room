@@ -68,7 +68,7 @@ export default function CoachingsPage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 900, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Mes coachings</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Mes coachings</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             Ce qu&apos;on a travaillé, et ce qui reste à faire d&apos;ici la prochaine fois.
           </div>
@@ -80,7 +80,7 @@ export default function CoachingsPage() {
       {etat === "horsligne" && (
         <Vide>Connecte-toi pour voir tes coachings. <Link href="/login" style={{ color: "var(--accent)" }}>Se connecter</Link></Vide>
       )}
-      {erreur && <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14 }}>{erreur}</div>}
+      {erreur && <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14 }}>{erreur}</div>}
 
       {etat === "pret" && (
         <div style={{ display: "grid", gap: 14 }}>
@@ -107,13 +107,13 @@ export default function CoachingsPage() {
                           </strong>
                         </span>
                         {e.expire && (
-                          <Pastille couleur={e.expire_passe ? "var(--text-muted)" : e.expire_bientot ? "#E8C547" : "var(--text-muted)"}>
+                          <Pastille couleur={e.expire_passe ? "var(--text-muted)" : e.expire_bientot ? "var(--attention)" : "var(--text-muted)"}>
                             {e.expire_passe ? "expiré" : `expire le ${new Date(e.expire).toLocaleDateString("fr-FR")}`}
                           </Pastille>
                         )}
                       </div>
                       {e.expire_bientot && (
-                        <div style={{ fontSize: 11, color: "#E8C547", marginTop: 8 }}>
+                        <div style={{ fontSize: 11, color: "var(--attention)", marginTop: 8 }}>
                           Il te reste {e.restantes} h et {e.joursRestants} jour{e.joursRestants > 1 ? "s" : ""} pour les utiliser.
                         </div>
                       )}
@@ -137,10 +137,10 @@ export default function CoachingsPage() {
                           {dateLongue(c.date)} · {duree(c.duree_min)}
                         </span>
                         <span style={{ display: "flex", gap: 6 }}>
-                          <Pastille couleur={c.statut === "fait" ? "#34D399" : "#4FA8E0"}>
+                          <Pastille couleur={c.statut === "fait" ? "var(--accent)" : "var(--info)"}>
                             {c.statut === "fait" ? "fait" : "à venir"}
                           </Pastille>
-                          <Pastille couleur={c.paiement === "paye" ? "#34D399" : c.paiement === "pack" ? "#4FA8E0" : "#E8C547"}>
+                          <Pastille couleur={c.paiement === "paye" ? "var(--accent)" : c.paiement === "pack" ? "var(--info)" : "var(--attention)"}>
                             {c.paiement === "paye" ? "payé" : c.paiement === "pack" ? "sur pack" : "à payer"}
                           </Pastille>
                         </span>

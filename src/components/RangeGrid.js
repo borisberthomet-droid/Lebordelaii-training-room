@@ -26,9 +26,9 @@ function SuitFilterBar({ filter, setFilter }) {
     <button key={mode} type="button" onClick={() => setFilter((f) => ({ ...f, mode }))}
       style={{
         padding: '4px 12px', fontSize: 11, borderRadius: 5, cursor: 'pointer',
-        border: '1px solid #302D2A',
+        border: '1px solid var(--border)',
         background: filter.mode === mode ? '#3A3733' : 'transparent',
-        color: filter.mode === mode ? '#ECEEF1' : '#7A736D',
+        color: filter.mode === mode ? 'var(--text)' : '#7A736D',
         fontWeight: filter.mode === mode ? 600 : 400,
       }}>{label}</button>
   );
@@ -42,7 +42,7 @@ function SuitFilterBar({ filter, setFilter }) {
         style={{
           width: family === 'suited' ? 34 : 24, height: 24, lineHeight: 1,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          border: `1px solid ${on ? '#8E867E' : '#302D2A'}`, borderRadius: 5, cursor: 'pointer',
+          border: `1px solid ${on ? 'var(--text-muted)' : 'var(--border)'}`, borderRadius: 5, cursor: 'pointer',
           background: on ? 'rgba(255,255,255,0.10)' : 'transparent',
           color: SUIT_COLOR[suit], fontSize: 13, opacity: on ? 1 : 0.55, padding: 0,
         }}>
@@ -54,7 +54,7 @@ function SuitFilterBar({ filter, setFilter }) {
   return (
     <div style={{
       display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8,
-      padding: '8px 10px', background: '#1A1918', border: '1px solid #302D2A', borderRadius: 6,
+      padding: '8px 10px', background: 'var(--panel-2)', border: '1px solid var(--border)', borderRadius: 6,
     }}>
       <div style={{ display: 'flex', gap: 4 }}>{modeBtn('include', 'Include')}{modeBtn('exclude', 'Exclude')}</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -67,12 +67,12 @@ function SuitFilterBar({ filter, setFilter }) {
       </div>
       {active && (
         <button type="button" onClick={() => setFilter(EMPTY_SUIT_FILTER)}
-          style={{ marginLeft: 'auto', padding: '4px 10px', fontSize: 10, background: 'transparent', color: '#E8A83C', border: '1px solid #302D2A', borderRadius: 5, cursor: 'pointer' }}>
+          style={{ marginLeft: 'auto', padding: '4px 10px', fontSize: 10, background: 'transparent', color: 'var(--attention)', border: '1px solid var(--border)', borderRadius: 5, cursor: 'pointer' }}>
           Tout réinitialiser
         </button>
       )}
       {active && (
-        <div style={{ flexBasis: '100%', fontSize: 10, color: '#E8A83C' }}>
+        <div style={{ flexBasis: '100%', fontSize: 10, color: 'var(--attention)' }}>
           Filtre actif : tes clics ne remplissent que les combos {filter.mode === 'exclude' ? 'NON ' : ''}visés.
         </div>
       )}
@@ -136,13 +136,13 @@ function GridCell({
       {/* Le fond/texte est découpé (overflow:hidden) séparément de la case elle-même : sans ça,
           ce même overflow:hidden coupait aussi le popup détail-combo positionné juste en dessous. */}
       <div style={{
-        position: 'absolute', inset: 0, background: bg, border: '1px solid #302D2A', borderRadius: 3,
-        color: classFullyExcluded ? '#302D2A' : (weight > 0.4 ? '#FFFFFF' : (weight > 0 ? '#E8A83C' : '#ECEEF1')),
+        position: 'absolute', inset: 0, background: bg, border: '1px solid var(--border)', borderRadius: 3,
+        color: classFullyExcluded ? 'var(--border)' : (weight > 0.4 ? 'var(--sur-accent)' : (weight > 0 ? 'var(--accent-dark)' : 'var(--text)')),
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, overflow: 'hidden',
       }}>
         <span>{cls}</span>
         {showPct && (
-          <span style={{ fontSize: 7, lineHeight: 1, color: 'rgba(255,255,255,0.6)' }}>
+          <span style={{ fontSize: 7, lineHeight: 1, opacity: 0.72 }}>
             {formatPct(weight)}
           </span>
         )}
@@ -150,8 +150,8 @@ function GridCell({
       {expanded && (
         <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
           style={{
-            position: 'absolute', ...vertical, ...anchor, zIndex: 50, background: '#211F1D',
-            border: '1px solid #302D2A', borderRadius: 6, padding: 8,
+            position: 'absolute', ...vertical, ...anchor, zIndex: 50, background: 'var(--panel)',
+            border: '1px solid var(--border)', borderRadius: 6, padding: 8,
             boxShadow: '0 8px 24px rgba(0,0,0,0.5)', width: 180,
           }}>
           <div style={{ fontFamily: "var(--font-space-grotesk), sans-serif", fontSize: 10, color: '#9C9691', marginBottom: 6 }}>
@@ -173,8 +173,8 @@ function GridCell({
                   onMouseEnter={(e) => { if (!locked && e.buttons === 1) onComboDragEnter(key); }}
                   title={excluded ? 'Carte déjà connue' : filteredOut ? 'Écarté par le filtre de couleur' : (montrerPoids && w > 0 ? formatPct(w) : undefined)}
                   style={{
-                    background: excluded ? '#0A0C0E' : (w > 0 ? `rgba(${ACCENT_RGB},${0.05 + w * 0.55})` : '#1A1918'),
-                    border: `1px solid ${filteredOut ? '#242220' : '#302D2A'}`, borderRadius: 4, padding: '3px 2px',
+                    background: excluded ? 'var(--panel-2)' : (w > 0 ? `rgba(${ACCENT_RGB},${0.12 + w * 0.78})` : 'var(--panel)'),
+                    border: `1px solid ${filteredOut ? 'var(--panel-2)' : 'var(--border)'}`, borderRadius: 4, padding: '3px 2px',
                     textAlign: 'center', cursor: locked ? 'not-allowed' : 'pointer', fontSize: 10,
                     opacity: excluded ? 0.35 : filteredOut ? 0.3 : 1,
                     userSelect: 'none', fontFamily: "var(--font-ibm-plex-mono), monospace",
@@ -290,7 +290,7 @@ export default function RangeGrid({ comboWeights, setComboWeights, mode, resultR
           let cellBg = null;
           if (resultReveal) {
             const villainInClass = getClassCombos(cls).some(c => c.key === resultReveal.villainKey);
-            if (villainInClass) cellBg = resultReveal.found ? '#3FA05A' : '#C4544A';
+            if (villainInClass) cellBg = resultReveal.found ? '#3FA05A' : 'var(--erreur)';
           }
           return (
             <div key={cls} style={cellBg ? { outline: `2px solid ${cellBg}`, borderRadius: 3 } : undefined}>

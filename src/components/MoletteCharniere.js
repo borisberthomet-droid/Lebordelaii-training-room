@@ -94,7 +94,7 @@ export default function MoletteCharniere({ combos, board, mode = "defense", play
         type="range" min={0} max={stops.length - 1} step={1} value={idxTaille}
         onChange={(e) => setSeuil(seuilDepuisPart(mode, partPourTaille(mode, stops[Number(e.target.value)])))}
         aria-label="Taille de mise"
-        style={{ width: "100%", accentColor: "#34D399", margin: "6px 0 12px" }}
+        style={{ width: "100%", accentColor: "var(--accent)", margin: "6px 0 12px" }}
       />
 
       <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
@@ -147,12 +147,12 @@ export default function MoletteCharniere({ combos, board, mode = "defense", play
         }} />
         <div style={{
           position: "absolute", top: 0, bottom: 0, left: `calc(${seuil * 100}% - 1px)`, width: 2,
-          background: "#ECEEF1",
+          background: "var(--text)",
         }} />
         {hero && (
           <div title="Ta main" style={{
             position: "absolute", top: 0, bottom: 0,
-            left: `calc(${((hero.start + hero.end) / 2) * 100}% - 1px)`, width: 2, background: "#0B1210",
+            left: `calc(${((hero.start + hero.end) / 2) * 100}% - 1px)`, width: 2, background: "var(--sur-accent)",
             boxShadow: "0 0 0 1px rgba(255,255,255,0.85)",
           }} />
         )}

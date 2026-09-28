@@ -43,7 +43,7 @@ function Tache({ t, dansBacklog, jours, jour, occupe, onBasculer, onDeplacer, on
     >
       <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }}>
         <input type="checkbox" checked={t.fait} disabled={occupe === t.id} onChange={() => onBasculer(t)}
-          style={{ accentColor: "#34D399", width: 15, height: 15, marginTop: 2 }} />
+          style={{ accentColor: "var(--accent)", width: 15, height: 15, marginTop: 2 }} />
         <span style={{ fontSize: 12, lineHeight: 1.5, textDecoration: t.fait ? "line-through" : "none" }}>
           {t.titre}
           {t.origine === "coaching" && <span style={{ color: "var(--text-muted)" }}> · coaching</span>}
@@ -63,7 +63,7 @@ function Tache({ t, dansBacklog, jours, jour, occupe, onBasculer, onDeplacer, on
           <option value={AUTRE}>to-do</option>
           {jours.map((j, i) => <option key={j} value={j}>{JOURS[i]} {libelleCourt(j)}</option>)}
         </select>
-        {retard && <Pastille couleur="#E8C547">en retard</Pastille>}
+        {retard && <Pastille couleur="var(--attention)">en retard</Pastille>}
         <button onClick={() => onSupprimer(t)} disabled={occupe === t.id}
           style={{ marginLeft: "auto", background: "none", border: "none", color: "var(--text-muted)", fontSize: 11, cursor: "pointer" }}>
           supprimer
@@ -162,7 +162,7 @@ export default function SemainePage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Ma semaine</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Ma semaine</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             Glisse une tâche de ta to-do vers un jour. Rien ne se reporte tout seul.
           </div>
@@ -174,7 +174,7 @@ export default function SemainePage() {
       {etat === "horsligne" && (
         <Vide>Connecte-toi pour organiser ta semaine. <Link href="/login" style={{ color: "var(--accent)" }}>Se connecter</Link></Vide>
       )}
-      {erreur && <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14 }}>{erreur}</div>}
+      {erreur && <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14 }}>{erreur}</div>}
 
       {etat === "pret" && (
         <>

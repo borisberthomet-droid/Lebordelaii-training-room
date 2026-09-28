@@ -42,11 +42,11 @@ export function bluffCombosFor(betPct, valueCombos) {
 // niveaux 1/3/4 solides (2 à 4 mesures chacun), niveau 2 une seule mesure, niveau 5 trois
 // mesures dont deux avec des arbres d'actions asymétriques — la bande 5–6 tient, pas la décimale.
 export const ELASTICITY_LEVELS = [
-  { level: 1, k: 2.7, label: "Deep 40bb+, vs open raise, postflop à jouer", color: "#4FA8E0", solid: true },
-  { level: 2, k: 3.5, label: "Semi-commit, le porteur du KO coûte cher à attaquer", color: "#6FCF97", solid: false },
-  { level: 3, k: 4.0, label: "All-in, jammeur large (BTN/SB) ou deep (15-25bb)", color: "#E8C547", solid: true },
-  { level: 4, k: 4.6, label: "All-in, jammeur tight en early position, 8-12bb", color: "#E89A47", solid: true },
-  { level: 5, k: 5.5, label: "Chasseur qui couvre la prime, peut agir, et à bas coût", color: "#E0645A", solid: false },
+  { level: 1, k: 2.7, label: "Deep 40bb+, vs open raise, postflop à jouer", color: "var(--info)", solid: true },
+  { level: 2, k: 3.5, label: "Semi-commit, le porteur du KO coûte cher à attaquer", color: "var(--accent-clair)", solid: false },
+  { level: 3, k: 4.0, label: "All-in, jammeur large (BTN/SB) ou deep (15-25bb)", color: "var(--attention)", solid: true },
+  { level: 4, k: 4.6, label: "All-in, jammeur tight en early position, 8-12bb", color: "var(--attention)", solid: true },
+  { level: 5, k: 5.5, label: "Chasseur qui couvre la prime, peut agir, et à bas coût", color: "var(--erreur)", solid: false },
 ];
 
 export function rangeMultiplier(k, rpAbs) {

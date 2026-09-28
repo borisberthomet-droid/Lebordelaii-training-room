@@ -63,7 +63,7 @@ export default function ObjectifsPage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 820, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Mes objectifs</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Mes objectifs</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             Une vision, un cap à un an, trois chantiers pour le trimestre.
           </div>
@@ -75,7 +75,7 @@ export default function ObjectifsPage() {
       {etat === "horsligne" && (
         <Vide>Connecte-toi pour écrire tes objectifs. <Link href="/login" style={{ color: "var(--accent)" }}>Se connecter</Link></Vide>
       )}
-      {erreur && <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14 }}>{erreur}</div>}
+      {erreur && <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14 }}>{erreur}</div>}
 
       {etat === "pret" && (
         <div style={{ display: "grid", gap: 14 }}>
@@ -139,7 +139,7 @@ export default function ObjectifsPage() {
                 {objectifs.filter((o) => o.statut !== "en_cours").map((o) => (
                   <div key={o.id} style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center", fontSize: 12 }}>
                     <span style={{ color: "var(--text-muted)" }}>{o.texte}</span>
-                    <Pastille couleur={o.statut === "atteint" ? "#34D399" : "var(--text-muted)"}>
+                    <Pastille couleur={o.statut === "atteint" ? "var(--accent)" : "var(--text-muted)"}>
                       {o.statut === "atteint" ? "atteint" : "abandonné"}
                     </Pastille>
                   </div>

@@ -60,7 +60,7 @@ export default function FicheCoachPage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>
             {joueur?.pseudo || "Fiche joueur"}
           </div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
@@ -72,7 +72,7 @@ export default function FicheCoachPage() {
 
       {etat === "chargement" && <Vide>Chargement…</Vide>}
       {etat === "refuse" && <Vide>Cette page est réservée au coach.</Vide>}
-      {erreur && <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14 }}>{erreur}</div>}
+      {erreur && <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14 }}>{erreur}</div>}
 
       {etat === "pret" && fiche && (
         <div style={{ display: "grid", gap: 14 }}>

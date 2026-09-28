@@ -22,7 +22,7 @@ import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 // de miser. C'est la question qu'on se pose vraiment à la table.
 
 const btn = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 const ghost = {
@@ -129,7 +129,7 @@ export default function FindItSimPage() {
   if (error) {
     return (
       <div style={{ padding: 20, width: "100%", maxWidth: 780, margin: "0 auto" }}>
-        <div style={{ fontSize: 14, color: "#E0645A", marginBottom: 8 }}>{error}</div>
+        <div style={{ fontSize: 14, color: "var(--erreur)", marginBottom: 8 }}>{error}</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
     );
@@ -143,7 +143,7 @@ export default function FindItSimPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Logo size={24} showWordmark={false} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Find It — sur simulation</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Find It — sur simulation</span>
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--text-muted)" }}>
@@ -178,7 +178,7 @@ export default function FindItSimPage() {
         <button onClick={nouveau} style={btn} disabled={!pool.length || loading}>
           {loading ? "…" : "Nouveau spot"}
         </button>
-        <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "#E0645A", marginLeft: 12 }}>
+        <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "var(--erreur)", marginLeft: 12 }}>
           {pool.length ? `${pool.length} spots disponibles` : "Aucun spot : élargis les filtres."}
         </span>
       </div>
@@ -227,7 +227,7 @@ export default function FindItSimPage() {
                   background: reveal.found ? "rgba(52,211,153,0.12)" : "rgba(224,100,90,0.12)",
                   border: `1px solid ${reveal.found ? "rgba(52,211,153,0.35)" : "rgba(224,100,90,0.35)"}`,
                 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 10, color: reveal.found ? "#34D399" : "#E0645A" }}>
+                  <div style={{ fontWeight: 700, marginBottom: 10, color: reveal.found ? "var(--accent)" : "var(--erreur)" }}>
                     {reveal.found
                       ? `Trouvé — ${reveal.score}/100${reveal.tempsEcoule ? " (temps écoulé)" : ""}`
                       : reveal.tempsEcoule

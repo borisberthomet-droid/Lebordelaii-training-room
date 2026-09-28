@@ -39,7 +39,7 @@ export default async function FindItHome() {
       </div>
 
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
+        <div className="titre" style={{ fontSize: 24, fontWeight: 700 }}>
           {user ? `Salut ${profile?.pseudo || user.email.split("@")[0]}` : "Find It!"}
         </div>
         <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
@@ -52,7 +52,7 @@ export default async function FindItHome() {
           href="/train"
           style={{
             display: "block", padding: "18px 18px", background: "var(--accent-gradient)",
-            borderRadius: 14, color: "#0B1210", gridColumn: "1 / -1",
+            borderRadius: 14, color: "var(--sur-accent)", gridColumn: "1 / -1",
           }}
         >
           <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>S&apos;entraîner</div>
@@ -76,7 +76,7 @@ export default async function FindItHome() {
             href="/admin"
             style={{
               display: "block", padding: "18px 18px", background: "var(--accent-gradient)",
-              borderRadius: 14, color: "#0B1210",
+              borderRadius: 14, color: "var(--sur-accent)",
             }}
           >
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Éditeur admin</div>

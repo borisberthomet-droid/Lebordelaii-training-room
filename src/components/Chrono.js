@@ -35,7 +35,7 @@ export default function Chrono({ secondes = 300, actif = true, onTempsEcoule }) 
   const mm = Math.floor(restant / 60);
   const ss = String(restant % 60).padStart(2, "0");
   // Vert, puis ambre dans la dernière minute, puis rouge dans les dix dernières secondes.
-  const couleur = restant <= 10 ? "#E0645A" : restant <= 60 ? "#E8B44A" : "var(--accent)";
+  const couleur = restant <= 10 ? "var(--erreur)" : restant <= 60 ? "#E8B44A" : "var(--accent)";
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "12px 0 4px" }}>

@@ -46,7 +46,7 @@ export default function LeakFinderPage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 900, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Leak Finder</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Leak Finder</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             Trois statistiques à la fois, pas plus. Le reste attend son tour.
           </div>
@@ -58,7 +58,7 @@ export default function LeakFinderPage() {
       {etat === "horsligne" && (
         <Vide>Connecte-toi pour voir tes statistiques. <Link href="/login" style={{ color: "var(--accent)" }}>Se connecter</Link></Vide>
       )}
-      {erreur && <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14 }}>{erreur}</div>}
+      {erreur && <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14 }}>{erreur}</div>}
 
       {etat === "pret" && (
         <div style={{ display: "grid", gap: 14 }}>
@@ -100,9 +100,9 @@ export default function LeakFinderPage() {
                     <span>{s.nom}</span>
                     <span style={{ display: "flex", gap: 10, alignItems: "center", fontFamily: MONO, color: "var(--text-muted)" }}>
                       {s.valeur_depart != null && <span>{s.valeur_depart} →</span>}
-                      <span style={{ color: "#34D399", fontWeight: 700 }}>{s.valeur_atteinte}</span>
+                      <span style={{ color: "var(--accent)", fontWeight: 700 }}>{s.valeur_atteinte}</span>
                       <span>cible {libelleTarget(s)}</span>
-                      <Pastille couleur="#34D399">validé le {dateCourte(s.valide_le)}</Pastille>
+                      <Pastille couleur="var(--accent)">validé le {dateCourte(s.valide_le)}</Pastille>
                     </span>
                   </div>
                 ))}

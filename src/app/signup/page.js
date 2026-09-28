@@ -72,7 +72,7 @@ export default function SignupPage() {
         </div>
 
         {done ? (
-          <div style={{ fontSize: 13, color: "#6FCF97" }}>
+          <div style={{ fontSize: 13, color: "var(--accent-clair)" }}>
             Compte créé. Vérifie ta boîte mail pour confirmer ton adresse, puis{" "}
             <Link href="/login" style={{ color: "var(--accent)" }}>
               connecte-toi
@@ -121,7 +121,7 @@ export default function SignupPage() {
             </div>
 
             {error && (
-              <div style={{ fontSize: 12, color: "#E0645A", marginBottom: 12 }}>{error}</div>
+              <div style={{ fontSize: 12, color: "var(--erreur)", marginBottom: 12 }}>{error}</div>
             )}
 
             <button
@@ -131,7 +131,7 @@ export default function SignupPage() {
                 width: "100%",
                 padding: "10px 12px",
                 background: "var(--accent-gradient)",
-                color: "#0B1210",
+                color: "var(--sur-accent)",
                 border: "none",
                 borderRadius: 8,
                 fontWeight: 600,

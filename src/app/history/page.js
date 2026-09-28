@@ -45,7 +45,7 @@ export default function HistoryPage() {
               <div style={{ fontSize: 10, color: "var(--text-muted)" }}>score moyen</div>
             </div>
             <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 12, padding: "12px 18px", textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "#6FCF97", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{best}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--accent-clair)", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{best}</div>
               <div style={{ fontSize: 10, color: "var(--text-muted)" }}>meilleur score</div>
             </div>
           </div>
@@ -61,7 +61,7 @@ export default function HistoryPage() {
                     {h.spots?.mode === "exploit" ? "Exploit" : "Théorique"} · {new Date(h.created_at).toLocaleDateString("fr-FR")}
                   </div>
                 </div>
-                <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", fontWeight: 700, color: h.found ? "#6FCF97" : "#C4544A" }}>
+                <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", fontWeight: 700, color: h.found ? "var(--accent-clair)" : "var(--erreur)" }}>
                   {h.score} pts
                 </div>
               </div>

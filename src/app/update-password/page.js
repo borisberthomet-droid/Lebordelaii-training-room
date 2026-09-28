@@ -89,7 +89,7 @@ export default function UpdatePasswordPage() {
         {!checked ? (
           <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Vérification du lien…</div>
         ) : !ready ? (
-          <div style={{ fontSize: 13, color: "#E0645A" }}>
+          <div style={{ fontSize: 13, color: "var(--erreur)" }}>
             Ce lien est invalide ou a expiré.{" "}
             <Link href="/forgot-password" style={{ color: "var(--accent)" }}>
               Demander un nouveau lien
@@ -126,7 +126,7 @@ export default function UpdatePasswordPage() {
             </div>
 
             {error && (
-              <div style={{ fontSize: 12, color: "#E0645A", marginBottom: 12 }}>{error}</div>
+              <div style={{ fontSize: 12, color: "var(--erreur)", marginBottom: 12 }}>{error}</div>
             )}
 
             <button
@@ -136,7 +136,7 @@ export default function UpdatePasswordPage() {
                 width: "100%",
                 padding: "10px 12px",
                 background: "var(--accent-gradient)",
-                color: "#0B1210",
+                color: "var(--sur-accent)",
                 border: "none",
                 borderRadius: 8,
                 fontWeight: 600,

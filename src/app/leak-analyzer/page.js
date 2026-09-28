@@ -7,9 +7,9 @@ import { LeakAnalyzerIcon } from "@/components/ToolIcons";
 import { ACCENT, ACCENT_GRADIENT } from "@/lib/poker/constants";
 
 const VERDICT_STYLE = {
-  aligné: { label: "Aligné", color: "#34D399", bg: "rgba(52,211,153,0.12)" },
-  leak_mineur: { label: "Leak mineur", color: "#E8C547", bg: "rgba(232,197,71,0.12)" },
-  leak_majeur: { label: "Leak majeur", color: "#E0645A", bg: "rgba(224,100,90,0.14)" },
+  aligné: { label: "Aligné", color: "var(--accent)", bg: "rgba(52,211,153,0.12)" },
+  leak_mineur: { label: "Leak mineur", color: "var(--attention)", bg: "rgba(232,197,71,0.12)" },
+  leak_majeur: { label: "Leak majeur", color: "var(--erreur)", bg: "rgba(224,100,90,0.14)" },
   non_couvert: { label: "Non couvert", color: "#8E968F", bg: "rgba(142,150,143,0.1)" },
 };
 
@@ -95,7 +95,7 @@ export default function LeakAnalyzerPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <LeakAnalyzerIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Leak Analyzer</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Leak Analyzer</span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Analyseur de leaks (préflop)</span>
         </div>
@@ -132,14 +132,14 @@ export default function LeakAnalyzerPage() {
             style={{
               alignSelf: "flex-start", padding: "8px 16px",
               background: loading ? "var(--border)" : ACCENT_GRADIENT,
-              color: loading ? "var(--text-muted)" : "#0B1210",
+              color: loading ? "var(--text-muted)" : "var(--sur-accent)",
               border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700,
               cursor: loading ? "default" : "pointer",
             }}
           >
             {loading ? "Analyse en cours (peut prendre 1-2 min)…" : "Analyser la session"}
           </button>
-          {error && <div style={{ fontSize: 12, color: "#E0645A" }}>{error}</div>}
+          {error && <div style={{ fontSize: 12, color: "var(--erreur)" }}>{error}</div>}
         </div>
       </Section>
 

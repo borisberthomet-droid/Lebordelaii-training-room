@@ -21,16 +21,16 @@ const SOMBRE = {
   "--d-panel": "#1A1D1B",
   "--d-panel-2": "#20241F",
   "--d-border": "#272B28",
-  "--d-text": "#ECEEF1",
+  "--d-text": "var(--text)",
   "--d-muted": "#8E968F",
-  "--d-accent": "#34D399",
-  "--d-accent-fort": "#4ADE80",
-  "--d-contre": "#0B1210",
-  "--d-alerte": "#E8C547",
+  "--d-accent": "var(--accent)",
+  "--d-accent-fort": "var(--accent-clair)",
+  "--d-contre": "var(--sur-accent)",
+  "--d-alerte": "var(--attention)",
   "--d-voile": "rgba(11,18,16,0.86)",
   "--d-voile-fin": "rgba(11,18,16,0.20)",
-  "--d-sur-photo": "#ECEEF1",
-  "--d-sur-plein": "#0B1210",
+  "--d-sur-photo": "var(--text)",
+  "--d-sur-plein": "var(--sur-accent)",
   "--d-titre": "var(--font-space-grotesk), sans-serif",
   "--d-corps": "var(--font-space-grotesk), sans-serif",
 };
@@ -193,7 +193,7 @@ export default function StylePage() {
     <div className={`${serif.variable} ${sans.variable}`}
       style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1100, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
-        <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Banc d&apos;essai — habillage</div>
+        <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Banc d&apos;essai — habillage</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
       <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16, lineHeight: 1.7, maxWidth: 620 }}>

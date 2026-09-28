@@ -11,9 +11,9 @@ function chipColorForAmount(bb) {
   if (bb < 15) return '#D64545';
   if (bb < 40) return '#3F8FD1';
   if (bb < 100) return '#3FA05A';
-  return '#E8A83C';
+  return 'var(--attention)';
 }
-const CHIP_TEXT_COLOR = { '#ECEEF1': '#1A1918', '#D64545': '#FFFFFF', '#3F8FD1': '#FFFFFF', '#3FA05A': '#FFFFFF', '#E8A83C': '#1A1918' };
+const CHIP_TEXT_COLOR = { '#ECEEF1': '#1A1918', '#D64545': '#FFFFFF', '#3F8FD1': '#FFFFFF', '#3FA05A': '#FFFFFF', 'var(--attention)': '#1A1918' };
 
 // Tuile de mise plate et colorée (même esprit que les cartes), la taille grandit avec le montant
 function BetTag({ amountBB }) {
@@ -70,7 +70,7 @@ function HoleCard({ card }) {
 function Seat({ position, stackBB, stackChips, action, bounty, dealer, highlight, profile }) {
   const [showChips, setShowChips] = useState(false);
   const PROFILE_COLORS = {
-    'ELITE': '#E0645A', 'REG AGGRO': '#E8C547', 'AVG REG': '#9C9691', 'REG TIGHT': '#4FA8E0',
+    'ELITE': 'var(--erreur)', 'REG AGGRO': 'var(--attention)', 'AVG REG': '#9C9691', 'REG TIGHT': 'var(--info)',
     'RECREA': '#2F6B4F', 'BALEINE': '#39FF6A', 'GTO': '#FFFFFF',
   };
   const profileColor = profile ? PROFILE_COLORS[profile] : null;
@@ -88,7 +88,7 @@ function Seat({ position, stackBB, stackChips, action, bounty, dealer, highlight
       {bounty && (
         <div style={{
           position: 'absolute', top: -9, left: -9, minWidth: 22, height: 22, borderRadius: '50%',
-          background: '#1A1918', border: '2px solid #6FCF97', color: '#6FCF97', fontSize: 8, fontWeight: 700,
+          background: '#1A1918', border: '2px solid var(--accent-clair)', color: 'var(--accent-clair)', fontSize: 8, fontWeight: 700,
           display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
           fontFamily: "var(--font-ibm-plex-mono), monospace", padding: '0 2px', zIndex: 2,
         }}>{bounty}</div>
@@ -102,7 +102,7 @@ function Seat({ position, stackBB, stackChips, action, bounty, dealer, highlight
           onClick={() => clickable && setShowChips(v => !v)}
           title={clickable ? 'Clique pour voir le stack en jetons' : undefined}
           style={{
-            fontFamily: "var(--font-ibm-plex-mono), monospace", color: '#ECEEF1', fontSize: showChips ? 13 : 15, fontWeight: 700,
+            fontFamily: "var(--font-ibm-plex-mono), monospace", color: 'var(--sur-sombre)', fontSize: showChips ? 13 : 15, fontWeight: 700,
             whiteSpace: 'nowrap', cursor: clickable ? 'pointer' : 'default',
             borderBottom: clickable ? '1px dotted rgba(242,153,74,0.5)' : 'none',
           }}
@@ -113,7 +113,7 @@ function Seat({ position, stackBB, stackChips, action, bounty, dealer, highlight
         </div>
       </div>
       {action && (
-        <div style={{ fontSize: 10, fontFamily: "var(--font-ibm-plex-mono), monospace", color: /all-?in/i.test(action) ? '#E0645A' : '#6FCF97', marginTop: 4 }}>{action}</div>
+        <div style={{ fontSize: 10, fontFamily: "var(--font-ibm-plex-mono), monospace", color: /all-?in/i.test(action) ? 'var(--erreur)' : 'var(--accent-clair)', marginTop: 4 }}>{action}</div>
       )}
     </div>
   );
@@ -128,8 +128,8 @@ export default function TableView({ spot, heroCardsOverride, bets }) {
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', gap: 10, marginBottom: 8, fontSize: 11, fontFamily: "var(--font-ibm-plex-mono), monospace", color: '#9C9691', flexWrap: 'wrap' }}>
-        <span>Blinds <span style={{ color: '#ECEEF1' }}>{spot.blindLevel || '—'}</span></span>
-        <span>Average <span style={{ color: '#ECEEF1' }}>{spot.averageBB || '—'} BB</span></span>
+        <span>Blinds <span style={{ color: 'var(--text)' }}>{spot.blindLevel || '—'}</span></span>
+        <span>Average <span style={{ color: 'var(--text)' }}>{spot.averageBB || '—'} BB</span></span>
         {spot.momentTournoi && <span style={{ background: '#302D2A', padding: '2px 8px', borderRadius: 10, fontFamily: "var(--font-space-grotesk), sans-serif" }}>{spot.momentTournoi}</span>}
       </div>
       <div style={{ position: 'relative', width: '100%', maxWidth: 680, aspectRatio: '4/3', margin: '0 auto' }}>
@@ -141,7 +141,7 @@ export default function TableView({ spot, heroCardsOverride, bets }) {
           {spot.potTotal != null && spot.potTotal !== '' && (
             <div style={{ marginTop: 6, display: 'inline-block', background: '#211F1D', border: '1px solid #302D2A', borderRadius: 20, padding: '4px 14px' }}>
               <span style={{ fontSize: 10, color: '#9C9691' }}>Pot </span>
-              <span style={{ color: '#ECEEF1', fontFamily: "var(--font-ibm-plex-mono), monospace", fontWeight: 700, fontSize: 15 }}>{spot.potTotal} BB</span>
+              <span style={{ color: 'var(--sur-sombre)', fontFamily: "var(--font-ibm-plex-mono), monospace", fontWeight: 700, fontSize: 15 }}>{spot.potTotal} BB</span>
             </div>
           )}
         </div>
@@ -150,7 +150,7 @@ export default function TableView({ spot, heroCardsOverride, bets }) {
           const holeCards = s.role === 'hero'
             ? (heroCardsOverride && heroCardsOverride.length === 2 ? heroCardsOverride : (spot.heroCombo ? [spot.heroCombo.slice(0, 2), spot.heroCombo.slice(2, 4)] : null))
             : null;
-          const highlight = s.role === 'hero' ? ACCENT : (s.role === 'villain' ? '#E0645A' : undefined);
+          const highlight = s.role === 'hero' ? ACCENT : (s.role === 'villain' ? 'var(--erreur)' : undefined);
           return (
             <div key={i} style={{ position: 'absolute', left: pos.left, top: pos.top, transform: 'translate(-50%,-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               {holeCards && holeCards.length === 2 && (

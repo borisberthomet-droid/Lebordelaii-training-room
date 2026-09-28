@@ -27,7 +27,7 @@ export default function RangeBuilderRankingPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <RangeBuilderIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Range Builder</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Range Builder</span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Classement</span>
         </div>

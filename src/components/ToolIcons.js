@@ -1,13 +1,13 @@
 // Marques vectorielles des outils, dans le même langage visuel que le logo
-// Find It! (components/Logo.js) : dégradé vert #4ADE80→#059669, traits géométriques,
+// Find It! (components/Logo.js) : dégradé vert var(--accent-clair)→var(--accent-dark), traits géométriques,
 // fond sombre — pas d'emoji, pour un rendu cohérent et pas "généré par IA".
 
 function Grad({ id }) {
   return (
     <defs>
       <linearGradient id={id} x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0" stopColor="#4ADE80" />
-        <stop offset="1" stopColor="#059669" />
+        <stop offset="0" stopColor="var(--accent-clair)" />
+        <stop offset="1" stopColor="var(--accent-dark)" />
       </linearGradient>
     </defs>
   );

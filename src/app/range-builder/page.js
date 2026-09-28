@@ -21,7 +21,7 @@ const inputStyle = {
 };
 
 const primaryButtonStyle = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 
@@ -312,7 +312,7 @@ export default function RangeBuilderPage() {
                 {isAdmin && (
                   <>
                     <button onClick={() => startEdit(selectedSpot)} style={ghostButtonStyle}>Éditer le spot</button>
-                    <button onClick={() => handleDeleteSpot(selectedSpot.id)} style={{ ...ghostButtonStyle, color: "#E0645A" }}>
+                    <button onClick={() => handleDeleteSpot(selectedSpot.id)} style={{ ...ghostButtonStyle, color: "var(--erreur)" }}>
                       Supprimer
                     </button>
                   </>
@@ -353,7 +353,7 @@ export default function RangeBuilderPage() {
               <div style={{ marginTop: 20 }}>
                 <div style={{
                   fontSize: 22, fontWeight: 700, marginBottom: 14,
-                  color: result.accuracy >= 85 ? "var(--accent)" : result.accuracy >= 65 ? "#E8C547" : "#E0645A",
+                  color: result.accuracy >= 85 ? "var(--accent)" : result.accuracy >= 65 ? "var(--attention)" : "var(--erreur)",
                 }}>
                   {result.accuracy}% de similarité
                 </div>
@@ -364,7 +364,7 @@ export default function RangeBuilderPage() {
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
-                      Écart <span style={{ color: "#E0645A" }}>rouge = tu sur-bet</span> / <span style={{ color: "#4FA8E0" }}>bleu = tu sous-bet</span>
+                      Écart <span style={{ color: "var(--erreur)" }}>rouge = tu sur-bet</span> / <span style={{ color: "var(--info)" }}>bleu = tu sous-bet</span>
                     </div>
                     <StaticGrid
                       cellStyle={diffCellStyle(result.perClass)}

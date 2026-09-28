@@ -79,7 +79,7 @@ export default function SkillProfile() {
   useEffect(() => { load(); }, [load]);
 
   if (error) {
-    return <div style={{ fontSize: 13, color: "#E0645A" }}>{error}</div>;
+    return <div style={{ fontSize: 13, color: "var(--erreur)" }}>{error}</div>;
   }
 
   const mesures = profile?.axes.filter((a) => a.measured) || [];
@@ -118,7 +118,7 @@ export default function SkillProfile() {
             <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap", marginBottom: 4 }}>
               <span className="grad-text" style={{
                 fontSize: 52, fontWeight: 800, lineHeight: 1,
-                backgroundImage: "linear-gradient(135deg, #4ADE80 0%, #059669 100%)",
+                backgroundImage: "linear-gradient(135deg, var(--accent-clair) 0%, var(--accent-dark) 100%)",
               }}>
                 {profile.global ?? "—"}
               </span>
@@ -148,7 +148,7 @@ export default function SkillProfile() {
                     <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: a.measured ? "var(--accent)" : "var(--text-muted)" }}>
                       {a.measured ? a.score : "non mesuré"}
                       {a.trend != null && a.trend !== 0 && (
-                        <span style={{ marginLeft: 8, color: a.trend > 0 ? "#34D399" : "#E0645A" }}>
+                        <span style={{ marginLeft: 8, color: a.trend > 0 ? "var(--accent)" : "var(--erreur)" }}>
                           {a.trend > 0 ? "+" : ""}{a.trend} ce mois-ci
                         </span>
                       )}
@@ -186,7 +186,7 @@ export default function SkillProfile() {
             ))}
           </div>
           <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 16 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#E8C547" }}>Axes de progression</div>
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "var(--attention)" }}>Axes de progression</div>
             {faibles.map((a) => (
               <div key={a.id} style={{ fontSize: 12, color: "var(--text-muted)", padding: "2px 0" }}>
                 {a.label} <span style={{ color: "var(--text)" }}>{a.score}</span>
@@ -205,7 +205,7 @@ export default function SkillProfile() {
       )}
 
       {source === "local" && (
-        <div style={{ fontSize: 11, color: "#E8C547", marginBottom: 12, lineHeight: 1.6 }}>
+        <div style={{ fontSize: 11, color: "var(--attention)", marginBottom: 12, lineHeight: 1.6 }}>
           Données lues sur ce navigateur, pas sur le compte : la base est en veille ou la table
           n&apos;est pas encore créée. Les réponses sont conservées et remonteront une fois la base
           revenue.

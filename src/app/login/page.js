@@ -101,7 +101,7 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div style={{ fontSize: 12, color: "#E0645A", marginBottom: 12 }}>{error}</div>
+          <div style={{ fontSize: 12, color: "var(--erreur)", marginBottom: 12 }}>{error}</div>
         )}
 
         <button
@@ -111,7 +111,7 @@ export default function LoginPage() {
             width: "100%",
             padding: "10px 12px",
             background: "var(--accent-gradient)",
-            color: "#0B1210",
+            color: "var(--sur-accent)",
             border: "none",
             borderRadius: 8,
             fontWeight: 600,

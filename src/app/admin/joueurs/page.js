@@ -66,7 +66,7 @@ export default function JoueursPage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Mes joueurs</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Mes joueurs</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             Suivi coaching et administratif. Clique une ligne pour ouvrir la fiche complète.
           </div>
@@ -81,7 +81,7 @@ export default function JoueursPage() {
       {etat === "refuse" && (
         <Vide>Cette page est réservée au coach. <Link href="/login" style={{ color: "var(--accent)" }}>Se connecter</Link></Vide>
       )}
-      {erreur && <div style={{ fontSize: 13, color: "#E0645A", marginBottom: 14 }}>{erreur}</div>}
+      {erreur && <div style={{ fontSize: 13, color: "var(--erreur)", marginBottom: 14 }}>{erreur}</div>}
 
       {etat === "pret" && (
         <Carte>
@@ -126,7 +126,7 @@ export default function JoueursPage() {
                       style={{ borderTop: "1px solid var(--border)", cursor: "pointer" }}>
                       <td style={{ ...td, fontWeight: 600 }}>{j.pseudo}</td>
                       <td style={td}>
-                        <Pastille couleur={actif ? "#34D399" : "var(--text-muted)"}>{actif ? "actif" : "inactif"}</Pastille>
+                        <Pastille couleur={actif ? "var(--accent)" : "var(--text-muted)"}>{actif ? "actif" : "inactif"}</Pastille>
                       </td>
                       <td style={{ ...td, fontFamily: MONO }}>{j.nbCoachings}</td>
                       <td style={{ ...td, fontFamily: MONO }}>{j.heures} h</td>
@@ -136,12 +136,12 @@ export default function JoueursPage() {
                       </td>
                       <td style={td}>{j.pack ? "pack" : j.nbCoachings ? "unité" : "—"}</td>
                       <td style={{ ...td, fontFamily: MONO }}>{j.pack ? `${j.pack.etat.restantes} h` : "—"}</td>
-                      <td style={{ ...td, fontFamily: MONO, color: j.pack?.etat.expire_bientot ? "#E8C547" : undefined }}>
+                      <td style={{ ...td, fontFamily: MONO, color: j.pack?.etat.expire_bientot ? "var(--attention)" : undefined }}>
                         {j.pack?.etat.expire ? dateCourte(j.pack.etat.expire) : "—"}
                       </td>
                       <td style={td}>
                         {j.impayes > 0
-                          ? <Pastille couleur="#E8C547">{j.impayes} à payer</Pastille>
+                          ? <Pastille couleur="var(--attention)">{j.impayes} à payer</Pastille>
                           : <span style={{ color: "var(--text-muted)" }}>à jour</span>}
                       </td>
                     </tr>

@@ -29,7 +29,7 @@ const smallInputStyle = {
 };
 
 const primaryButtonStyle = {
-  padding: "8px 16px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "8px 16px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 
@@ -41,7 +41,7 @@ const ghostButtonStyle = {
 function toggleButtonStyle(active, activeColor = ACCENT) {
   return {
     padding: "5px 10px", fontSize: 11, borderRadius: 6, border: "1px solid var(--border)",
-    background: active ? activeColor : "var(--panel-2)", color: active ? "#0B1210" : "var(--text)",
+    background: active ? activeColor : "var(--panel-2)", color: active ? "var(--sur-accent)" : "var(--text)",
     cursor: "pointer",
   };
 }
@@ -380,7 +380,7 @@ export default function AdminPage() {
                   </div>
                   <button onClick={() => handleSelectNode(previewIdx)} disabled={isConfirmed} style={{
                     width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700, border: 'none',
-                    background: isConfirmed ? 'var(--panel-2)' : 'var(--accent-gradient)', color: isConfirmed ? '#6FCF97' : '#0B1210',
+                    background: isConfirmed ? 'var(--panel-2)' : 'var(--accent-gradient)', color: isConfirmed ? 'var(--accent-clair)' : 'var(--sur-accent)',
                     cursor: isConfirmed ? 'default' : 'pointer',
                   }}>
                     {isConfirmed ? "✓ Nœud d'arrêt confirmé" : "Arrêter l'exercice ici — utiliser ce nœud"}
@@ -569,10 +569,10 @@ export default function AdminPage() {
                           <button onClick={() => setSeatRole(idx, 'hero')} style={{ ...toggleButtonStyle(seat.role === 'hero'), padding: '3px 6px' }}>H</button>
                         </td>
                         <td style={{ padding: 4 }}>
-                          <button onClick={() => setSeatRole(idx, 'villain')} style={{ ...toggleButtonStyle(seat.role === 'villain', '#E0645A'), padding: '3px 6px' }}>V</button>
+                          <button onClick={() => setSeatRole(idx, 'villain')} style={{ ...toggleButtonStyle(seat.role === 'villain', 'var(--erreur)'), padding: '3px 6px' }}>V</button>
                         </td>
                         <td style={{ padding: 4 }}>
-                          <button onClick={() => setSeatDealer(idx)} style={{ ...toggleButtonStyle(seat.dealer, '#ECEEF1'), padding: '3px 6px' }}>D</button>
+                          <button onClick={() => setSeatDealer(idx)} style={{ ...toggleButtonStyle(seat.dealer, 'var(--text)'), padding: '3px 6px' }}>D</button>
                         </td>
                         <td style={{ padding: '4px 0 4px 4px' }}>
                           <select value={seat.profile} onChange={e => updateSeat(idx, { profile: e.target.value })}
@@ -681,7 +681,7 @@ export default function AdminPage() {
                 <button onClick={resetEditor} style={ghostButtonStyle}>Annuler l&apos;édition</button>
               )}
             </div>
-            {saveMsg && <div style={{ marginTop: 10, fontSize: 12, color: saveMsg.startsWith('⚠️') || saveMsg.startsWith('Erreur') ? '#E0645A' : '#6FCF97' }}>{saveMsg}</div>}
+            {saveMsg && <div style={{ marginTop: 10, fontSize: 12, color: saveMsg.startsWith('⚠️') || saveMsg.startsWith('Erreur') ? 'var(--erreur)' : 'var(--accent-clair)' }}>{saveMsg}</div>}
           </Section>
         </div>
       </div>
@@ -711,9 +711,9 @@ export default function AdminPage() {
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{s.mode === 'exploit' ? 'Exploit' : 'Théorique'} · {s.timer}s</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <button onClick={() => handleEditSpot(s)} style={{ padding: '5px 10px', background: editingId === s.id ? ACCENT : 'var(--panel)', color: editingId === s.id ? '#0B1210' : 'var(--text)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 11 }}>Éditer</button>
+                  <button onClick={() => handleEditSpot(s)} style={{ padding: '5px 10px', background: editingId === s.id ? ACCENT : 'var(--panel)', color: editingId === s.id ? 'var(--sur-accent)' : 'var(--text)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 11 }}>Éditer</button>
                   <Link href={`/play/${s.id}`} style={{ padding: '5px 10px', background: 'var(--panel)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 11 }}>Jouer</Link>
-                  <button onClick={() => handleDeleteSpot(s.id)} style={{ padding: '5px 10px', background: 'transparent', color: '#C4544A', border: '1px solid #C4544A', borderRadius: 6, fontSize: 11 }}>Suppr.</button>
+                  <button onClick={() => handleDeleteSpot(s.id)} style={{ padding: '5px 10px', background: 'transparent', color: 'var(--erreur)', border: '1px solid var(--erreur)', borderRadius: 6, fontSize: 11 }}>Suppr.</button>
                 </div>
               </div>
             ))}

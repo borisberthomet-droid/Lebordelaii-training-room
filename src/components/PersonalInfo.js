@@ -125,14 +125,14 @@ export default function PersonalInfo() {
 
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 16, flexWrap: "wrap" }}>
         <button onClick={enregistrer} disabled={enCours} style={{
-          padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+          padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
           border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13,
           cursor: enCours ? "default" : "pointer", opacity: enCours ? 0.6 : 1,
         }}>
           {enCours ? "…" : "Enregistrer"}
         </button>
         {message && (
-          <span style={{ fontSize: 12, color: message.ok ? "var(--accent)" : "#E0645A" }}>{message.texte}</span>
+          <span style={{ fontSize: 12, color: message.ok ? "var(--accent)" : "var(--erreur)" }}>{message.texte}</span>
         )}
         <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--text-muted)" }}>
           Seul toi — et ton coach — voyez ces informations.

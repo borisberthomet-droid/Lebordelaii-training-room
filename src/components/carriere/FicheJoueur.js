@@ -70,13 +70,13 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
             <Compteur
               valeur={`${pack.etat.restantes} h`}
               libelle={`restantes sur ${pack.etat.achetees} h${pack.etat.expire ? ` · jusqu'au ${dateCourte(pack.etat.expire)}` : ""}`}
-              couleur={pack.etat.expire_bientot ? "#E8C547" : undefined}
+              couleur={pack.etat.expire_bientot ? "var(--attention)" : undefined}
             />
           )}
         </div>
         {pack?.etat.expire_bientot && (
           <div style={{
-            marginTop: 12, fontSize: 12, color: "#E8C547", background: "rgba(232,197,71,0.10)",
+            marginTop: 12, fontSize: 12, color: "var(--attention)", background: "rgba(232,197,71,0.10)",
             border: "1px solid rgba(232,197,71,0.35)", borderRadius: 10, padding: "8px 12px",
           }}>
             Ton pack expire dans {pack.etat.joursRestants} jour{pack.etat.joursRestants > 1 ? "s" : ""} et il te
@@ -197,7 +197,7 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
               }}>
                 <input type="checkbox" checked={t.fait} disabled={!joueur || enCours === t.id}
                   onChange={() => agir(t.id, () => majTache(t.id, { fait: !t.fait, fait_le: t.fait ? null : new Date().toISOString() }))}
-                  style={{ accentColor: "#34D399", width: 16, height: 16 }} />
+                  style={{ accentColor: "var(--accent)", width: 16, height: 16 }} />
                 <span style={{ textDecoration: t.fait ? "line-through" : "none" }}>{t.titre}</span>
               </label>
             ))}
@@ -207,7 +207,7 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
         )}
 
         {retards.length > 0 && (
-          <div style={{ marginTop: 12, fontSize: 12, color: "#E8C547" }}>
+          <div style={{ marginTop: 12, fontSize: 12, color: "var(--attention)" }}>
             {retards.length} tâche{retards.length > 1 ? "s" : ""} en retard cette semaine — à toi de décider si tu la
             {retards.length > 1 ? "s " : " "}déplaces.
           </div>

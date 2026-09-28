@@ -49,7 +49,7 @@ export default function CarrierePage() {
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.3 }}>Gestion de carrière</div>
+          <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Gestion de carrière</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
             {compte ? `${compte.pseudo} — où j'en suis, ce que je travaille, ce que je fais aujourd'hui` : " "}
           </div>
@@ -83,7 +83,7 @@ export default function CarrierePage() {
       )}
 
       {etat === "erreur" && (
-        <div style={{ background: "var(--panel)", border: "1px solid rgba(224,100,90,0.35)", borderRadius: 14, padding: 18, fontSize: 13, color: "#E0645A", lineHeight: 1.7 }}>
+        <div style={{ background: "var(--panel)", border: "1px solid rgba(224,100,90,0.35)", borderRadius: 14, padding: 18, fontSize: 13, color: "var(--erreur)", lineHeight: 1.7 }}>
           {erreur}
         </div>
       )}

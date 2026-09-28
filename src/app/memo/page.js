@@ -31,7 +31,7 @@ function TabButton({ active, onClick, children }) {
     <button onClick={onClick} style={{
       padding: "9px 20px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600,
       background: active ? "var(--accent-gradient)" : "var(--panel-2)",
-      color: active ? "#0B1210" : "var(--text)",
+      color: active ? "var(--sur-accent)" : "var(--text)",
       border: active ? "none" : "1px solid var(--border)",
     }}>{children}</button>
   );
@@ -125,11 +125,11 @@ function PotOddsTab() {
               {POT_ODDS_ROWS.map((r) => (
                 <tr key={r.betPct}>
                   <td style={{ ...td, fontWeight: 700 }}>{r.betPct}%</td>
-                  <td style={{ ...td, color: "#E0645A" }}>{r.cote.toFixed(1)}:1</td>
-                  <td style={{ ...td, color: "#E8C547" }}>{pc(r.callEquity, 1)}</td>
-                  <td style={{ ...td, color: "#6FCF97" }}>{pc(r.mdf, 1)}</td>
-                  <td style={{ ...td, color: "#E89A47" }}>{pc(r.mff, 1)}</td>
-                  <td style={{ ...td, color: "#4FA8E0" }}>{pc(r.valueBetEquity, 1)}</td>
+                  <td style={{ ...td, color: "var(--erreur)" }}>{r.cote.toFixed(1)}:1</td>
+                  <td style={{ ...td, color: "var(--attention)" }}>{pc(r.callEquity, 1)}</td>
+                  <td style={{ ...td, color: "var(--accent-clair)" }}>{pc(r.mdf, 1)}</td>
+                  <td style={{ ...td, color: "var(--attention)" }}>{pc(r.mff, 1)}</td>
+                  <td style={{ ...td, color: "var(--info)" }}>{pc(r.valueBetEquity, 1)}</td>
                   <td style={{ ...td, color: "var(--accent)", fontWeight: 700 }}>{r.alpha.toFixed(2)}</td>
                 </tr>
               ))}
@@ -185,19 +185,19 @@ function PkoTab() {
 
   const koSeries = [{
     label: "Valeur du KO (starting stacks)",
-    color: "#E8C547",
+    color: "var(--attention)",
     values: KO_VALUE_BY_FIELD.map((d) => d.value),
   }];
 
   const rpMaxSeries = [{
     label: "RP Max en table finale",
-    color: "#E8C547",
+    color: "var(--attention)",
     values: RP_MAX_BY_KO_RATIO.map((d) => d.rpMax),
   }];
 
   const rpCurveSeries = [{
     label: "RP = −19% × ln(1 + 1.31r)",
-    color: "#E8C547",
+    color: "var(--attention)",
     values: RP_RATIO_STEPS.map((r) => riskPremiumFromRatio(r)),
   }];
 
@@ -327,7 +327,7 @@ function PkoTab() {
                       <td style={{ ...td, fontFamily: "inherit" }}>{r.spot}</td>
                       <td style={td}>{r.noKo}%</td>
                       <td style={{ ...td, color: "var(--accent)" }}>{r.atKo10}%</td>
-                      <td style={{ ...td, color: "#E89A47" }}>−{(r.noKo - r.atKo10).toFixed(1)}</td>
+                      <td style={{ ...td, color: "var(--attention)" }}>−{(r.noKo - r.atKo10).toFixed(1)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -357,7 +357,7 @@ function PkoTab() {
                       const p = at(ko);
                       return <td key={ko} style={td}>{p ? `${p.pct}%` : "—"}</td>;
                     })}
-                    <td style={{ ...td, color: "#E89A47" }}>{v.relative}%</td>
+                    <td style={{ ...td, color: "var(--attention)" }}>{v.relative}%</td>
                   </tr>
                 );
               })}
@@ -407,7 +407,7 @@ function PkoTab() {
                 {alphaReferenceRows().map((d) => (
                   <tr key={d.fl}>
                     <td style={{ ...td, fontWeight: d.shortcut ? 700 : 400, whiteSpace: "nowrap" }}>
-                      {d.fl}%{d.limit ? <span style={{ color: "#E89A47" }}> ← limite hors-ICM</span> : ""}
+                      {d.fl}%{d.limit ? <span style={{ color: "var(--attention)" }}> ← limite hors-ICM</span> : ""}
                     </td>
                     <td style={{
                       ...td, fontWeight: d.shortcut ? 700 : 400,
@@ -435,7 +435,7 @@ function PkoTab() {
               <span style={{ color: "var(--text-muted)" }}>À mi-tournoi, 1 KO de base ≈ <strong style={{ color: "var(--text)" }}>0.3 × starting stack</strong>.</span>
             </div>
             <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>
-              <strong style={{ color: "#E89A47" }}>*</strong> Sous ~20% FL, ces valeurs viennent du calcul observable, pas du générateur :
+              <strong style={{ color: "var(--attention)" }}>*</strong> Sous ~20% FL, ces valeurs viennent du calcul observable, pas du générateur :
               une fois l&apos;ITM passée, une partie des payouts est déjà versée, le pool restant est plus petit,
               donc le KO vaut <em>encore plus</em>. Le générateur suppose le prizepool régulier intact et sous-estime
               (0.41 au lieu de 0.43 à 10% FL, 0.48 au lieu de 0.60 à 3%).

@@ -38,7 +38,7 @@ export default function TrainPage() {
     return (
       <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 480, margin: "0 auto" }}>
         <PageHeader subtitle="Entraînement" />
-        <div style={{ fontSize: 13, color: "#E0645A" }}>{errorMsg}</div>
+        <div style={{ fontSize: 13, color: "var(--erreur)" }}>{errorMsg}</div>
       </div>
     );
   }

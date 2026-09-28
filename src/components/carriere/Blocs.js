@@ -65,7 +65,7 @@ export function Vide({ children }) {
 }
 
 export const btn = {
-  padding: "8px 16px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "8px 16px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 export const btnFantome = {
@@ -80,9 +80,9 @@ export const champ = {
 // --- Vocabulaire commun ---------------------------------------------------------------------
 
 export const STATUT_AXE = {
-  a_travailler: { label: "à travailler", couleur: "#E8C547" },
-  en_cours: { label: "en cours", couleur: "#4FA8E0" },
-  maitrise: { label: "maîtrisé", couleur: "#34D399" },
+  a_travailler: { label: "à travailler", couleur: "var(--attention)" },
+  en_cours: { label: "en cours", couleur: "var(--info)" },
+  maitrise: { label: "maîtrisé", couleur: "var(--accent)" },
 };
 
 export const HORIZONS = {
@@ -120,10 +120,10 @@ export function StatFocus({ stat, compact }) {
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
         <span style={{ fontSize: 13, fontWeight: 700 }}>{stat.nom}</span>
-        {ok && <Pastille couleur="#34D399">dans la cible</Pastille>}
+        {ok && <Pastille couleur="var(--accent)">dans la cible</Pastille>}
       </div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginTop: 8 }}>
-        <span style={{ fontSize: 24, fontWeight: 800, fontFamily: MONO, color: ok ? "#34D399" : "var(--text)" }}>
+        <span style={{ fontSize: 24, fontWeight: 800, fontFamily: MONO, color: ok ? "var(--accent)" : "var(--text)" }}>
           {stat.valeur_actuelle != null ? stat.valeur_actuelle : "—"}
         </span>
         <span style={{ fontSize: 12, color: "var(--text-muted)" }}>cible</span>

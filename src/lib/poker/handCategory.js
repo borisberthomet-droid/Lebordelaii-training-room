@@ -20,13 +20,13 @@ const value = (card) => RANKS.indexOf(card[0]) + 2;
 const suitOf = (card) => card[1];
 
 export const CATEGORIES = [
-  { id: "made", label: "DP+", pairedLabel: "Trips+", color: "#34D399" },
+  { id: "made", label: "DP+", pairedLabel: "Trips+", color: "var(--accent)" },
   { id: "overpair", label: "Overpair", color: "#7ED0F0" },
-  { id: "tp", label: "TP", color: "#4FA8E0" },
+  { id: "tp", label: "TP", color: "var(--info)" },
   { id: "p2", label: "2nde paire", color: "#8B8FE8" },
   { id: "p3", label: "3e paire", color: "#B98BE0" },
   { id: "p4", label: "4e paire", color: "#E08BC0" },
-  { id: "underpair", label: "Underpair", color: "#E8C547" },
+  { id: "underpair", label: "Underpair", color: "var(--attention)" },
   { id: "air", label: "Air", color: "#6B7280" },
 ];
 

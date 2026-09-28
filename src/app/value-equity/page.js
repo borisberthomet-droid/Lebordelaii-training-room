@@ -36,7 +36,7 @@ function maxValueSizing(equity) {
 }
 
 const btn = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 const ghost = {
@@ -160,7 +160,7 @@ export default function ValueEquityPage() {
   if (error) {
     return (
       <div style={{ padding: 20, width: "100%", maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ fontSize: 14, color: "#E0645A", marginBottom: 8 }}>Impossible de charger les données : {error}</div>
+        <div style={{ fontSize: 14, color: "var(--erreur)", marginBottom: 8 }}>Impossible de charger les données : {error}</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
     );
@@ -178,7 +178,7 @@ export default function ValueEquityPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PotOddsIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Quelle est ton équité ?</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Quelle est ton équité ?</span>
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--text-muted)" }}>
@@ -229,7 +229,7 @@ export default function ValueEquityPage() {
             <button onClick={newQuestion} style={btn} disabled={!pool.length || loading}>
               {loading ? "…" : "Nouvelle question"}
             </button>
-            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "#E0645A", marginLeft: 12 }}>
+            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "var(--erreur)", marginLeft: 12 }}>
               {pool.length ? `${pool.length} spots correspondent` : "Aucun spot : élargis les filtres."}
             </span>
           </>
@@ -287,7 +287,7 @@ export default function ValueEquityPage() {
             }}>
               <div style={{
                 fontWeight: 700, marginBottom: 10,
-                color: result.grade === "exact" ? "#34D399" : result.grade === "proche" ? "#E8C547" : "#E0645A",
+                color: result.grade === "exact" ? "var(--accent)" : result.grade === "proche" ? "var(--attention)" : "var(--erreur)",
               }}>
                 {result.grade === "exact" ? "Exact" : result.grade === "proche" ? "Proche" : "Loin"}
                 {` — ton estimation ${result.given.toFixed(1)}%, équité réelle ${combo[2].toFixed(1)}% (écart ${result.delta.toFixed(1)} pt)`}
@@ -296,7 +296,7 @@ export default function ValueEquityPage() {
               <div style={{ color: "var(--text-muted)", lineHeight: 1.9 }}>
                 <Row label="Sizing max en value"
                   strong={bMax != null}
-                  color={bMax == null ? "#E0645A" : undefined}
+                  color={bMax == null ? "var(--erreur)" : undefined}
                   value={bMax == null
                     ? "aucun — moins de 50% d'équité"
                     : allInPct != null && bMax * 100 >= allInPct
@@ -328,7 +328,7 @@ export default function ValueEquityPage() {
                               <td style={{ padding: "4px 6px", color: "var(--text)" }}>{pct}%</td>
                               <td style={{ padding: "4px 6px" }}>{(row.mdf * 100).toFixed(1)}%</td>
                               <td style={{ padding: "4px 6px" }}>{(row.valueBetEquity * 100).toFixed(1)}%</td>
-                              <td style={{ padding: "4px 6px", color: beyondStack ? "var(--text-muted)" : ok ? "#34D399" : "#E0645A", fontWeight: 600 }}>
+                              <td style={{ padding: "4px 6px", color: beyondStack ? "var(--text-muted)" : ok ? "var(--accent)" : "var(--erreur)", fontWeight: 600 }}>
                                 {beyondStack ? "au-delà du tapis" : ok ? "value" : "trop gros"}
                               </td>
                             </tr>
@@ -355,7 +355,7 @@ export default function ValueEquityPage() {
                     const betFreq = spot.actions.reduce((sum, a, i) => sum + (a.type === "R" ? (combo[4][i] || 0) : 0), 0);
                     if (equity >= 0.5 || betFreq < 0.03) return null;
                     return (
-                      <div style={{ fontSize: 11, marginTop: 4, color: "#E8C547" }}>
+                      <div style={{ fontSize: 11, marginTop: 4, color: "var(--attention)" }}>
                         Il mise {(betFreq * 100).toFixed(0)}% du temps avec {combo[2].toFixed(1)}% d&apos;équité :
                         c&apos;est un bluff, pas de la value.
                       </div>

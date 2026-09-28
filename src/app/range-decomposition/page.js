@@ -26,7 +26,7 @@ import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 // joueur qui fait face à la mise, avec sa stratégie combo par combo.
 
 const btn = {
-  padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
 };
 const ghost = {
@@ -165,7 +165,7 @@ export default function RangeDecompositionPage() {
   if (error) {
     return (
       <div style={{ padding: 20, width: "100%", maxWidth: 1000, margin: "0 auto" }}>
-        <div style={{ fontSize: 14, color: "#E0645A", marginBottom: 8 }}>Impossible de charger la simulation : {error}</div>
+        <div style={{ fontSize: 14, color: "var(--erreur)", marginBottom: 8 }}>Impossible de charger la simulation : {error}</div>
         <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
       </div>
     );
@@ -180,7 +180,7 @@ export default function RangeDecompositionPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <RangeDecompIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Décompose la range</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Décompose la range</span>
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <span style={{ fontSize: 12, fontFamily: MONO, color: "var(--text-muted)" }}>
@@ -228,7 +228,7 @@ export default function RangeDecompositionPage() {
             <button onClick={newQuestion} style={btn} disabled={!pool.length || loading}>
               {loading ? "…" : "Nouvelle range"}
             </button>
-            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "#E0645A", marginLeft: 12 }}>
+            <span style={{ fontSize: 11, color: pool.length ? "var(--text-muted)" : "var(--erreur)", marginLeft: 12 }}>
               {pool.length ? `${pool.length} spots disponibles` : "Aucun spot : élargis les filtres."}
             </span>
           </>
@@ -299,7 +299,7 @@ export default function RangeDecompositionPage() {
                               que la grille d'écarts du Range Builder. */}
                           <span style={{
                             marginLeft: 8, display: "inline-block", minWidth: 40, textAlign: "right",
-                            color: Math.abs(gap) < 2.5 ? "var(--text-muted)" : gap > 0 ? "#E0645A" : "#4FA8E0",
+                            color: Math.abs(gap) < 2.5 ? "var(--text-muted)" : gap > 0 ? "var(--erreur)" : "var(--info)",
                           }}>
                             {gap > 0 ? "+" : ""}{gap.toFixed(0)}
                           </span>

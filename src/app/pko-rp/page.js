@@ -285,7 +285,7 @@ export default function PkoRpPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PkoRpIcon size={22} />
-          <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>PKO — KO &amp; RP</span>
+          <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>PKO — KO &amp; RP</span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Depuis une hand history ou un export HRC</span>
         </div>
@@ -311,7 +311,7 @@ export default function PkoRpPage() {
                 <img src={s.previewUrl} alt="" style={{ height: 70, borderRadius: 6, border: "1px solid var(--border)" }} />
                 <button onClick={() => removeShot(i)} style={{
                   position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%",
-                  background: "#E0645A", color: "#fff", border: "none", fontSize: 11, cursor: "pointer", lineHeight: 1,
+                  background: "var(--erreur)", color: "#fff", border: "none", fontSize: 11, cursor: "pointer", lineHeight: 1,
                 }}>×</button>
               </div>
             ))}
@@ -324,7 +324,7 @@ export default function PkoRpPage() {
         }}>
           {extracting ? "Extraction…" : "Extraire"}
         </button>
-        {extractError && <div style={{ fontSize: 12, color: "#E0645A", marginTop: 10 }}>{extractError}</div>}
+        {extractError && <div style={{ fontSize: 12, color: "var(--erreur)", marginTop: 10 }}>{extractError}</div>}
         {extractResult && (
           <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 600, marginTop: 10 }}>
             ✓ {extractResult.tournamentName || "Structure"} — valeur du jeton
@@ -448,13 +448,13 @@ export default function PkoRpPage() {
         )}
 
         <button onClick={handleAnalyze} style={{
-          padding: "9px 18px", background: "var(--accent-gradient)", color: "#0B1210",
+          padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
           border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
         }}>
           Analyser
         </button>
 
-        {error && <div style={{ fontSize: 12, color: "#E0645A", marginTop: 12 }}>{error}</div>}
+        {error && <div style={{ fontSize: 12, color: "var(--erreur)", marginTop: 12 }}>{error}</div>}
       </div>
 
       {(winamaxRows || hrcRows) && (

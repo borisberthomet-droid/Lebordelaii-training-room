@@ -89,7 +89,7 @@ export default function HHTestPage() {
       />
       <button
         onClick={handleAnalyze}
-        style={{ padding: "6px 12px", background: ACCENT, color: "#1A1918", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600 }}
+        style={{ padding: "6px 12px", background: ACCENT, color: "var(--sur-accent)", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600 }}
       >
         Analyser la Hand History
       </button>

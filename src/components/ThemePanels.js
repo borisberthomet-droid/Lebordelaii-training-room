@@ -17,7 +17,7 @@ import { buildProfile } from "@/lib/poker/skillScore";
 // déjà cette distinction question par question.
 const THEMES = [
   {
-    axis: "equite", color2: "#4ADE80", label: "Équité", color: "#34D399",
+    axis: "equite", color2: "#8A8C43", label: "Équité", color: "#4F5220",
     desc: "Estimer sa force brute face à une range",
     tools: [
       { href: "/value-equity", label: "Quelle est ton équité ?" },
@@ -25,7 +25,7 @@ const THEMES = [
     ],
   },
   {
-    axis: "frequence", color2: "#7ED0F0", label: "Fréquence", color: "#4FA8E0",
+    axis: "frequence", color2: "#4E82A8", label: "Fréquence", color: "#2F5876",
     desc: "Savoir à quelle fréquence défendre, miser, bluffer",
     tools: [
       { href: "/range-position", label: "Vs AGG — où suis-je dans ma range ?" },
@@ -35,7 +35,7 @@ const THEMES = [
     ],
   },
   {
-    axis: "lecture", color2: "#F2D97A", label: "Lecture de range", color: "#E8C547",
+    axis: "lecture", color2: "#A9741F", label: "Lecture de range", color: "#7A4E12",
     desc: "Reconstruire ce que l'adversaire peut avoir",
     tools: [
       { href: "/train", label: "Find It! — un spot au hasard" },
@@ -45,7 +45,7 @@ const THEMES = [
     ],
   },
   {
-    axis: "calcul", color2: "#F0B877", label: "Calcul mental", color: "#E89A47",
+    axis: "calcul", color2: "#A8552A", label: "Calcul mental", color: "#7E3C1B",
     desc: "Sortir les nombres sans hésiter",
     tools: [
       { href: "/math-trainer", label: "Math Trainer" },

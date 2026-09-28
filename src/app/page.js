@@ -64,7 +64,7 @@ export default function Home() {
       </div>
 
       <div style={{ marginBottom: 22 }}>
-        <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
+        <div className="titre" style={{ fontSize: 24, fontWeight: 700 }}>
           {me ? `Salut ${me.pseudo}` : "Training Room"}
         </div>
         <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
@@ -77,7 +77,7 @@ export default function Home() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 26 }}>
         <Link href="/train" style={{
           display: "block", padding: "18px 18px", background: "var(--accent-gradient)",
-          borderRadius: 14, color: "#0B1210",
+          borderRadius: 14, color: "var(--sur-accent)",
         }}>
           <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>S&apos;entraîner</div>
           <div style={{ fontSize: 12, opacity: 0.75 }}>Un spot au hasard, théorique ou exploit</div>

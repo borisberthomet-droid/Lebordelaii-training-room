@@ -18,7 +18,7 @@ export default function Replayer({ spot, heroCardsOverride }) {
     return (
       <>
         <TableView spot={spot} heroCardsOverride={heroCardsOverride} />
-        <div style={{ background: '#211F1D', border: '1px solid #302D2A', borderRadius: 6, padding: '8px 10px', marginBottom: 14, fontSize: 12, color: '#ECEEF1', fontStyle: 'italic' }}>
+        <div style={{ background: '#211F1D', border: '1px solid #302D2A', borderRadius: 6, padding: '8px 10px', marginBottom: 14, fontSize: 12, color: 'var(--text)', fontStyle: 'italic' }}>
           {spot.ligne || 'Ligne de jeu non renseignée.'}
         </div>
       </>
@@ -56,15 +56,15 @@ export default function Replayer({ spot, heroCardsOverride }) {
       <TableView spot={liveSpot} heroCardsOverride={heroCardsOverride} bets={betsBB} />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
         <button onClick={() => setIdx(i => Math.max(-1, i - 1))} disabled={idx <= -1}
-          style={{ padding: '6px 12px', background: idx <= -1 ? '#211F1D' : '#302D2A', color: '#ECEEF1', border: '1px solid #302D2A', borderRadius: 6, opacity: idx <= -1 ? 0.4 : 1 }}>←</button>
+          style={{ padding: '6px 12px', background: idx <= -1 ? '#211F1D' : '#302D2A', color: 'var(--text)', border: '1px solid #302D2A', borderRadius: 6, opacity: idx <= -1 ? 0.4 : 1 }}>←</button>
         {STREETS.map(s => (
           <button key={s} disabled={!streetsPresent.includes(s)} onClick={() => jumpToStreet(s)}
-            style={{ padding: '5px 9px', fontSize: 10, background: current && current.street === s ? ACCENT : '#211F1D', color: current && current.street === s ? '#1A1918' : '#ECEEF1', border: '1px solid #302D2A', borderRadius: 6, opacity: streetsPresent.includes(s) ? 1 : 0.3 }}>
+            style={{ padding: '5px 9px', fontSize: 10, background: current && current.street === s ? ACCENT : '#211F1D', color: current && current.street === s ? '#1A1918' : 'var(--text)', border: '1px solid #302D2A', borderRadius: 6, opacity: streetsPresent.includes(s) ? 1 : 0.3 }}>
             {s}
           </button>
         ))}
         <button onClick={() => setIdx(i => Math.min(maxIdx, i + 1))} disabled={idx >= maxIdx}
-          style={{ padding: '6px 12px', background: idx >= maxIdx ? '#211F1D' : '#302D2A', color: '#ECEEF1', border: '1px solid #302D2A', borderRadius: 6, opacity: idx >= maxIdx ? 0.4 : 1 }}>→</button>
+          style={{ padding: '6px 12px', background: idx >= maxIdx ? '#211F1D' : '#302D2A', color: 'var(--text)', border: '1px solid #302D2A', borderRadius: 6, opacity: idx >= maxIdx ? 0.4 : 1 }}>→</button>
       </div>
       {!current && (
         <div style={{ background: '#211F1D', border: '1px solid #302D2A', borderRadius: 6, padding: '8px 10px', marginBottom: 14, fontSize: 12, color: '#9C9691', fontStyle: 'italic', textAlign: 'center' }}>

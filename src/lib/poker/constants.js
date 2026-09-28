@@ -1,7 +1,7 @@
 export const RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 export const SUITS = ['s', 'h', 'd', 'c'];
 export const SUIT_SYMBOL = { s: '♠', h: '♥', d: '♦', c: '♣' };
-export const SUIT_COLOR = { s: '#ECEEF1', c: '#6FCF97', h: '#E0645A', d: '#4FA8E0' };
+export const SUIT_COLOR = { s: 'var(--text)', c: 'var(--accent-clair)', h: 'var(--erreur)', d: 'var(--info)' };
 
 export const MOMENT_OPTIONS = [
   '100% restants', '75% restants', '50% restants', '25% restants',
@@ -9,18 +9,18 @@ export const MOMENT_OPTIONS = [
   '5% restants', '3 tables', '2 tables', 'Table finale',
 ];
 
-export const ACCENT = '#34D399';
-export const ACCENT_RGB = '52,211,153';
-export const ACCENT_GRADIENT = 'linear-gradient(135deg, #4ADE80 0%, #059669 100%)';
-export const ACCENT_DARK = '#059669';
+export const ACCENT = 'var(--accent)';
+export const ACCENT_RGB = '95,97,39';
+export const ACCENT_GRADIENT = 'linear-gradient(135deg, var(--accent-clair) 0%, var(--accent-dark) 100%)';
+export const ACCENT_DARK = 'var(--accent-dark)';
 
-export const BG = '#121413';
-export const PANEL = '#1A1D1B';
-export const BORDER = '#272B28';
-export const TEXT_MUTED = '#8E968F';
+export const BG = 'var(--bg)';
+export const PANEL = 'var(--panel)';
+export const BORDER = 'var(--border)';
+export const TEXT_MUTED = 'var(--text-muted)';
 
 export const selectStyle = {
-  background: PANEL, borderWidth: 1, borderStyle: 'solid', borderColor: BORDER, color: '#ECEEF1',
+  background: PANEL, borderWidth: 1, borderStyle: 'solid', borderColor: BORDER, color: 'var(--text)',
   borderRadius: 6, padding: '5px 6px', fontSize: 12,
 };
 
@@ -38,7 +38,7 @@ export const POSITIONS_BY_COUNT = {
 
 export const PROFILE_OPTIONS = ['ELITE', 'REG AGGRO', 'AVG REG', 'REG TIGHT', 'RECREA', 'BALEINE', 'GTO'];
 export const PROFILE_COLORS = {
-  'ELITE': '#E0645A', 'REG AGGRO': '#E8C547', 'AVG REG': '#9C9691', 'REG TIGHT': '#4FA8E0',
+  'ELITE': 'var(--erreur)', 'REG AGGRO': 'var(--attention)', 'AVG REG': '#9C9691', 'REG TIGHT': 'var(--info)',
   'RECREA': '#2F6B4F', 'BALEINE': '#39FF6A', 'GTO': '#FFFFFF',
 };
 

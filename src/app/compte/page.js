@@ -26,7 +26,7 @@ function Card({ href, Icon, label, desc, tag }) {
       {tag && (
         <span style={{
           position: "absolute", top: 12, right: 12, fontSize: 10, fontWeight: 600,
-          color: "#E8C547", background: "rgba(232,197,71,0.12)", border: "1px solid rgba(232,197,71,0.3)",
+          color: "var(--attention)", background: "rgba(232,197,71,0.12)", border: "1px solid rgba(232,197,71,0.3)",
           borderRadius: 999, padding: "2px 8px",
         }}>{tag}</span>
       )}
@@ -91,7 +91,7 @@ export default function ComptePage() {
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
         <ProfileIcon size={30} />
         <div>
-          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3 }}>
+          <div className="titre" style={{ fontSize: 24, fontWeight: 700 }}>
             {me?.pseudo || "Mon espace"}
           </div>
           <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 2 }}>

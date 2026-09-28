@@ -69,7 +69,7 @@ export default function PracticePage() {
       <button
         onClick={drawSpot}
         disabled={!hasReference}
-        style={{ padding: "6px 12px", background: ACCENT, color: "#1A1918", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, opacity: hasReference ? 1 : 0.4 }}
+        style={{ padding: "6px 12px", background: ACCENT, color: "var(--sur-accent)", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, opacity: hasReference ? 1 : 0.4 }}
       >
         Nouveau tirage
       </button>
@@ -87,7 +87,7 @@ export default function PracticePage() {
               <RangeGrid comboWeights={playWeights} setComboWeights={setPlayWeights} mode="play" excludedCards={heroCards} />
               <button
                 onClick={submit}
-                style={{ marginTop: 14, padding: "10px 18px", background: ACCENT, color: "#1A1918", border: "none", borderRadius: 6, fontWeight: 700 }}
+                style={{ marginTop: 14, padding: "10px 18px", background: ACCENT, color: "var(--sur-accent)", border: "none", borderRadius: 6, fontWeight: 700 }}
               >
                 Valider
               </button>
@@ -97,7 +97,7 @@ export default function PracticePage() {
               <RangeGrid comboWeights={playWeights} setComboWeights={() => {}} mode="reveal"
                 resultReveal={{ villainKey: reveal.villainKey, found: reveal.found }} excludedCards={heroCards} />
               <div style={{ marginTop: 14, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ fontSize: 28, fontWeight: 700, color: reveal.found ? "#6FCF97" : "#C4544A", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
+                <div style={{ fontSize: 28, fontWeight: 700, color: reveal.found ? "var(--accent-clair)" : "var(--erreur)", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
                   {reveal.score} pts
                 </div>
                 <div style={{ fontSize: 13, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6 }}>
