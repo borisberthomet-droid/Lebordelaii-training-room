@@ -118,6 +118,12 @@ export function PanneauLeak({ fiche, coachId, captures, liens, onRafraichir }) {
   const [notes, setNotes] = useState({});
   const [valeurs, setValeurs] = useState({});
   const [titreCapture, setTitreCapture] = useState("");
+  const [survol, setSurvol] = useState(false);
+
+  const envoyer = (fichiers) => agir("upload", async () => {
+    for (const f of fichiers) await envoyerCapture(fiche.userId, f, titreCapture, coachId);
+    setTitreCapture("");
+  });
 
   const focus = fiche.stats.filter((s) => s.statut === "focus");
   const acquises = fiche.stats.filter((s) => s.statut === "acquise");
@@ -218,7 +224,7 @@ export function PanneauLeak({ fiche, coachId, captures, liens, onRafraichir }) {
         </div>
       )}
 
-      <div style={{ borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+      <div style={{ borderTop: "1px solid var(--border)", paddingTop: 12 }} id="captures">
         <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Captures de statistiques</div>
         {captures.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10, marginBottom: 10 }}>
@@ -241,24 +247,40 @@ export function PanneauLeak({ fiche, coachId, captures, liens, onRafraichir }) {
             ))}
           </div>
         )}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          <input value={titreCapture} onChange={(e) => setTitreCapture(e.target.value)}
-            placeholder="titre (ex : H2N postflop janvier)" style={{ ...petit, flex: 1, minWidth: 180 }} />
-          <label style={{ ...btnFantome, display: "inline-block" }}>
-            Choisir une image
-            <input type="file" accept="image/*" multiple style={{ display: "none" }}
-              onChange={(e) => {
-                const fichiers = [...e.target.files];
-                e.target.value = "";
-                if (!fichiers.length) return;
-                agir("upload", async () => {
-                  for (const f of fichiers) await envoyerCapture(fiche.userId, f, titreCapture, coachId);
-                  setTitreCapture("");
-                });
-              }} />
-          </label>
-          {occupe === "upload" && <span style={{ fontSize: 11, color: "var(--text-muted)" }}>envoi…</span>}
-        </div>
+        <input value={titreCapture} onChange={(e) => setTitreCapture(e.target.value)}
+          placeholder="titre des captures (ex : H2N postflop janvier)" style={{ ...petit, marginBottom: 8 }} />
+
+        {/* Zone de dépôt : on peut faire glisser les captures Hand2Note dessus, ou cliquer. Un
+            simple bouton « choisir un fichier » passait inaperçu au milieu du panneau. */}
+        <label
+          onDragOver={(e) => { e.preventDefault(); setSurvol(true); }}
+          onDragLeave={() => setSurvol(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setSurvol(false);
+            const fichiers = [...e.dataTransfer.files].filter((f) => f.type.startsWith("image/"));
+            if (fichiers.length) envoyer(fichiers);
+          }}
+          style={{
+            display: "block", textAlign: "center", cursor: "pointer",
+            border: `1px dashed ${survol ? "var(--accent)" : "var(--border)"}`,
+            background: survol ? "rgba(52,211,153,0.08)" : "var(--panel-2)",
+            borderRadius: 10, padding: "18px 12px",
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 600, color: survol ? "var(--accent)" : "var(--text)" }}>
+            {occupe === "upload" ? "Envoi en cours…" : "Déposer des captures ici"}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
+            ou clique pour les choisir — captures Hand2Note, plusieurs à la fois
+          </div>
+          <input type="file" accept="image/*" multiple style={{ display: "none" }}
+            onChange={(e) => {
+              const fichiers = [...e.target.files];
+              e.target.value = "";
+              if (fichiers.length) envoyer(fichiers);
+            }} />
+        </label>
       </div>
       <Erreur message={erreur} />
     </Carte>

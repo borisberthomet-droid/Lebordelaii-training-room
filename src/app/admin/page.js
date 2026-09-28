@@ -321,7 +321,12 @@ export default function AdminPage() {
 
   return (
     <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 1180, margin: "0 auto" }}>
-      <PageHeader subtitle="Éditeur admin" right={<Link href="/train" style={{ fontSize: 12, color: "var(--text-muted)" }}>S&apos;entraîner</Link>} />
+      <PageHeader subtitle="Éditeur admin" right={
+        <span style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <Link href="/admin/joueurs" style={{ fontSize: 12, color: "var(--accent)" }}>Mes joueurs</Link>
+          <Link href="/train" style={{ fontSize: 12, color: "var(--text-muted)" }}>S&apos;entraîner</Link>
+        </span>
+      } />
 
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <div style={{ flex: '1 1 380px', minWidth: 320 }}>

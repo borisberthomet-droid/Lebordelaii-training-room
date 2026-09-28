@@ -98,7 +98,7 @@ create policy "objectifs ecrits par le joueur"
 -- dans la semaine. Une tâche non faite reste sur son jour : rien ne la reporte automatiquement,
 -- c'est le joueur qui décide de la déplacer.
 -- ---------------------------------------------------------------------------
-create table if not exists task_recurrences (
+create table if not exists routines (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references profiles(id) on delete cascade,
   titre text not null,
@@ -117,18 +117,18 @@ create table if not exists tasks (
   ordre integer not null default 0,
   fait boolean not null default false,
   fait_le timestamptz,
-  recurrence_id uuid references task_recurrences(id) on delete set null,
+  routine_id uuid references routines(id) on delete set null,
   origine text not null default 'joueur' check (origine in ('joueur', 'coaching')),
   created_at timestamptz not null default now()
 );
 
 create index if not exists tasks_user_jour_idx on tasks (user_id, jour);
--- Une récurrence ne doit pas créer deux fois la même tâche le même jour.
-create unique index if not exists tasks_recurrence_jour_idx
-  on tasks (recurrence_id, jour) where recurrence_id is not null;
+-- Une routine ne doit pas créer deux fois la même tâche le même jour.
+create unique index if not exists tasks_routine_jour_idx
+  on tasks (routine_id, jour) where routine_id is not null;
 
 alter table tasks enable row level security;
-alter table task_recurrences enable row level security;
+alter table routines enable row level security;
 
 drop policy if exists "taches lues par le joueur ou le coach" on tasks;
 create policy "taches lues par le joueur ou le coach"
@@ -141,12 +141,12 @@ create policy "taches ecrites par le joueur"
   on tasks for all to authenticated
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
-drop policy if exists "recurrences lues par le joueur ou le coach" on task_recurrences;
-create policy "recurrences lues par le joueur ou le coach"
-  on task_recurrences for select to authenticated
+drop policy if exists "routines lues par le joueur ou le coach" on routines;
+create policy "routines lues par le joueur ou le coach"
+  on routines for select to authenticated
   using (auth.uid() = user_id or est_coach());
 
-drop policy if exists "recurrences ecrites par le joueur" on task_recurrences;
-create policy "recurrences ecrites par le joueur"
-  on task_recurrences for all to authenticated
+drop policy if exists "routines ecrites par le joueur" on routines;
+create policy "routines ecrites par le joueur"
+  on routines for all to authenticated
   using (auth.uid() = user_id) with check (auth.uid() = user_id);

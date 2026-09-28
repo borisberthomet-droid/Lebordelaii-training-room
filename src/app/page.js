@@ -91,6 +91,17 @@ export default function Home() {
             Mes axes, mes objectifs, ma semaine, mes coachings
           </div>
         </Link>
+        {me?.role === "admin" && (
+          <Link href="/admin/joueurs" style={{ ...cardStyle, padding: "18px 18px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <ProfileIcon size={22} />
+              <span style={{ fontSize: 17, fontWeight: 700 }}>Mes joueurs</span>
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+              Les fiches de tes élèves : axes, Leak Finder, coachings
+            </div>
+          </Link>
+        )}
         <Link href="/compte" style={{ ...cardStyle, padding: "18px 18px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
             <ProfileIcon size={22} />

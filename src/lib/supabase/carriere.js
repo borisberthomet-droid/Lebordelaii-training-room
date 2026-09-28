@@ -152,38 +152,38 @@ export async function supprimerTache(id) {
   await jeter(error);
 }
 
-export async function listerRecurrences(userId) {
+export async function listerRoutines(userId) {
   const { data, error } = await sb()
-    .from("task_recurrences").select("*").eq("user_id", userId).eq("actif", true).order("created_at");
+    .from("routines").select("*").eq("user_id", userId).eq("actif", true).order("created_at");
   await jeter(error);
   return data || [];
 }
 
-export async function creerRecurrence(userId, titre, jours) {
+export async function creerRoutine(userId, titre, jours) {
   const { data, error } = await sb()
-    .from("task_recurrences").insert({ user_id: userId, titre, jours }).select("*").single();
+    .from("routines").insert({ user_id: userId, titre, jours }).select("*").single();
   await jeter(error);
   return data;
 }
 
-export async function supprimerRecurrence(id) {
-  const { error } = await sb().from("task_recurrences").update({ actif: false }).eq("id", id);
+export async function supprimerRoutine(id) {
+  const { error } = await sb().from("routines").update({ actif: false }).eq("id", id);
   await jeter(error);
 }
 
-// Pose les tâches récurrentes de la semaine affichée. L'index unique (recurrence_id, jour) fait
+// Pose les routines de la semaine affichée. L'index unique (routine_id, jour) fait
 // que rejouer l'opération ne crée pas de doublon — c'est lui qui garantit l'idempotence, pas un
 // test côté client qui courrait après une tâche créée sur un autre appareil.
-export async function materialiserRecurrences(userId, lundi, recurrences, dejaPosees) {
-  if (!recurrences.length) return [];
-  const existantes = new Set(dejaPosees.filter((t) => t.recurrence_id).map((t) => `${t.recurrence_id}|${t.jour}`));
+export async function materialiserRoutines(userId, lundi, routines, dejaPosees) {
+  if (!routines.length) return [];
+  const existantes = new Set(dejaPosees.filter((t) => t.routine_id).map((t) => `${t.routine_id}|${t.jour}`));
   const aCreer = [];
   for (const jour of joursDeSemaine(lundi)) {
     const n = numeroJour(jour);
-    for (const r of recurrences) {
+    for (const r of routines) {
       if (!(r.jours || []).includes(n)) continue;
       if (existantes.has(`${r.id}|${jour}`)) continue;
-      aCreer.push({ user_id: userId, titre: r.titre, jour, recurrence_id: r.id });
+      aCreer.push({ user_id: userId, titre: r.titre, jour, routine_id: r.id });
     }
   }
   if (!aCreer.length) return [];

@@ -93,10 +93,24 @@ export default function FicheCoachPage() {
           <FicheJoueur fiche={fiche} compte={compte} mode="coach" onRafraichir={rafraichir} />
 
           <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14, display: "grid", gap: 14 }}>
-            <div style={{ fontSize: 13, fontWeight: 700 }}>Commandes du coach</div>
-            <PanneauAxes fiche={fiche} coachId={compte.id} onRafraichir={rafraichir} />
-            <PanneauLeak fiche={fiche} coachId={compte.id} captures={captures} liens={liens} onRafraichir={rafraichir} />
-            <PanneauCoachings fiche={fiche} coachId={compte.id} onRafraichir={rafraichir} />
+            {/* Raccourcis : la fiche est longue, et le Leak Finder est ce qu'on ouvre le plus
+                souvent avant une séance. */}
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>Commandes du coach</span>
+              {[["axes", "Axes"], ["leak", "Leak Finder"], ["coachings", "Coachings et packs"]].map(([ancre, label]) => (
+                <a key={ancre} href={`#${ancre}`} style={{
+                  fontSize: 12, color: "var(--accent)", border: "1px solid var(--border)",
+                  borderRadius: 999, padding: "4px 12px",
+                }}>{label}</a>
+              ))}
+            </div>
+            <div id="axes"><PanneauAxes fiche={fiche} coachId={compte.id} onRafraichir={rafraichir} /></div>
+            <div id="leak">
+              <PanneauLeak fiche={fiche} coachId={compte.id} captures={captures} liens={liens} onRafraichir={rafraichir} />
+            </div>
+            <div id="coachings" style={{ display: "grid", gap: 14 }}>
+              <PanneauCoachings fiche={fiche} coachId={compte.id} onRafraichir={rafraichir} />
+            </div>
           </div>
         </div>
       )}

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Carte, Jauge, MONO, Pastille, Vide, btn, btnFantome, champ } from "@/components/carriere/Blocs";
 import {
-  chargerTaches, creerRecurrence, creerTache, listerRecurrences, majTache,
-  materialiserRecurrences, monCompte, supprimerRecurrence, supprimerTache,
+  chargerTaches, creerRoutine, creerTache, listerRoutines, majTache,
+  materialiserRoutines, monCompte, supprimerRoutine, supprimerTache,
 } from "@/lib/supabase/carriere";
 import {
   JOURS, aujourdhui, decalerJours, enRetard, joursDeSemaine, libelleCourt, libelleSemaine,
@@ -47,7 +47,7 @@ function Tache({ t, dansBacklog, jours, jour, occupe, onBasculer, onDeplacer, on
         <span style={{ fontSize: 12, lineHeight: 1.5, textDecoration: t.fait ? "line-through" : "none" }}>
           {t.titre}
           {t.origine === "coaching" && <span style={{ color: "var(--text-muted)" }}> · coaching</span>}
-          {t.recurrence_id && <span style={{ color: "var(--text-muted)" }}> · récurrent</span>}
+          {t.routine_id && <span style={{ color: "var(--text-muted)" }}> · routine</span>}
         </span>
       </label>
       <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
@@ -78,11 +78,11 @@ export default function SemainePage() {
   const [lundi, setLundi] = useState(lundiDe());
   const [backlog, setBacklog] = useState([]);
   const [semaine, setSemaine] = useState([]);
-  const [recurrences, setRecurrences] = useState([]);
+  const [routines, setRoutines] = useState([]);
   const [etat, setEtat] = useState("chargement");
   const [erreur, setErreur] = useState(null);
   const [nouvelle, setNouvelle] = useState("");
-  const [nouvelleRec, setNouvelleRec] = useState({ titre: "", jours: [] });
+  const [nouvelleRoutine, setNouvelleRoutine] = useState({ titre: "", jours: [] });
   const [occupe, setOccupe] = useState(null);
   const [glisse, setGlisse] = useState(null);
 
@@ -90,12 +90,12 @@ export default function SemainePage() {
   const jour = aujourdhui();
 
   const charger = useCallback(async (userId, debut) => {
-    const recs = await listerRecurrences(userId);
+    const recs = await listerRoutines(userId);
     const { backlog: b, semaine: s } = await chargerTaches(userId, debut);
-    // Les tâches récurrentes de la semaine affichée sont posées à l'ouverture : tant que personne
+    // Les routines de la semaine affichée sont posées à l'ouverture : tant que personne
     // ne regarde la semaine, rien n'est créé en base.
-    const ajoutees = await materialiserRecurrences(userId, debut, recs, s);
-    setRecurrences(recs);
+    const ajoutees = await materialiserRoutines(userId, debut, recs, s);
+    setRoutines(recs);
     setBacklog(b);
     setSemaine([...s, ...ajoutees]);
   }, []);
@@ -139,12 +139,12 @@ export default function SemainePage() {
   const basculer = (t) =>
     agir(t.id, () => majTache(t.id, { fait: !t.fait, fait_le: t.fait ? null : new Date().toISOString() }));
 
-  const ajouterRecurrence = () => {
-    const titre = nouvelleRec.titre.trim();
-    if (!titre || !nouvelleRec.jours.length) return;
+  const ajouterRoutine = () => {
+    const titre = nouvelleRoutine.titre.trim();
+    if (!titre || !nouvelleRoutine.jours.length) return;
     return agir("rec", async () => {
-      await creerRecurrence(compte.id, titre, nouvelleRec.jours);
-      setNouvelleRec({ titre: "", jours: [] });
+      await creerRoutine(compte.id, titre, nouvelleRoutine.jours);
+      setNouvelleRoutine({ titre: "", jours: [] });
     });
   };
 
@@ -266,10 +266,10 @@ export default function SemainePage() {
           </div>
 
           {/* Récurrences */}
-          <Carte titre="Tâches récurrentes" aide="posées automatiquement chaque semaine, sur les jours choisis" style={{ marginTop: 14 }}>
-            {recurrences.length > 0 && (
+          <Carte titre="Mes routines" aide="ce que tu refais chaque semaine — posé automatiquement sur les jours choisis" style={{ marginTop: 14 }}>
+            {routines.length > 0 && (
               <div style={{ display: "grid", gap: 6, marginBottom: 12 }}>
-                {recurrences.map((r) => (
+                {routines.map((r) => (
                   <div key={r.id} style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center", fontSize: 12 }}>
                     <span>
                       {r.titre}
@@ -278,7 +278,7 @@ export default function SemainePage() {
                       </span>
                     </span>
                     <button style={btnFantome} disabled={occupe === r.id}
-                      onClick={() => agir(r.id, () => supprimerRecurrence(r.id))}>
+                      onClick={() => agir(r.id, () => supprimerRoutine(r.id))}>
                       Arrêter
                     </button>
                   </div>
@@ -286,14 +286,14 @@ export default function SemainePage() {
               </div>
             )}
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-              <input value={nouvelleRec.titre} onChange={(e) => setNouvelleRec((r) => ({ ...r, titre: e.target.value }))}
+              <input value={nouvelleRoutine.titre} onChange={(e) => setNouvelleRoutine((r) => ({ ...r, titre: e.target.value }))}
                 placeholder="ex : review des mains taguées"
                 style={{ ...champ, flex: 1, minWidth: 200, fontSize: 12, padding: "7px 9px" }} />
               {JOURS.map((nom, i) => {
                 const n = i + 1;
-                const actif = nouvelleRec.jours.includes(n);
+                const actif = nouvelleRoutine.jours.includes(n);
                 return (
-                  <button key={nom} onClick={() => setNouvelleRec((r) => ({
+                  <button key={nom} onClick={() => setNouvelleRoutine((r) => ({
                     ...r, jours: actif ? r.jours.filter((x) => x !== n) : [...r.jours, n],
                   }))} style={{
                     padding: "5px 9px", borderRadius: 999, fontSize: 11, cursor: "pointer",
@@ -305,8 +305,8 @@ export default function SemainePage() {
                   </button>
                 );
               })}
-              <button style={btn} onClick={ajouterRecurrence}
-                disabled={occupe === "rec" || !nouvelleRec.titre.trim() || !nouvelleRec.jours.length}>
+              <button style={btn} onClick={ajouterRoutine}
+                disabled={occupe === "rec" || !nouvelleRoutine.titre.trim() || !nouvelleRoutine.jours.length}>
                 Ajouter
               </button>
             </div>

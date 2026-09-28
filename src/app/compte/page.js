@@ -138,6 +138,8 @@ export default function ComptePage() {
       {isAdmin && (
         <Section title="Coach">
           <Grid>
+            <Card href="/admin/joueurs" Icon={() => <ProfileIcon size={22} />}
+              label="Mes joueurs" desc="Fiches, axes, Leak Finder, coachings et packs" />
             <Card href="/admin" Icon={() => <PotOddsIcon size={22} />}
               label="Éditeur admin" desc="Créer et gérer les spots" />
             <Card href="/range-builder" Icon={() => <PotOddsIcon size={22} />}
