@@ -27,23 +27,34 @@ const SOMBRE = {
   "--d-accent-fort": "#4ADE80",
   "--d-contre": "#0B1210",
   "--d-alerte": "#E8C547",
+  "--d-voile": "rgba(11,18,16,0.86)",
+  "--d-voile-fin": "rgba(11,18,16,0.20)",
+  "--d-sur-photo": "#ECEEF1",
   "--d-titre": "var(--font-space-grotesk), sans-serif",
   "--d-corps": "var(--font-space-grotesk), sans-serif",
 };
 
-// Les jetons repris du site de coaching. Couleurs relevées sur les captures ; les tons de données
-// (vert, ambre) sont assombris, sinon ils disparaissent sur un fond crème.
+// Les jetons du site de coaching. Les quatre premieres couleurs sont RELEVEES AU PIXEL sur les
+// captures, pas estimees a l'oeil : creme #E6DFDB (le fond des pages), olive #7E7B45 (le bandeau
+// « Qui est Boris ? »), brun #583A1E (les titres), lavande #C1BFCB (les boutons).
+//
+// L'olive de la charte est trop clair pour porter une echelle de frequence : sur creme, 55% et
+// 100% se ressemblent. La teinte des donnees descend donc d'un cran en luminosite — meme famille,
+// assez de course pour que l'oeil lise l'ecart.
 const CHAUD = {
-  "--d-bg": "#EFE4DF",
-  "--d-panel": "#FAF5F2",
-  "--d-panel-2": "#E7D9D1",
-  "--d-border": "#D6C3B8",
-  "--d-text": "#3B2A1E",
-  "--d-muted": "#8A7466",
-  "--d-accent": "#7A8B4B",
-  "--d-accent-fort": "#5F6E36",
-  "--d-contre": "#FAF5F2",
-  "--d-alerte": "#B07A17",
+  "--d-bg": "#E6DFDB",
+  "--d-panel": "#F2EDEA",
+  "--d-panel-2": "#DCD3CE",
+  "--d-border": "#CBBFB8",
+  "--d-text": "#3A2A1C",
+  "--d-muted": "#8A7563",
+  "--d-accent": "#5F6127",
+  "--d-accent-fort": "#7E7B45",
+  "--d-contre": "#F2EDEA",
+  "--d-alerte": "#96631A",
+  "--d-voile": "rgba(58,42,28,0.82)",
+  "--d-voile-fin": "rgba(58,42,28,0.12)",
+  "--d-sur-photo": "#F3EEEA",
   "--d-titre": "var(--font-essai-serif), Georgia, serif",
   "--d-corps": "var(--font-essai-sans), sans-serif",
 };
@@ -59,8 +70,32 @@ function Demo({ jetons, titre, note }) {
       </div>
       <div style={{ fontSize: 11, color: "var(--d-muted)", marginBottom: 16 }}>{note}</div>
 
-      <div style={{ fontFamily: "var(--d-titre)", fontSize: 28, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.1, marginBottom: 14 }}>
-        Gestion de carrière
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/demo/logo-essai.png" alt="" style={{ width: 38, height: 36, objectFit: "cover", borderRadius: 8 }} />
+        <span style={{ fontFamily: "var(--d-titre)", fontSize: 15, fontWeight: 700 }}>Training Room</span>
+      </div>
+
+      {/* Bandeau photo : le titre posé sur une image, avec un voile dégradé qui garantit la
+          lisibilité quelle que soit la photo. C'est le seul endroit où une photo a sa place —
+          derrière un titre et du vide. Jamais derrière une grille ou un tableau. */}
+      <div style={{
+        position: "relative", borderRadius: 14, overflow: "hidden", marginBottom: 14,
+        minHeight: 130, display: "flex", alignItems: "flex-end",
+        backgroundImage: "url(/demo/photo-essai.jpg)", backgroundSize: "cover", backgroundPosition: "center 28%",
+      }}>
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(90deg, var(--d-voile) 0%, var(--d-voile-fin) 75%)",
+        }} />
+        <div style={{ position: "relative", padding: 16 }}>
+          <div style={{ fontFamily: "var(--d-titre)", fontSize: 28, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.1, color: "var(--d-sur-photo)" }}>
+            Gestion de carrière
+          </div>
+          <div style={{ fontSize: 12, color: "var(--d-sur-photo)", opacity: 0.85, marginTop: 4 }}>
+            Boris — 24 coachings, 37 h 30
+          </div>
+        </div>
       </div>
 
       {/* Compteurs */}
@@ -105,7 +140,7 @@ function Demo({ jetons, titre, note }) {
               }}>
                 <div style={{
                   position: "absolute", left: 0, right: 0, bottom: 0, height: `${p * 100}%`,
-                  background: `color-mix(in srgb, var(--d-accent) ${30 + p * 55}%, transparent)`,
+                  background: `color-mix(in srgb, var(--d-accent) ${22 + p * 78}%, var(--d-panel-2))`,
                 }} />
                 <div style={{ position: "relative", fontSize: 11, fontWeight: 600 }}>{m}</div>
                 <div style={{ position: "relative", fontFamily: "var(--font-ibm-plex-mono), monospace", fontSize: 9, opacity: 0.75 }}>
