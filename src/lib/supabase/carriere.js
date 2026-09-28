@@ -1,5 +1,5 @@
 import { createClient } from "./client";
-import { decalerJours, isoDate, joursDeSemaine, numeroJour } from "@/lib/carriere/semaine";
+import { decalerJours, joursDeSemaine, lundiDe, numeroJour } from "@/lib/carriere/semaine";
 
 // Accès aux données de la Gestion de carrière. Tout passe par les policies : un élève ne voit que
 // ses lignes, le coach voit tout. Aucune fonction ici ne filtre « pour faire joli » — si une
@@ -444,7 +444,7 @@ export async function listerJoueurs() {
 // le tableau de bord n'enchaîne pas huit allers-retours.
 export async function chargerFiche(userId) {
   const supabase = sb();
-  const lundi = isoDate(new Date(Date.now() - ((new Date().getDay() + 6) % 7) * 86400000));
+  const lundi = lundiDe();
   const [axes, objectifs, stats, coachings, packs, evals, taches, prive] = await Promise.all([
     listerAxes(userId),
     listerObjectifs(userId),

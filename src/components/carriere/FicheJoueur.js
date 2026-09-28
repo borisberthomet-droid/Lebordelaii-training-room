@@ -89,7 +89,7 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
       <Carte
         titre="Mes 3 statistiques en focus"
         aide="définies avec ton coach dans le Leak Finder"
-        action={<Link href={joueur ? "/carriere/leak-finder" : `/admin/joueurs/${fiche.userId}/leak-finder`} style={{ fontSize: 12, color: "var(--accent)" }}>Leak Finder →</Link>}
+        action={joueur && <Link href="/carriere/leak-finder" style={{ fontSize: 12, color: "var(--accent)" }}>Leak Finder →</Link>}
       >
         {focus.length ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
@@ -253,7 +253,7 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
         {/* Dernier coaching. */}
         <Carte
           titre="Dernier coaching"
-          action={<Link href={joueur ? "/carriere/coachings" : `/admin/joueurs/${fiche.userId}/coachings`} style={{ fontSize: 12, color: "var(--accent)" }}>Historique →</Link>}
+          action={joueur && <Link href="/carriere/coachings" style={{ fontSize: 12, color: "var(--accent)" }}>Historique →</Link>}
         >
           {dernier ? (
             <>
