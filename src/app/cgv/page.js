@@ -74,7 +74,7 @@ export default function CgvPage() {
       <Section titre="5. Annulation et report">
         <Liste>
           <li>
-            Une séance peut être déplacée sans frais jusqu&apos;à <Valeur>{"[À COMPLÉTER : délai, ex. 24 heures]"}</Valeur> avant
+            Une séance peut être déplacée sans frais jusqu&apos;à <strong>24 heures</strong> avant
             l&apos;heure prévue.
           </li>
           <li>
