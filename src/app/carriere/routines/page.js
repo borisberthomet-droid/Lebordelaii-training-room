@@ -7,7 +7,9 @@ import { Carte, MONO, Pastille, Vide, btn, btnFantome, champ } from "@/component
 import {
   chargerGrilleRoutines, creerRoutine, marquerRoutine, monCompte, saisirQuantite, supprimerRoutine,
 } from "@/lib/supabase/carriere";
-import { JOURS, aujourdhui, decalerJours, libelleCourt } from "@/lib/carriere/semaine";
+import {
+  JOURS, aujourdhui, decalerJours, joursDeSemaine, libelleCourt, libelleSemaine, lundiDe,
+} from "@/lib/carriere/semaine";
 import { PERIODES, bilans, estPrevu, record, serie } from "@/lib/carriere/routines";
 
 // Mes routines : ce qu'on répète, jour après jour.
@@ -22,13 +24,11 @@ import { PERIODES, bilans, estPrevu, record, serie } from "@/lib/carriere/routin
 // Une case non cochée ne vaut pas zéro : elle vaut « rien de saisi ». C'est pour ça qu'un jour
 // fait sans quantité compte dans les jours mais pas dans le total — supposer « 1 » serait inventer.
 
-const JOURS_VISIBLES = 14;
-
 // Palette des lignes, dans la famille de la marque.
 const COULEURS = ["#5F6127", "#3A6851", "#8A6A1E", "#A0552A", "#7C5372", "#4E3E66", "#7A4E12", "#6A5A87"];
 
-function Grille({ routines, parRoutine, fin, jour, onBasculer, onQuantite, occupe }) {
-  const jours = Array.from({ length: JOURS_VISIBLES }, (_, i) => decalerJours(fin, i - JOURS_VISIBLES + 1));
+function Grille({ routines, parRoutine, lundi, jour, onBasculer, onQuantite, occupe }) {
+  const jours = joursDeSemaine(lundi);
 
   return (
     <div style={{ overflowX: "auto" }}>
@@ -36,11 +36,13 @@ function Grille({ routines, parRoutine, fin, jour, onBasculer, onQuantite, occup
         <thead>
           <tr style={{ color: "var(--text-muted)" }}>
             <th style={{ textAlign: "left", padding: "6px 10px 6px 0", fontWeight: 500, minWidth: 150 }}>Routine</th>
-            {jours.map((j) => (
-              <th key={j} style={{ padding: "4px 2px", fontWeight: 500, minWidth: 34 }}>
-                <div style={{ fontSize: 9, textTransform: "uppercase" }}>{JOURS[(new Date(j).getDay() + 6) % 7].slice(0, 3)}</div>
+            {jours.map((j, i) => (
+              <th key={j} style={{ padding: "4px 4px", fontWeight: 500, minWidth: 54 }}>
+                <div style={{ fontSize: 10, textTransform: "uppercase", color: j === jour ? "var(--accent)" : "inherit" }}>
+                  {JOURS[i].slice(0, 3)}
+                </div>
                 <div style={{ fontFamily: MONO, fontSize: 10, color: j === jour ? "var(--accent)" : "inherit" }}>
-                  {libelleCourt(j).slice(0, 2)}
+                  {libelleCourt(j)}
                 </div>
               </th>
             ))}
@@ -73,7 +75,7 @@ function Grille({ routines, parRoutine, fin, jour, onBasculer, onQuantite, occup
                         disabled={futur || occupe === `${r.id}|${j}`}
                         title={`${r.titre} · ${j}${e?.quantite != null ? ` · ${e.quantite} ${r.unite || ""}` : ""}`}
                         style={{
-                          width: 30, height: 30, borderRadius: 7, cursor: futur ? "default" : "pointer",
+                          width: 42, height: 36, borderRadius: 8, cursor: futur ? "default" : "pointer",
                           border: `1px solid ${e?.fait ? couleur : "var(--border)"}`,
                           background: e?.fait ? couleur : prevu ? "var(--panel-2)" : "transparent",
                           color: "var(--sur-accent)", fontSize: 9, fontFamily: MONO,
@@ -88,7 +90,7 @@ function Grille({ routines, parRoutine, fin, jour, onBasculer, onQuantite, occup
                           onChange={(ev) => onQuantite(e, ev.target.value)}
                           aria-label={`Quantité ${r.titre} ${j}`}
                           style={{
-                            width: 30, marginTop: 2, padding: "1px 2px", fontSize: 9, textAlign: "center",
+                            width: 42, marginTop: 3, padding: "2px 3px", fontSize: 10, textAlign: "center",
                             background: "var(--panel)", color: "var(--text)",
                             border: "1px solid var(--border)", borderRadius: 4, fontFamily: MONO,
                           }}
@@ -125,7 +127,7 @@ export default function RoutinesPage() {
   const [etat, setEtat] = useState("chargement");
   const [erreur, setErreur] = useState(null);
   const [occupe, setOccupe] = useState(null);
-  const [fin, setFin] = useState(aujourdhui());
+  const [lundi, setLundi] = useState(lundiDe());
   const [form, setForm] = useState({ titre: "", unite: "", jours: [] });
 
   const jour = aujourdhui();
@@ -216,19 +218,21 @@ export default function RoutinesPage() {
       {etat === "pret" && (
         <div style={{ display: "grid", gap: 14 }}>
           <Carte
-            titre="Routines quotidiennes"
-            aide={`${libelleCourt(decalerJours(fin, -JOURS_VISIBLES + 1))} → ${libelleCourt(fin)}`}
+            titre="Ma semaine de routines"
+            aide={libelleSemaine(lundi)}
             action={
-              <span style={{ display: "flex", gap: 6 }}>
-                <button style={btnFantome} onClick={() => setFin(decalerJours(fin, -7))}>←</button>
-                <button style={btnFantome} onClick={() => setFin(decalerJours(fin, 7))} disabled={fin >= jour}>→</button>
-                {fin !== jour && <button style={btnFantome} onClick={() => setFin(jour)}>Aujourd&apos;hui</button>}
+              <span style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <button style={btnFantome} onClick={() => setLundi(decalerJours(lundi, -7))}>← semaine précédente</button>
+                <button style={btnFantome} onClick={() => setLundi(decalerJours(lundi, 7))}>semaine suivante →</button>
+                {lundi !== lundiDe() && (
+                  <button style={btnFantome} onClick={() => setLundi(lundiDe())}>cette semaine</button>
+                )}
               </span>
             }
           >
             {routines.length ? (
               <Grille
-                routines={routines} parRoutine={parRoutine} fin={fin} jour={jour}
+                routines={routines} parRoutine={parRoutine} lundi={lundi} jour={jour}
                 onBasculer={basculer} onQuantite={quantite} occupe={occupe}
               />
             ) : (
