@@ -5,7 +5,8 @@ import Link from "next/link";
 import Onglets from "@/components/carriere/Onglets";
 import { Carte, MONO, Pastille, Vide, btn, btnFantome, champ } from "@/components/carriere/Blocs";
 import {
-  chargerGrilleRoutines, creerRoutine, marquerRoutine, monCompte, saisirQuantite, supprimerRoutine,
+  chargerGrilleRoutines, creerRoutine, majRoutine, marquerRoutine, monCompte, saisirQuantite,
+  supprimerRoutine,
 } from "@/lib/supabase/carriere";
 import {
   JOURS, aujourdhui, decalerJours, joursDeSemaine, libelleCourt, libelleSemaine, lundiDe,
@@ -196,6 +197,18 @@ export default function RoutinesPage() {
     finally { setOccupe(null); }
   };
 
+  // Poser une unite sur une routine existante : c'est elle qui fait apparaitre la saisie du
+  // nombre dans chaque case, donc qui debloque les cumuls.
+  const changerUnite = async (r, valeur) => {
+    const unite = valeur.trim() || null;
+    if (unite === (r.unite || null)) return;
+    setErreur(null);
+    try {
+      await majRoutine(r.id, { unite });
+      setRoutines((l) => l.map((x) => (x.id === r.id ? { ...x, unite } : x)));
+    } catch (e) { setErreur(e.message); }
+  };
+
   const retirer = async (r) => {
     setOccupe(r.id);
     try { await supprimerRoutine(r.id); setRoutines((l) => l.filter((x) => x.id !== r.id)); }
@@ -289,7 +302,20 @@ export default function RoutinesPage() {
                       const b = bilans(parRoutine[r.id] || [], jour);
                       return (
                         <tr key={r.id} style={{ borderTop: "1px solid var(--border)" }}>
-                          <td style={{ padding: "7px 8px", fontWeight: 600 }}>{r.titre}</td>
+                          <td style={{ padding: "7px 8px" }}>
+                            <div style={{ fontWeight: 600 }}>{r.titre}</div>
+                            <input
+                              defaultValue={r.unite || ""}
+                              onBlur={(e) => changerUnite(r, e.target.value)}
+                              placeholder="unité à compter (ex : spots)"
+                              aria-label={`Unité de ${r.titre}`}
+                              style={{
+                                marginTop: 4, width: 170, padding: "3px 6px", fontSize: 11,
+                                background: "var(--panel-2)", color: "var(--text)",
+                                border: "1px solid var(--border)", borderRadius: 6,
+                              }}
+                            />
+                          </td>
                           {PERIODES.map((p) => {
                             const v = b[p.id];
                             return (
