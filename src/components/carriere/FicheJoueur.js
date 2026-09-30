@@ -6,6 +6,7 @@ import {
   Carte, Compteur, Jauge, Pastille, StatFocus, Vide, MONO,
   STATUT_AXE, HORIZONS, btnFantome,
 } from "./Blocs";
+import CarteJoueur from "./CarteJoueur";
 import { accepterAction, majAction, majAxe, majTache, packActif } from "@/lib/supabase/carriere";
 import { aujourdhui, enRetard, libelleJour, tauxAccomplissement } from "@/lib/carriere/semaine";
 
@@ -277,23 +278,8 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
           )}
         </Carte>
 
-        {/* Auto-évaluation. */}
-        <Carte
-          titre="Mon auto-évaluation"
-          action={joueur && <Link href="/carriere/auto-evaluation" style={{ fontSize: 12, color: "var(--accent)" }}>Ma carte →</Link>}
-        >
-          {derniereEval ? (
-            <div style={{ fontSize: 13 }}>
-              Dernière le {dateCourte(derniereEval.date)}
-              <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6, lineHeight: 1.7 }}>
-                {evaluations.length} évaluation{evaluations.length > 1 ? "s" : ""} enregistrée{evaluations.length > 1 ? "s" : ""}.
-                Refais-en une tous les trois à six mois pour voir la forme bouger.
-              </div>
-            </div>
-          ) : (
-            <Vide>Pas encore d&apos;auto-évaluation. Compte vingt minutes la première fois.</Vide>
-          )}
-        </Carte>
+        {/* La carte du joueur, avec son radar : c'est la reponse a « est-ce que je progresse ? ». */}
+        <CarteJoueur competences={fiche.competences || []} evaluations={evaluations} />
       </div>
     </div>
   );

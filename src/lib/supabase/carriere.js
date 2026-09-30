@@ -159,11 +159,56 @@ export async function listerRoutines(userId) {
   return data || [];
 }
 
-export async function creerRoutine(userId, titre, jours) {
+export async function creerRoutine(userId, titre, jours, champs = {}) {
   const { data, error } = await sb()
-    .from("routines").insert({ user_id: userId, titre, jours }).select("*").single();
+    .from("routines").insert({ user_id: userId, titre, jours, ...champs }).select("*").single();
   await jeter(error);
   return data;
+}
+
+export async function majRoutine(id, champs) {
+  const { error } = await sb().from("routines").update(champs).eq("id", id);
+  await jeter(error);
+}
+
+// Grille des routines : les routines actives et TOUTES leurs entrees. Le volume reste modeste —
+// quelques centaines de lignes par an — et series comme cumuls ont besoin de l'historique entier.
+export async function chargerGrilleRoutines(userId) {
+  const supabase = sb();
+  const [routines, entrees] = await Promise.all([
+    supabase.from("routines").select("*").eq("user_id", userId).eq("actif", true).order("ordre").order("created_at"),
+    supabase.from("tasks").select("id, routine_id, jour, fait, quantite")
+      .eq("user_id", userId).not("routine_id", "is", null).order("jour"),
+  ]);
+  await jeter(routines.error);
+  await jeter(entrees.error);
+  return { routines: routines.data || [], entrees: entrees.data || [] };
+}
+
+// Coche ou decoche une routine un jour donne. La ligne peut ne pas exister : l'ouverture d'une
+// semaine n'est plus la seule facon de la creer, on peut cocher n'importe quel jour de la grille.
+export async function marquerRoutine({ userId, routine, jour, fait, entree }) {
+  const supabase = sb();
+  if (entree) {
+    const { error } = await supabase.from("tasks")
+      .update({ fait, fait_le: fait ? new Date().toISOString() : null })
+      .eq("id", entree.id);
+    await jeter(error);
+    return { ...entree, fait };
+  }
+  const { data, error } = await supabase.from("tasks").insert({
+    user_id: userId, titre: routine.titre, jour, routine_id: routine.id,
+    fait, fait_le: fait ? new Date().toISOString() : null,
+  }).select("id, routine_id, jour, fait, quantite").single();
+  await jeter(error);
+  return data;
+}
+
+export async function saisirQuantite(taskId, quantite) {
+  const { error } = await sb().from("tasks")
+    .update({ quantite: quantite === "" || quantite == null ? null : Number(quantite) })
+    .eq("id", taskId);
+  await jeter(error);
 }
 
 export async function supprimerRoutine(id) {
@@ -445,7 +490,7 @@ export async function listerJoueurs() {
 export async function chargerFiche(userId) {
   const supabase = sb();
   const lundi = lundiDe();
-  const [axes, objectifs, stats, coachings, packs, evals, taches, prive] = await Promise.all([
+  const [axes, objectifs, stats, coachings, packs, evals, taches, prive, competences] = await Promise.all([
     listerAxes(userId),
     listerObjectifs(userId),
     listerStats(userId),
@@ -455,6 +500,7 @@ export async function chargerFiche(userId) {
     supabase.from("tasks").select("*").eq("user_id", userId)
       .gte("jour", lundi).lte("jour", decalerJours(lundi, 6)),
     supabase.from("profile_private").select("*").eq("id", userId).maybeSingle(),
+    listerCompetences(),
   ]);
   await jeter(taches.error);
   return {
@@ -465,6 +511,7 @@ export async function chargerFiche(userId) {
     coachings,
     packs,
     evaluations: evals,
+    competences,
     tachesSemaine: taches.data || [],
     prive: prive.data || {},
     lundi,

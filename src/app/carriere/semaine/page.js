@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Onglets from "@/components/carriere/Onglets";
 import { Carte, Jauge, MONO, Pastille, Vide, btn, btnFantome, champ } from "@/components/carriere/Blocs";
 import {
   chargerTaches, creerRoutine, creerTache, listerRoutines, majTache,
@@ -160,6 +161,7 @@ export default function SemainePage() {
 
   return (
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 1200, margin: "0 auto" }}>
+      <Onglets />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
           <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Ma semaine</div>

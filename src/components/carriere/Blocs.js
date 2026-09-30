@@ -87,8 +87,11 @@ export const STATUT_AXE = {
 
 export const HORIZONS = {
   vision: { label: "Vision", aide: "quel joueur ai-je envie de devenir ?" },
-  annee: { label: "Objectif à 1 an", aide: null },
   trimestre: { label: "Ce trimestre", aide: "trois au maximum" },
+  mois: { label: "Ce mois-ci", aide: "trois au maximum, datés" },
+  // Conserve pour les objectifs deja ecrits sous l'ancien decoupage : ils restent lisibles,
+  // l'ecran n'en propose simplement plus de nouveaux.
+  annee: { label: "Objectif à 1 an", aide: "ancien découpage" },
 };
 
 // Cible d'une statistique, en clair : « 80 – 85 % », « ≥ 80 % », « ≤ 25 % ».

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Onglets from "@/components/carriere/Onglets";
 import FicheJoueur from "@/components/carriere/FicheJoueur";
 import Banniere, { PHOTOS } from "@/components/Banniere";
 import { Vide } from "@/components/carriere/Blocs";
@@ -10,14 +11,6 @@ import { chargerFiche, monCompte } from "@/lib/supabase/carriere";
 // Gestion de carrière — la page d'accueil du joueur. Elle ne demande rien, elle montre : axes du
 // moment, statistiques en focus, objectifs, semaine, coaching. Tout ce qui se modifie vit dans une
 // sous-page, pour que celle-ci reste lisible en une seconde.
-
-const ONGLETS = [
-  { href: "/carriere/auto-evaluation", label: "Auto-évaluation" },
-  { href: "/carriere/objectifs", label: "Objectifs" },
-  { href: "/carriere/semaine", label: "Ma semaine" },
-  { href: "/carriere/leak-finder", label: "Leak Finder" },
-  { href: "/carriere/coachings", label: "Coachings" },
-];
 
 export default function CarrierePage() {
   const [compte, setCompte] = useState(null);
@@ -63,16 +56,7 @@ export default function CarrierePage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18 }}>
-        {ONGLETS.map((o) => (
-          <Link key={o.href} href={o.href} style={{
-            padding: "7px 14px", borderRadius: 999, fontSize: 12,
-            border: "1px solid var(--border)", background: "var(--panel-2)", color: "var(--text)",
-          }}>
-            {o.label}
-          </Link>
-        ))}
-      </div>
+      <Onglets />
 
       {etat === "chargement" && <Vide>Chargement…</Vide>}
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Onglets from "@/components/carriere/Onglets";
 import { Carte, Compteur, MONO, Pastille, Vide, btnFantome } from "@/components/carriere/Blocs";
 import {
   accepterAction, etatPack, listerCoachings, listerPacks, majAction, monCompte,
@@ -66,6 +67,7 @@ export default function CoachingsPage() {
 
   return (
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 900, margin: "0 auto" }}>
+      <Onglets />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
           <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Mes coachings</div>

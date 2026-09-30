@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Onglets from "@/components/carriere/Onglets";
 import { Carte, HORIZONS, Pastille, Vide, btn, btnFantome, champ } from "@/components/carriere/Blocs";
 import {
   creerObjectif, listerObjectifs, majObjectif, monCompte, supprimerObjectif,
@@ -12,14 +13,19 @@ import {
 // c'est une liste de courses. Ils n'ont pas à être reliés aux axes techniques : « établir mon set
 // de session » est un objectif parfaitement légitime.
 
-const MAX_TRIMESTRE = 3;
+// Trois par horizon : au-dela ce n'est plus un objectif, c'est une liste de courses.
+const MAX_PAR_HORIZON = 3;
+const HORIZONS_ACTIFS = ["vision", "trimestre", "mois"];
 
 export default function ObjectifsPage() {
   const [compte, setCompte] = useState(null);
   const [objectifs, setObjectifs] = useState([]);
   const [etat, setEtat] = useState("chargement");
   const [erreur, setErreur] = useState(null);
-  const [brouillons, setBrouillons] = useState({ vision: "", annee: "", trimestre: "" });
+  const [brouillons, setBrouillons] = useState({ vision: "", trimestre: "", mois: "" });
+  // Date de mise en place d'un objectif mensuel : sans elle, impossible de dire de quel mois on
+  // parlait une fois l'objectif atteint.
+  const [debutMois, setDebutMois] = useState(() => new Date().toISOString().slice(0, 10));
   const [occupe, setOccupe] = useState(null);
 
   const charger = useCallback(async () => {
@@ -51,7 +57,10 @@ export default function ObjectifsPage() {
     const texte = brouillons[horizon].trim();
     if (!texte) return;
     return agir(`ajout-${horizon}`, async () => {
-      await creerObjectif(compte.id, { horizon, texte });
+      await creerObjectif(compte.id, {
+        horizon, texte,
+        debut: horizon === "mois" ? debutMois : null,
+      });
       setBrouillons((b) => ({ ...b, [horizon]: "" }));
     });
   };
@@ -61,6 +70,7 @@ export default function ObjectifsPage() {
 
   return (
     <div style={{ minHeight: "100vh", padding: 24, width: "100%", maxWidth: 820, margin: "0 auto" }}>
+      <Onglets />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
           <div className="titre" style={{ fontSize: 22, fontWeight: 700 }}>Mes objectifs</div>
@@ -79,10 +89,10 @@ export default function ObjectifsPage() {
 
       {etat === "pret" && (
         <div style={{ display: "grid", gap: 14 }}>
-          {["vision", "annee", "trimestre"].map((h) => {
+          {HORIZONS_ACTIFS.map((h) => {
             const liste = actifs(h);
-            const plein = h === "trimestre" && liste.length >= MAX_TRIMESTRE;
-            const unique = h !== "trimestre" && liste.length >= 1;
+            const plein = h !== "vision" && liste.length >= MAX_PAR_HORIZON;
+            const unique = h === "vision" && liste.length >= 1;
             return (
               <Carte key={h} titre={HORIZONS[h].label} aide={HORIZONS[h].aide}>
                 {liste.length ? (
@@ -92,7 +102,15 @@ export default function ObjectifsPage() {
                         background: "var(--panel-2)", borderRadius: 10, padding: 12,
                         display: "flex", justifyContent: "space-between", gap: 10, alignItems: "flex-start", flexWrap: "wrap",
                       }}>
-                        <span style={{ fontSize: 13, lineHeight: 1.6, flex: 1, minWidth: 200 }}>{o.texte}</span>
+                        <span style={{ fontSize: 13, lineHeight: 1.6, flex: 1, minWidth: 200 }}>
+                          {o.texte}
+                          {o.debut && (
+                            <span style={{ color: "var(--text-muted)", fontSize: 11 }}>
+                              {" — "}
+                              {new Date(o.debut).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+                            </span>
+                          )}
+                        </span>
                         <span style={{ display: "flex", gap: 6 }}>
                           <button style={btnFantome} disabled={occupe === o.id}
                             onClick={() => agir(o.id, () => majObjectif(o.id, { statut: "atteint" }))}>
@@ -116,17 +134,21 @@ export default function ObjectifsPage() {
                       onKeyDown={(e) => e.key === "Enter" && ajouter(h)}
                       placeholder={
                         h === "vision" ? "ex : un joueur qui ne subit jamais ses spots"
-                          : h === "annee" ? "ex : jouer les 100 € d'ABI sereinement"
-                            : "ex : établir mon set de session"
+                          : h === "trimestre" ? "ex : établir mon set de session"
+                            : "ex : 20 spots SRP IP par semaine"
                       }
                       style={{ ...champ, flex: 1, minWidth: 220 }}
                     />
+                    {h === "mois" && (
+                      <input type="date" value={debutMois} onChange={(e) => setDebutMois(e.target.value)}
+                        aria-label="Mise en place" style={{ ...champ, width: "auto" }} />
+                    )}
                     <button style={btn} onClick={() => ajouter(h)} disabled={occupe === `ajout-${h}`}>Ajouter</button>
                   </div>
                 )}
                 {plein && (
                   <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 10 }}>
-                    Trois objectifs trimestriels, c&apos;est le maximum. Marque-en un comme atteint pour en ouvrir un autre.
+                    Trois objectifs, c&apos;est le maximum sur cet horizon. Marques-en un comme atteint pour en ouvrir un autre.
                   </div>
                 )}
               </Carte>
