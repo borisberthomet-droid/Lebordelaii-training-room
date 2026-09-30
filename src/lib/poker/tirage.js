@@ -24,6 +24,17 @@ export function lignesJouees(spots) {
   return spots.filter((s) => frequence(s) >= FREQ_MIN_PCT);
 }
 
+// Fréquence de mise minimale pour qu'un nœud « je peux miser » soit entraînable. Mesuré sur les
+// 2 509 nœuds publiés : 275 sont sous ce seuil, dont une centaine à 0.0% — typiquement la BB
+// première de parole sur le turn après avoir check-callé le cbet, qui n'a aucune range de donk
+// dans cet arbre. Y demander une équité de value n'a pas de sens.
+export const MISE_MIN_PCT = 10;
+
+export function aUneRangeDeMise(spot) {
+  // Les textures construites avant cette mesure n'ont pas le champ : on ne les écarte pas.
+  return spot.betFreqPct == null || spot.betFreqPct >= MISE_MIN_PCT;
+}
+
 // Tirage proportionnel à la fréquence de la ligne.
 export function tirerPondere(spots) {
   if (!spots.length) return null;

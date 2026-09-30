@@ -12,7 +12,7 @@ import { PotOddsIcon } from "@/components/ToolIcons";
 import { knownCards } from "@/lib/poker/scoring";
 import { bucketFor } from "@/lib/poker/relativeStrength";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
-import { lignesJouees, tirerPondere } from "@/lib/poker/tirage";
+import { aUneRangeDeMise, lignesJouees, tirerPondere } from "@/lib/poker/tirage";
 import { useSolvedSims } from "@/lib/useSolvedSims";
 
 // « As AGG en bluff » : j'ai la main, je peux miser, et la question n'est pas de savoir si la main
@@ -91,7 +91,8 @@ export default function DoisJeBlufferPage() {
   const tousSpots = useMemo(() => rassembler((idx) => idx.valueSpots), [rassembler]);
 
   const pool = useMemo(
-    () => lignesJouees(tousSpots.filter((s) => streets.includes(s.streetName) && situations.includes(s.situation))),
+    () => lignesJouees(tousSpots.filter((s) =>
+      streets.includes(s.streetName) && situations.includes(s.situation) && aUneRangeDeMise(s))),
     [tousSpots, streets, situations]
   );
 

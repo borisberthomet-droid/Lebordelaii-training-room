@@ -12,7 +12,7 @@ import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { knownCards } from "@/lib/poker/scoring";
 import FiltreSims from "@/components/FiltreSims";
 import MoletteEquite from "@/components/MoletteEquite";
-import { lignesJouees, tirerPondere } from "@/lib/poker/tirage";
+import { aUneRangeDeMise, lignesJouees, tirerPondere } from "@/lib/poker/tirage";
 import { useSolvedSims, libelleSim, TOUTES } from "@/lib/useSolvedSims";
 
 // « Quelle est ton équité ? » — sur un nœud où tu peux miser, estime ton équité contre la range
@@ -105,7 +105,8 @@ export default function ValueEquityPage() {
   const apercu = sim === TOUTES ? Object.values(indexes)[0] : indexes[sim];
 
   const pool = useMemo(
-    () => lignesJouees(tousSpots.filter((s) => streets.includes(s.streetName) && situations.includes(s.situation))),
+    () => lignesJouees(tousSpots.filter((s) =>
+      streets.includes(s.streetName) && situations.includes(s.situation) && aUneRangeDeMise(s))),
     [tousSpots, streets, situations]
   );
 

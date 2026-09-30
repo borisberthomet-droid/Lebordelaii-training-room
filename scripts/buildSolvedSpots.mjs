@@ -362,11 +362,23 @@ while (stack.length) {
     const playedV = {};
     for (const [c, h] of Object.entries(d.hands)) playedV[normKey(c)] = h.played;
     const villainChecked = d.sequence.some((a) => a.street === d.street && a.player === villain && a.type === "X");
+    // Part de la range que le solveur MISE ici. Un nœud où il ne mise jamais — la BB sur un turn
+    // après avoir check-callé, qui n'a pas de range de donk — n'a rien à faire dans un exercice
+    // de value : estimer son équité « pour miser » n'a pas de sens. Signalé par Boris.
+    const misent = d.actions.map((a, i) => (a.type === "R" ? i : -1)).filter((i) => i >= 0);
+    let poidsRange = 0, poidsMise = 0;
+    for (const c of rankedValue.combos) {
+      const joue = playedV[c.key] || [];
+      poidsRange += c.weight;
+      poidsMise += c.weight * misent.reduce((s, i) => s + (joue[i] || 0), 0);
+    }
+    const betFreqPct = poidsRange > 0 ? +((poidsMise / poidsRange) * 100).toFixed(1) : 0;
     outValue.push({
       kind: "value",
       id, street: d.street, streetName: STREETS[d.street], board,
       heroPos: POS(hero), villainPos: POS(villain),
       situation: villainChecked ? "Après son check" : "Premier de parole",
+      betFreqPct,
       line: describeLine(d.sequence),
       potBB: +(pot / BB).toFixed(2),
       effStackBB: +(effStack / BB).toFixed(1),
@@ -433,6 +445,7 @@ const index = {
   sim: simName,
   valueSpots: outValue.map((s) => ({
     id: s.id, street: s.street, streetName: s.streetName, situation: s.situation,
+    betFreqPct: s.betFreqPct,
     heroPos: s.heroPos, villainPos: s.villainPos, board: s.board, line: s.line,
     potBB: s.potBB, weightTotal: s.weightTotal, reachPct: s.reachPct, lineFreqPct: s.lineFreqPct,
   })),
