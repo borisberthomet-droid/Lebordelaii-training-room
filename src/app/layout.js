@@ -1,5 +1,6 @@
 import { Fraunces, Poppins, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import PiedDePage from "@/components/PiedDePage";
 
 // Les polices de la marque, reprises du site de coaching : un serif à fort caractère pour les
 // titres, un sans rond pour le texte courant. Le monospace reste réservé aux CHIFFRES — pot,
@@ -33,7 +34,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr" className={`${titre.variable} ${corps.variable} ${ibmPlexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <PiedDePage />
+      </body>
     </html>
   );
 }
