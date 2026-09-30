@@ -1,0 +1,75 @@
+"use client";
+
+import PageLegale, { Liste, Section, Valeur } from "@/components/PageLegale";
+import { EDITEUR, HEBERGEURS } from "@/lib/legal";
+
+export default function MentionsLegalesPage() {
+  return (
+    <PageLegale
+      titre="Mentions légales"
+      chapeau="Qui édite ce site, qui l'héberge, et à qui s'adresser."
+      avertissement={
+        <>
+          Les informations surlignées restent à renseigner. Tant qu&apos;elles manquent, ces mentions
+          ne sont pas complètes au sens de la loi — le statut, le SIRET et l&apos;adresse sont obligatoires
+          pour un site édité par un professionnel.
+        </>
+      }
+    >
+      <Section titre="Éditeur du site">
+        <Liste>
+          <li>Nom : {EDITEUR.nom}</li>
+          <li>Nom commercial : {EDITEUR.marque}</li>
+          <li>Statut : <Valeur>{EDITEUR.statut}</Valeur></li>
+          <li>SIRET : <Valeur>{EDITEUR.siret}</Valeur></li>
+          <li>Adresse : <Valeur>{EDITEUR.adresse}</Valeur></li>
+          <li>Contact : <a href={`mailto:${EDITEUR.email}`} style={{ color: "var(--accent)" }}>{EDITEUR.email}</a></li>
+          <li>TVA : <Valeur>{EDITEUR.tva}</Valeur></li>
+          <li>Directeur de la publication : {EDITEUR.directeurPublication}</li>
+        </Liste>
+      </Section>
+
+      <Section titre="Hébergement et stockage des données">
+        <p>
+          Le site s&apos;appuie sur deux prestataires. Ils n&apos;utilisent pas les données pour leur
+          propre compte : ils les hébergent.
+        </p>
+        <Liste>
+          {HEBERGEURS.map((h) => (
+            <li key={h.nom}>
+              <strong>{h.role}</strong> — {h.nom}, {h.adresse} ({h.site}).{" "}
+              <span style={{ color: "var(--text-muted)" }}>{h.note}</span>
+            </li>
+          ))}
+        </Liste>
+      </Section>
+
+      <Section titre="Propriété intellectuelle">
+        <p>
+          Les exercices, les textes, les corrections, les simulations de stratégie et leur mise en
+          forme sont la propriété de {EDITEUR.nom}. L&apos;accès à la plateforme est personnel : il
+          n&apos;autorise ni la copie, ni l&apos;extraction, ni la rediffusion des contenus, notamment des
+          fichiers de stratégie issus des simulations, que ce soit à titre gratuit ou payant.
+        </p>
+        <p style={{ marginTop: 8 }}>
+          Les logiciels tiers cités (PioSOLVER, GTO Wizard, Hand2Note, Winamax) restent la propriété
+          de leurs éditeurs respectifs et ne sont mentionnés qu&apos;à titre de référence.
+        </p>
+      </Section>
+
+      <Section titre="Public concerné">
+        <p>
+          La plateforme s&apos;adresse à des joueurs de poker majeurs. Elle enseigne la technique du jeu ;
+          elle ne propose aucun jeu d&apos;argent, n&apos;encaisse aucune mise et ne garantit aucun gain.
+        </p>
+      </Section>
+
+      <Section titre="Signaler un problème">
+        <p>
+          Pour toute question sur le site, une demande de retrait de contenu ou un problème d&apos;accès,
+          écrire à <a href={`mailto:${EDITEUR.email}`} style={{ color: "var(--accent)" }}>{EDITEUR.email}</a>.
+        </p>
+      </Section>
+    </PageLegale>
+  );
+}

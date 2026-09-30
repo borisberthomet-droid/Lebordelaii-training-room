@@ -184,6 +184,15 @@ export default function LoginForm({ initialMode, next, initialError }) {
           {loading ? "…" : mode === "login" ? "Se connecter" : "Activer mon accès"}
         </button>
       </form>
+
+      <div style={{
+        display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap",
+        marginTop: 18, fontSize: 11, color: "var(--text-muted)",
+      }}>
+        <Link href="/mentions-legales">Mentions légales</Link>
+        <Link href="/confidentialite">Confidentialité</Link>
+        <Link href="/cgv">Conditions de vente</Link>
+      </div>
     </div>
   );
 }

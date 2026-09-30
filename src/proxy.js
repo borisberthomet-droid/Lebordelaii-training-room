@@ -9,7 +9,10 @@ import { updateSession } from '@/lib/supabase/proxy';
 // dès sa navigation suivante, sans attendre l'expiration de sa session.
 
 // Ouvert à tous : se connecter, activer une clé, récupérer son mot de passe.
-const OPEN = ['/login', '/signup', '/forgot-password', '/auth/confirm'];
+const OPEN = [
+  '/login', '/signup', '/forgot-password', '/auth/confirm',
+  '/mentions-legales', '/confidentialite', '/cgv',
+];
 // Session exigée, accès non : la page qui explique que l'accès n'est pas actif, et le
 // changement de mot de passe après un lien de récupération.
 const SESSION_ONLY = ['/acces', '/update-password'];
