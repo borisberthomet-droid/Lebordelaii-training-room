@@ -21,7 +21,8 @@
   --sur-accent: #F5F1ED;          /* texte posé sur un aplat d'accent */
   --erreur: #B0402F;
   --attention: #8F5E15;
-  --info: #3E6E93;
+  --info: #6A5A87;          /* etats « en cours », « a venir » — violet, accorde a la lavande */
+  --carreau: #2E77B0;       /* couleur du carreau : convention du jeu a quatre couleurs, jamais du theme */
 
   /* Habillage */
   --bg: #E6DFDB;

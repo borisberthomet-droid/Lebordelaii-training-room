@@ -1,7 +1,7 @@
 export const RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 export const SUITS = ['s', 'h', 'd', 'c'];
 export const SUIT_SYMBOL = { s: '♠', h: '♥', d: '♦', c: '♣' };
-export const SUIT_COLOR = { s: 'var(--text)', c: 'var(--accent-clair)', h: 'var(--erreur)', d: 'var(--info)' };
+export const SUIT_COLOR = { s: 'var(--text)', c: 'var(--accent-clair)', h: 'var(--erreur)', d: 'var(--carreau)' };
 
 export const MOMENT_OPTIONS = [
   '100% restants', '75% restants', '50% restants', '25% restants',

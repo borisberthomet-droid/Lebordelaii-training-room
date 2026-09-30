@@ -364,7 +364,7 @@ export default function RangeBuilderPage() {
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
-                      Écart <span style={{ color: "var(--erreur)" }}>rouge = tu sur-bet</span> / <span style={{ color: "var(--info)" }}>bleu = tu sous-bet</span>
+                      Écart <span style={{ color: "var(--erreur)" }}>rouge = tu sur-bet</span> / <span style={{ color: "var(--info)" }}>violet = tu sous-bet</span>
                     </div>
                     <StaticGrid
                       cellStyle={diffCellStyle(result.perClass)}

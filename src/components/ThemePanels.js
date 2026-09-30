@@ -27,10 +27,10 @@ const THEMES = [
     ],
   },
   {
-    axis: "frequence", color2: "#4E82A8", label: "Fréquence", color: "#2F5876",
+    axis: "frequence", color2: "#5F8B73", label: "Fréquence", color: "#3A6851",
     desc: "Savoir à quelle fréquence défendre, miser, bluffer",
     tools: [
-      { href: "/range-position", label: "Vs AGG — où suis-je dans ma range ?" },
+      { href: "/range-position", label: "Défendre ma range — Vs AGG" },
       { href: "/dois-je-bluffer", label: "Dois-je bluffer ? — as AGG" },
       { href: "/pot-odds?axe=frequence", label: "Pot Odds — fréquence" },
     ],

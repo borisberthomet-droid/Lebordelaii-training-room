@@ -11,7 +11,7 @@ import { buildProfile, levelFor, MIN_WEIGHT } from "@/lib/poker/skillScore";
 // rien. L'axe ICM n'a pas encore d'exercice, et c'est dit plutôt que masqué.
 const WHERE = {
   equite: [{ href: "/value-equity", label: "Quelle est ton équité ?" }, { href: "/pot-odds?axe=equite", label: "Pot Odds — équité" }],
-  frequence: [{ href: "/range-position", label: "Vs AGG" }, { href: "/pot-odds?axe=frequence", label: "Pot Odds — fréquence" }],
+  frequence: [{ href: "/range-position", label: "Défendre ma range — Vs AGG" }, { href: "/pot-odds?axe=frequence", label: "Pot Odds — fréquence" }],
   construction: [{ href: "/range-builder", label: "Range Builder" }],
   calcul: [{ href: "/math-trainer", label: "Math Trainer" }],
   lecture: [{ href: "/train", label: "Find It!" }, { href: "/range-decomposition", label: "Décompose la range" }],

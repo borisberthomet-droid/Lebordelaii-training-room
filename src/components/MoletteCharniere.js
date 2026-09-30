@@ -105,7 +105,7 @@ export default function MoletteCharniere({ combos, board, mode = "defense", play
         type="range" min={1} max={99} step={1} value={Math.round(seuil * 100)}
         onChange={(e) => setSeuil(Number(e.target.value) / 100)}
         aria-label="Percentile dans la range"
-        style={{ width: "100%", accentColor: "#8AA0FF", margin: "6px 0 14px" }}
+        style={{ width: "100%", accentColor: "#8B7BA8", margin: "6px 0 14px" }}
       />
 
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
