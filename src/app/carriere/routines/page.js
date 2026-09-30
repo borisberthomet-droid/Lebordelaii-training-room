@@ -51,6 +51,13 @@ function Grille({ routines, parRoutine, lundi, jour, onBasculer, onQuantite, occ
           </tr>
         </thead>
         <tbody>
+          {!routines.length && (
+            <tr style={{ borderTop: "1px solid var(--border)" }}>
+              <td colSpan={9} style={{ padding: "18px 8px", color: "var(--text-muted)", fontSize: 12 }}>
+                Ajoute une routine ci-dessous : elle prendra sa ligne ici, une case par jour.
+              </td>
+            </tr>
+          )}
           {routines.map((r, i) => {
             const entrees = parRoutine[r.id] || [];
             const index = Object.fromEntries(entrees.map((e) => [e.jour, e]));
@@ -230,23 +237,17 @@ export default function RoutinesPage() {
               </span>
             }
           >
-            {routines.length ? (
-              <Grille
-                routines={routines} parRoutine={parRoutine} lundi={lundi} jour={jour}
-                onBasculer={basculer} onQuantite={quantite} occupe={occupe}
-              />
-            ) : (
-              <Vide>
-                Aucune routine. Ajoute ce que tu veux tenir dans la durée : un drill, une review,
-                quinze minutes de rien.
-              </Vide>
-            )}
+            <Grille
+              routines={routines} parRoutine={parRoutine} lundi={lundi} jour={jour}
+              onBasculer={basculer} onQuantite={quantite} occupe={occupe}
+            />
 
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: 16 }}>
               <input value={form.titre} onChange={(e) => setForm((f) => ({ ...f, titre: e.target.value }))}
                 placeholder="ex : Drill ICM" style={{ ...champ, flex: 1, minWidth: 180, fontSize: 12, padding: "7px 9px" }} />
               <input value={form.unite} onChange={(e) => setForm((f) => ({ ...f, unite: e.target.value }))}
                 placeholder="unité (ex : spots)" style={{ ...champ, width: 150, fontSize: 12, padding: "7px 9px" }} />
+              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>jours prévus</span>
               {JOURS.map((nom, i) => {
                 const n = i + 1;
                 const actif = form.jours.includes(n);
