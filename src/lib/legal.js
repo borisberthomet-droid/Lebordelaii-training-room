@@ -12,12 +12,13 @@ const MANQUE = (quoi) => `[À COMPLÉTER : ${quoi}]`;
 export const EDITEUR = {
   nom: "Boris Berthomet",
   marque: "Lebordelaii Training Room",
-  statut: MANQUE("statut juridique — entrepreneur individuel, EURL, SASU…"),
-  siret: MANQUE("numéro SIRET"),
-  adresse: MANQUE("adresse du siège ou de l'activité"),
-  email: "borisberthomet@gmail.com",
-  telephone: null,                       // facultatif : la loi n'impose pas le téléphone
-  tva: MANQUE("numéro de TVA, ou « franchise en base de TVA — TVA non applicable, art. 293 B du CGI »"),
+  statut: "EIRL Boris Berthomet, entreprise individuelle à responsabilité limitée, exerçant sous le nom commercial « Le Bordelaii »",
+  siret: "834 870 925 00015",
+  ape: "9329Z",
+  adresse: "40 B allée des Douves, 33470 Gujan-Mestras",
+  email: "contact@lebordelaii.fr",
+  telephone: "06 15 65 05 13",
+  tva: "TVA non applicable, article 293 B du CGI.",
   directeurPublication: "Boris Berthomet",
 };
 

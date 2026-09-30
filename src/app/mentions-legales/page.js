@@ -22,8 +22,10 @@ export default function MentionsLegalesPage() {
           <li>Nom commercial : {EDITEUR.marque}</li>
           <li>Statut : <Valeur>{EDITEUR.statut}</Valeur></li>
           <li>SIRET : <Valeur>{EDITEUR.siret}</Valeur></li>
+          {EDITEUR.ape && <li>Code APE : {EDITEUR.ape}</li>}
           <li>Adresse : <Valeur>{EDITEUR.adresse}</Valeur></li>
           <li>Contact : <a href={`mailto:${EDITEUR.email}`} style={{ color: "var(--accent)" }}>{EDITEUR.email}</a></li>
+          {EDITEUR.telephone && <li>Téléphone : {EDITEUR.telephone}</li>}
           <li>TVA : <Valeur>{EDITEUR.tva}</Valeur></li>
           <li>Directeur de la publication : {EDITEUR.directeurPublication}</li>
         </Liste>
