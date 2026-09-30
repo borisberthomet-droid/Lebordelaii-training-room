@@ -286,6 +286,12 @@ export default function PkoRpPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PkoRpIcon size={22} />
           <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>PKO — KO &amp; RP</span>
+          <span style={{
+            fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 999,
+            background: "color-mix(in srgb, var(--attention) 16%, transparent)", color: "var(--attention)",
+          }}>
+            En développement
+          </span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Depuis une hand history ou un export HRC</span>
         </div>

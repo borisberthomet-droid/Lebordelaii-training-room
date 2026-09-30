@@ -116,6 +116,12 @@ export default function RpTrainerPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <PkoRpIcon size={22} />
           <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>RP Trainer</span>
+          <span style={{
+            fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 999,
+            background: "color-mix(in srgb, var(--attention) 16%, transparent)", color: "var(--attention)",
+          }}>
+            En développement
+          </span>
           <span style={{ color: "var(--border)", fontSize: 16 }}>/</span>
           <span style={{ fontSize: 14, color: "var(--text-muted)" }}>Risk Premium par stade</span>
         </div>

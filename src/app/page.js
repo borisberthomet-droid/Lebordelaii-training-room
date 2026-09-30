@@ -19,11 +19,11 @@ import LogoutButton from "./logout-button";
 // entière.
 const PKO_TOOLS = [
   {
-    href: "/pko-rp", Icon: () => <PkoRpIcon size={24} />,
+    href: "/pko-rp", Icon: () => <PkoRpIcon size={24} />, enDev: true,
     label: "PKO — KO & RP", desc: "Colle une main : valeur des KO en blindes et RP par joueur",
   },
   {
-    href: "/pko-rp/trainer", Icon: () => <PkoRpIcon size={24} />,
+    href: "/pko-rp/trainer", Icon: () => <PkoRpIcon size={24} />, enDev: true,
     label: "RP Trainer", desc: "Estime le Risk Premium, du début de tournoi à la table finale",
   },
 ];
@@ -124,6 +124,16 @@ export default function Home() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
         {PKO_TOOLS.map((tool) => (
           <Link key={tool.label} href={tool.href} style={cardStyle}>
+            {tool.enDev && (
+              <span style={{
+                position: "absolute", top: 10, right: 10, fontSize: 10, fontWeight: 600,
+                padding: "3px 9px", borderRadius: 999,
+                background: "color-mix(in srgb, var(--attention) 16%, transparent)",
+                color: "var(--attention)",
+              }}>
+                En développement
+              </span>
+            )}
             <div style={{ marginBottom: 9 }}><tool.Icon /></div>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3 }}>{tool.label}</div>
             <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{tool.desc}</div>
