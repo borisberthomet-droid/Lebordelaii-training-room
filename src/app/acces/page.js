@@ -74,7 +74,7 @@ export default function AccessPage() {
 
         {state === "actif" ? (
           <button type="button" onClick={() => { router.push("/"); router.refresh(); }} style={{
-            width: "100%", padding: "11px 12px", background: "var(--accent-gradient)", color: "#0B1210",
+            width: "100%", padding: "11px 12px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
             border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
           }}>
             Aller à l&apos;accueil
@@ -87,7 +87,7 @@ export default function AccessPage() {
 
             <label style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 16, cursor: "pointer" }}>
               <input type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)}
-                style={{ marginTop: 3, accentColor: "#34D399" }} />
+                style={{ marginTop: 3, accentColor: "var(--accent)" }} />
               <span>
                 J&apos;accepte que mes données de suivi (résultats aux exercices, informations de profil)
                 soient stockées de façon sécurisée pour mon accompagnement. Je peux en demander la
@@ -95,10 +95,10 @@ export default function AccessPage() {
               </span>
             </label>
 
-            {error && <div style={{ fontSize: 12, color: "#E0645A", marginBottom: 12, lineHeight: 1.5 }}>{error}</div>}
+            {error && <div style={{ fontSize: 12, color: "var(--erreur)", marginBottom: 12, lineHeight: 1.5 }}>{error}</div>}
 
             <button type="submit" disabled={loading || state === null} style={{
-              width: "100%", padding: "11px 12px", background: "var(--accent-gradient)", color: "#0B1210",
+              width: "100%", padding: "11px 12px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
               border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13,
               cursor: loading ? "default" : "pointer", opacity: loading || state === null ? 0.6 : 1,
             }}>

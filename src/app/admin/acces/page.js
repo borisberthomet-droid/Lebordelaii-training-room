@@ -15,7 +15,7 @@ import { generateAccessCode } from "@/lib/access";
 
 const MONO = "var(--font-ibm-plex-mono), monospace";
 const btn = {
-  padding: "8px 14px", background: "var(--accent-gradient)", color: "#0B1210",
+  padding: "8px 14px", background: "var(--accent-gradient)", color: "var(--sur-accent)",
   border: "none", borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: "pointer",
 };
 const small = {
@@ -30,9 +30,9 @@ function statusOf(k) {
   return "libre";
 }
 const STATUS = {
-  libre: { label: "Libre", color: "#E8C547" },
-  active: { label: "Active", color: "#34D399" },
-  revoquee: { label: "Révoquée", color: "#E0645A" },
+  libre: { label: "Libre", color: "var(--attention)" },
+  active: { label: "Active", color: "var(--accent)" },
+  revoquee: { label: "Révoquée", color: "var(--erreur)" },
 };
 
 export default function AccessKeysAdmin() {
@@ -121,7 +121,7 @@ export default function AccessKeysAdmin() {
   return (
     <div style={{ minHeight: "100vh", padding: 20, width: "100%", maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
-        <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3 }}>Clés d&apos;accès</span>
+        <span className="titre" style={{ fontSize: 21, fontWeight: 700 }}>Clés d&apos;accès</span>
         <div style={{ display: "flex", gap: 14 }}>
           <Link href="/compte" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Mon compte</Link>
           <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>Accueil</Link>
@@ -160,7 +160,7 @@ export default function AccessKeysAdmin() {
             </div>
           </div>
         )}
-        {error && <div style={{ marginTop: 10, fontSize: 12, color: "#E0645A" }}>{error}</div>}
+        {error && <div style={{ marginTop: 10, fontSize: 12, color: "var(--erreur)" }}>{error}</div>}
       </div>
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 18 }}>
@@ -199,7 +199,7 @@ export default function AccessKeysAdmin() {
                 {k.revoked_at
                   ? <button onClick={() => update(k.id, { revoked_at: null, revoked_reason: null })} style={small}>Réactiver</button>
                   : <button onClick={() => update(k.id, { revoked_at: new Date().toISOString(), revoked_reason: "manuel" })}
-                      style={{ ...small, color: "#E0645A" }}>Révoquer</button>}
+                      style={{ ...small, color: "var(--erreur)" }}>Révoquer</button>}
               </div>
             );
           })}
