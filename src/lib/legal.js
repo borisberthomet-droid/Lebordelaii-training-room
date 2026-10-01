@@ -7,7 +7,9 @@
 // manque, les pages l'affichent en évidence plutôt que d'inventer : une mention légale fausse vaut
 // moins qu'une mention légale absente.
 
-const MANQUE = (quoi) => `[À COMPLÉTER : ${quoi}]`;
+// Exporté pour rester à portée de main : toute valeur légale encore inconnue passe par ici
+// plutôt que par une approximation.
+export const MANQUE = (quoi) => `[À COMPLÉTER : ${quoi}]`;
 
 export const EDITEUR = {
   nom: "Boris Berthomet",
@@ -47,7 +49,6 @@ export const PRESTATIONS = [
   { nom: "Coaching individuel", prix: "125 €", unite: "la séance d'une heure" },
   { nom: "Coaching duo", prix: "200 €", unite: "la séance d'une heure" },
   { nom: "Analyse de jeu — Leakfinder", prix: "500 €", unite: "la formule complète" },
-  { nom: "Pack d'heures", prix: MANQUE("tarif des packs"), unite: "validité indiquée à l'achat" },
 ];
 
 // Médiateur de la consommation, d'après l'attestation d'affiliation du 1er octobre 2026.

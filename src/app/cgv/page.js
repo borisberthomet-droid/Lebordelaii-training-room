@@ -3,8 +3,8 @@
 import PageLegale, { Liste, Section, Valeur } from "@/components/PageLegale";
 import { EDITEUR, MEDIATEUR, PRESTATIONS } from "@/lib/legal";
 
-// Projet de CGV. Écrit à partir de ce que l'application fait réellement — notamment l'expiration
-// des heures d'un pack, qui est codée dans la base et doit donc être annoncée. À faire relire par
+// Projet de CGV. Écrit à partir de ce que l'application fait réellement, et de ce qui est
+// réellement vendu : des séances à l'unité, pas de pack d'heures prépayées. À faire relire par
 // un juriste avant publication : une clause d'annulation mal tournée se retourne contre son auteur.
 
 export default function CgvPage() {
@@ -15,9 +15,9 @@ export default function CgvPage() {
       avertissement={
         <>
           <strong>Projet, à faire relire avant publication.</strong> Ce texte a été rédigé à partir du
-          fonctionnement réel de la plateforme, mais il n&apos;a pas été relu par un juriste. Deux points
-          méritent particulièrement son avis : la renonciation au droit de rétractation et
-          l&apos;expiration des heures non utilisées d&apos;un pack.
+          fonctionnement réel de la plateforme, mais il n&apos;a pas été relu par un juriste. Un point
+          mérite particulièrement son avis : la renonciation au droit de rétractation lorsque la
+          séance est planifiée dans les quatorze jours.
         </>
       }
     >
@@ -44,7 +44,7 @@ export default function CgvPage() {
         <p style={{ marginTop: 10 }}>
           Les prix sont en euros. <Valeur>{EDITEUR.tva}</Valeur> Le tarif applicable est celui affiché
           au moment de la réservation ; une évolution ultérieure est sans effet sur une séance déjà
-          réglée ou sur un pack déjà acheté.
+          réglée.
         </p>
       </Section>
 
@@ -78,8 +78,7 @@ export default function CgvPage() {
             l&apos;heure prévue.
           </li>
           <li>
-            Passé ce délai, ou en cas d&apos;absence, la séance est considérée comme due et décomptée du
-            pack le cas échéant.
+            Passé ce délai, ou en cas d&apos;absence, la séance est considérée comme due.
           </li>
           <li>
             Si le coach doit annuler, la séance est reportée sans frais, ou remboursée si aucun
@@ -88,20 +87,7 @@ export default function CgvPage() {
         </Liste>
       </Section>
 
-      <Section titre="6. Packs d'heures">
-        <p>
-          Un pack donne droit à un nombre d&apos;heures de coaching à consommer avant la date d&apos;expiration
-          annoncée à l&apos;achat. Chaque séance réalisée est décomptée du solde, visible à tout moment
-          dans ton espace.
-        </p>
-        <p style={{ marginTop: 8 }}>
-          <strong>Les heures non utilisées à la date d&apos;expiration sont perdues et ne sont ni
-          remboursées ni reportées.</strong> Le solde et la date d&apos;expiration sont affichés dans ton
-          espace, et un rappel t&apos;est adressé quinze jours avant l&apos;échéance s&apos;il te reste des heures.
-        </p>
-      </Section>
-
-      <Section titre="7. Ce que le coaching promet, et ce qu'il ne promet pas">
+      <Section titre="6. Ce que le coaching promet, et ce qu'il ne promet pas">
         <p>
           Le coach s&apos;engage à fournir un accompagnement sérieux : préparation des séances, analyse de
           ton jeu, plan de travail et suivi.
@@ -115,11 +101,11 @@ export default function CgvPage() {
         </p>
       </Section>
 
-      <Section titre="8. Accès à la plateforme">
+      <Section titre="7. Accès à la plateforme">
         <p>
           La clé d&apos;activation est personnelle. Le partage d&apos;un accès, la revente ou l&apos;extraction des
           contenus — notamment des fichiers de stratégie issus des simulations — entraînent la
-          révocation immédiate de l&apos;accès, sans remboursement des séances non consommées.
+          révocation immédiate de l&apos;accès, sans remboursement des séances déjà réglées.
         </p>
         <p style={{ marginTop: 8 }}>
           La plateforme est fournie en l&apos;état, avec une disponibilité normale mais sans garantie
@@ -128,7 +114,7 @@ export default function CgvPage() {
         </p>
       </Section>
 
-      <Section titre="9. Jeu responsable">
+      <Section titre="8. Jeu responsable">
         <p>
           Les prestations s&apos;adressent exclusivement à des personnes majeures. Si le jeu cesse d&apos;être
           un plaisir, des professionnels écoutent gratuitement et anonymement au 09 74 75 13 13
@@ -136,7 +122,7 @@ export default function CgvPage() {
         </p>
       </Section>
 
-      <Section titre="10. Données personnelles">
+      <Section titre="9. Données personnelles">
         <p>
           Le traitement des données est décrit dans la{" "}
           <a href="/confidentialite" style={{ color: "var(--accent)" }}>politique de confidentialité</a>,
@@ -144,7 +130,7 @@ export default function CgvPage() {
         </p>
       </Section>
 
-      <Section titre="11. Réclamation et médiation">
+      <Section titre="10. Réclamation et médiation">
         <p>
           En cas de désaccord, écris d&apos;abord à{" "}
           <a href={`mailto:${EDITEUR.email}`} style={{ color: "var(--accent)" }}>{EDITEUR.email}</a> :
@@ -171,7 +157,7 @@ export default function CgvPage() {
         </p>
       </Section>
 
-      <Section titre="12. Droit applicable">
+      <Section titre="11. Droit applicable">
         <p>
           Les présentes conditions sont soumises au droit français. À défaut d&apos;accord amiable, les
           tribunaux français sont compétents.

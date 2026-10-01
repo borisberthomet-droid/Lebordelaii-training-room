@@ -51,7 +51,7 @@ export default function ConfidentialitePage() {
             captures d&apos;écran de tes statistiques déposées par le coach.
           </li>
           <li>
-            <strong>Coaching</strong> — dates, durées, état de paiement, packs d&apos;heures, et la
+            <strong>Coaching</strong> — dates, durées, état de paiement, solde d&apos;heures éventuel, et la
             synthèse écrite de chaque séance une fois validée par le coach.
           </li>
         </Liste>
