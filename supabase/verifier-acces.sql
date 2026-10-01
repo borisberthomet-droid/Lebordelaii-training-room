@@ -19,8 +19,11 @@ pol as (
   select a.tbl,
          count(p.policyname)                                       as nb_select,
          count(*) filter (where p.qual ilike '%has_access%')        as avec_controle,
+         -- est_coach() et les politiques admin sont PLUS strictes que has_access(), pas plus
+         -- laxistes : les compter comme des trous ferait crier au loup (cas vecu sur skill_items).
          count(*) filter (where p.qual is not null
                             and p.qual not ilike '%has_access%'
+                            and p.qual not ilike '%est_coach%'
                             and p.qual not ilike '%admin%')         as sans_controle,
          string_agg(p.policyname, ' + ')                            as noms
   from attendu a
