@@ -50,12 +50,23 @@ export const PRESTATIONS = [
   { nom: "Pack d'heures", prix: MANQUE("tarif des packs"), unite: "validité indiquée à l'achat" },
 ];
 
+// Médiateur de la consommation, d'après l'attestation d'affiliation du 1er octobre 2026.
+// Les articles L.616-1 et R.616-1 du Code de la consommation imposent de faire figurer le nom,
+// l'adresse postale et l'adresse du site du médiateur sur le site, dans les CGV et sur les
+// factures : ces trois informations doivent donc rester exactes, pas seulement présentes.
 export const MEDIATEUR = {
-  nom: MANQUE("médiateur de la consommation — obligatoire pour vendre à des particuliers en France"),
-  site: null,
+  nom: "CM2C — Centre de la Médiation de la Consommation de Conciliateurs de justice",
+  forme: "association loi 1901 agréée par la CECMC",
+  adresse: "49 rue de Ponthieu, 75008 Paris",
+  site: "www.cm2c.net",
+  siteUrl: "https://www.cm2c.net",
+  telephone: "01 89 47 00 14",
+  // L'adhésion est conclue pour trois ans. À renouveler avant cette date, sinon la mention
+  // devient fausse et l'obligation n'est plus remplie.
+  adhesionJusquau: "1er octobre 2029",
 };
 
-export const MISE_A_JOUR = "30 septembre 2026";
+export const MISE_A_JOUR = "1er octobre 2026";
 
 // Vrai quand une valeur n'a pas encore été renseignée : les pages s'en servent pour signaler ce
 // qui reste à faire, au lieu de publier un texte à trous sans le dire.

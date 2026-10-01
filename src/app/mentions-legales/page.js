@@ -1,20 +1,13 @@
 "use client";
 
 import PageLegale, { Liste, Section, Valeur } from "@/components/PageLegale";
-import { EDITEUR, HEBERGEURS } from "@/lib/legal";
+import { EDITEUR, HEBERGEURS, MEDIATEUR } from "@/lib/legal";
 
 export default function MentionsLegalesPage() {
   return (
     <PageLegale
       titre="Mentions légales"
       chapeau="Qui édite ce site, qui l'héberge, et à qui s'adresser."
-      avertissement={
-        <>
-          Les informations surlignées restent à renseigner. Tant qu&apos;elles manquent, ces mentions
-          ne sont pas complètes au sens de la loi — le statut, le SIRET et l&apos;adresse sont obligatoires
-          pour un site édité par un professionnel.
-        </>
-      }
     >
       <Section titre="Éditeur du site">
         <Liste>
@@ -64,6 +57,24 @@ export default function MentionsLegalesPage() {
           La plateforme s&apos;adresse à des joueurs de poker majeurs. Elle enseigne la technique du jeu ;
           elle ne propose aucun jeu d&apos;argent, n&apos;encaisse aucune mise et ne garantit aucun gain.
         </p>
+      </Section>
+
+      <Section titre="Médiation de la consommation">
+        <p>
+          Conformément aux articles L.616-1 et R.616-1 du Code de la consommation,{" "}
+          {EDITEUR.nom} a adhéré à un dispositif de médiation. En cas de litige non résolu
+          directement, le consommateur peut saisir gratuitement :
+        </p>
+        <Liste>
+          <li><strong>{MEDIATEUR.nom}</strong> ({MEDIATEUR.forme})</li>
+          <li>{MEDIATEUR.adresse}</li>
+          <li>
+            <a href={MEDIATEUR.siteUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>
+              {MEDIATEUR.site}
+            </a>{" "}
+            — {MEDIATEUR.telephone}
+          </li>
+        </Liste>
       </Section>
 
       <Section titre="Signaler un problème">

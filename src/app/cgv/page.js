@@ -148,8 +148,26 @@ export default function CgvPage() {
         <p>
           En cas de désaccord, écris d&apos;abord à{" "}
           <a href={`mailto:${EDITEUR.email}`} style={{ color: "var(--accent)" }}>{EDITEUR.email}</a> :
-          la plupart des situations se règlent ainsi. À défaut d&apos;accord, tu peux saisir gratuitement
-          le médiateur de la consommation : <Valeur>{MEDIATEUR.nom}</Valeur>.
+          la plupart des situations se règlent ainsi. À défaut d&apos;accord amiable dans un délai d&apos;un
+          mois, tu peux saisir gratuitement le médiateur de la consommation dont relève{" "}
+          {EDITEUR.marque} :
+        </p>
+        <Liste>
+          <li>
+            <strong>{MEDIATEUR.nom}</strong> ({MEDIATEUR.forme})
+          </li>
+          <li>{MEDIATEUR.adresse}</li>
+          <li>
+            <a href={MEDIATEUR.siteUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>
+              {MEDIATEUR.site}
+            </a>{" "}
+            — {MEDIATEUR.telephone}
+          </li>
+        </Liste>
+        <p style={{ marginTop: 10 }}>
+          La saisine du médiateur est gratuite pour le consommateur et se fait en ligne depuis le
+          site ci-dessus. Tu peux également utiliser la plateforme européenne de règlement des
+          litiges en ligne.
         </p>
       </Section>
 
