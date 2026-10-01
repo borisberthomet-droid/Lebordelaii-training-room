@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Confirme ton adresse</title></head>
+<body style="margin:0;padding:0;background:#E6DFDB;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#E6DFDB;padding:32px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#F2EDEA;border:1px solid #CBBFB8;border-radius:14px;">
+
+        <tr><td style="padding:28px 28px 0 28px;" align="center">
+          <img src="https://lebordelaii-training-room.vercel.app/marque/logo-192.png" width="56" height="56" alt="Lebordelaii" style="display:block;border:0;">
+          <div style="font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;color:#583A1E;padding-top:10px;letter-spacing:0.2px;">
+            Lebordelaii Training Room
+          </div>
+        </td></tr>
+
+        <tr><td style="padding:22px 28px 0 28px;">
+          <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;line-height:1.25;font-weight:700;color:#3A2A1C;">Confirme ton adresse</h1>
+          <p style="margin:14px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:#3A2A1C;">Ton compte sur la Training Room est créé. Un dernier clic pour confirmer que cette adresse est bien la tienne, et ton accès est ouvert.</p>
+        </td></tr>
+
+        <tr><td style="padding:24px 28px 0 28px;" align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+            <td align="center" style="background:#5F6127;border-radius:10px;">
+              <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 26px;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#F2EDEA;text-decoration:none;">Confirmer mon adresse</a>
+            </td>
+          </tr></table>
+        </td></tr>
+
+        <tr><td style="padding:20px 28px 0 28px;">
+          <p style="margin:0;font-family:Helvetica,Arial,sans-serif;font-size:12px;line-height:1.7;color:#6E5B4B;">Ce lien est valable une heure et ne sert qu'une fois. Si tu n'es pas à l'origine de cette inscription, ignore ce message : sans ce clic, aucun compte n'est activé.</p>
+          <p style="margin:12px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;line-height:1.6;color:#6E5B4B;word-break:break-all;">
+            Si le bouton ne fonctionne pas, copie ce lien dans ton navigateur :<br>
+            <a href="{{ .ConfirmationURL }}" style="color:#5F6127;">{{ .ConfirmationURL }}</a>
+          </p>
+        </td></tr>
+
+        <tr><td style="padding:22px 28px 28px 28px;">
+          <div style="border-top:1px solid #CBBFB8;padding-top:14px;font-family:Helvetica,Arial,sans-serif;font-size:11px;line-height:1.7;color:#6E5B4B;">
+            Tu reçois cet e-mail parce qu'une inscription a été faite avec {{ .Email }} sur la Training Room.<br>
+            <a href="https://lebordelaii-training-room.vercel.app/mentions-legales" style="color:#6E5B4B;">Mentions légales</a> &nbsp;·&nbsp;
+            <a href="https://lebordelaii-training-room.vercel.app/confidentialite" style="color:#6E5B4B;">Confidentialité</a> &nbsp;·&nbsp;
+            <a href="https://lebordelaii-training-room.vercel.app/cgv" style="color:#6E5B4B;">Conditions de vente</a>
+          </div>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
