@@ -5,6 +5,7 @@ import LogoutButton from "../logout-button";
 
 const NAV_ITEMS = [
   { href: "/find-it/sim", label: "Sur simulation", desc: "Retrouve la range de mise du solveur" },
+  { href: "/find-it/sim/ranking", label: "Points du simulateur", desc: "Chaque main rapporte sa note sur 100" },
   { href: "/ranking", label: "Classements", desc: "Général et par main" },
   { href: "/history", label: "Mon historique", desc: "Tes tentatives passées" },
 ];

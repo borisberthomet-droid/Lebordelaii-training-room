@@ -147,8 +147,11 @@ export default function FindItSimPage() {
         </div>
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <span style={{ fontSize: 12, fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--text-muted)" }}>
-            {stats.total ? `${stats.found}/${stats.total} trouvés · ${Math.round(stats.somme / stats.total)} de moyenne` : "—"}
+            {stats.total
+              ? `${Math.round(stats.somme)} pts · ${stats.found}/${stats.total} trouvés · ${Math.round(stats.somme / stats.total)} de moyenne`
+              : "—"}
           </span>
+          <Link href="/find-it/sim/ranking" style={{ fontSize: 12, color: "var(--accent)" }}>Classement</Link>
           <Link href="/find-it" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Find It</Link>
           <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>Accueil</Link>
         </div>
