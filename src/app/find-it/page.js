@@ -5,7 +5,7 @@ import LogoutButton from "../logout-button";
 
 const NAV_ITEMS = [
   { href: "/find-it/sim", label: "Sur simulation", desc: "Retrouve la range de mise du solveur" },
-  { href: "/ranking", label: "Classements", desc: "Général et par spot" },
+  { href: "/ranking", label: "Classements", desc: "Général et par main" },
   { href: "/history", label: "Mon historique", desc: "Tes tentatives passées" },
 ];
 
@@ -49,14 +49,14 @@ export default async function FindItHome() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
         <Link
-          href="/train"
+          href="/find-it/semaine"
           style={{
             display: "block", padding: "18px 18px", background: "var(--accent-gradient)",
             borderRadius: 14, color: "var(--sur-accent)", gridColumn: "1 / -1",
           }}
         >
-          <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>S&apos;entraîner</div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>Un spot au hasard, théorique ou exploit</div>
+          <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>Trouve la main de la semaine</div>
+          <div style={{ fontSize: 12, opacity: 0.75 }}>Une vraie main, un seul essai, un classement</div>
         </Link>
         {NAV_ITEMS.map((item) => (
           <Link
@@ -80,7 +80,7 @@ export default async function FindItHome() {
             }}
           >
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Éditeur admin</div>
-            <div style={{ fontSize: 12, opacity: 0.75 }}>Créer et gérer les spots</div>
+            <div style={{ fontSize: 12, opacity: 0.75 }}>Créer les mains de la semaine</div>
           </Link>
         )}
       </div>

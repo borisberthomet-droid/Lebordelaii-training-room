@@ -75,12 +75,12 @@ export default function Home() {
       />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 26 }}>
-        <Link href="/train" style={{
+        <Link href="/find-it/semaine" style={{
           display: "block", padding: "18px 18px", background: "var(--accent-gradient)",
           borderRadius: 14, color: "var(--sur-accent)",
         }}>
-          <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>S&apos;entraîner</div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>Un spot au hasard, théorique ou exploit</div>
+          <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>Main de la semaine</div>
+          <div style={{ fontSize: 12, opacity: 0.75 }}>Une vraie main, un seul essai, un classement</div>
         </Link>
         <Link href="/carriere" style={{ ...cardStyle, padding: "18px 18px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>

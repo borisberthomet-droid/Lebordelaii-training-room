@@ -32,6 +32,7 @@ function toRow(spot) {
     moment_tournoi: spot.momentTournoi || "",
     seats: spot.seats || [],
     replay: spot.replay || null,
+    semaine_du: spot.semaineDu || null,
   };
 }
 
@@ -66,6 +67,7 @@ function fromRow(row) {
     momentTournoi: row.moment_tournoi,
     seats: row.seats || [],
     replay: row.replay,
+    semaineDu: row.semaine_du || null,
     createdAt: row.created_at,
     createdBy: row.created_by,
   };
@@ -76,6 +78,25 @@ export async function listSpots() {
   const { data, error } = await supabase.from("spots").select("*").order("created_at", { ascending: false });
   if (error) throw error;
   return data.map(fromRow);
+}
+
+// La main en cours : la plus récemment publiée dont la date est déjà passée.
+//
+// Pas « celle de la semaine courante » : si Boris saute une semaine, la précédente reste en
+// place. Une main d'avance vaut mieux qu'une page vide, et le jeu ne s'arrête pas parce qu'un
+// lundi est passé à la trappe. Une date dans le futur, elle, ne sort pas : c'est ce qui permet
+// de préparer les mains à l'avance.
+export async function getMainDeLaSemaine() {
+  const supabase = createClient();
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from("spots").select("*")
+    .not("semaine_du", "is", null)
+    .lte("semaine_du", aujourdhui)
+    .order("semaine_du", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  return data && data.length ? fromRow(data[0]) : null;
 }
 
 export async function getSpot(id) {
@@ -149,6 +170,23 @@ export async function getMyAttempts() {
 
 // Top 10 d'un spot : seule la dernière tentative de chaque élève compte
 // (une nouvelle tentative remplace l'ancienne dans le classement), triée par score.
+// Le résultat de l'élève sur une main donnée : il n'a qu'un essai, donc une seule ligne. Sert à
+// lui réafficher son score quand il revient sur la page au lieu de lui redemander de jouer.
+export async function getMonScore(spotId) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data, error } = await supabase
+    .from("attempts")
+    .select("score, found, created_at")
+    .eq("spot_id", spotId)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  return data && data.length ? data[0] : null;
+}
+
 export async function getSpotLeaderboard(spotId) {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -184,35 +222,6 @@ export async function getGeneralRanking(minSpots = 5) {
 // Tire un spot au hasard pour l'entraînement, en excluant les spots exploit
 // encore verrouillés (rejoués il y a moins de 30 jours) et, optionnellement,
 // le spot en cours (pour éviter de retomber deux fois de suite sur le même).
-export async function getRandomAvailableSpot(excludeId) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: spotsData, error: spotsError }, { data: locksData, error: locksError }] = await Promise.all([
-    supabase.from("spots").select("*"),
-    supabase.from("user_spot_locks").select("spot_id, last_played_at").eq("user_id", user.id),
-  ]);
-  if (spotsError) throw spotsError;
-  if (locksError) throw locksError;
-
-  const lockedAt = new Map((locksData || []).map((l) => [l.spot_id, new Date(l.last_played_at).getTime()]));
-  const now = Date.now();
-  const THIRTY_DAYS = 30 * 24 * 3600 * 1000;
-
-  const available = spotsData
-    .map(fromRow)
-    .filter((s) => s.id !== excludeId)
-    .filter((s) => {
-      if (s.mode !== "exploit") return true;
-      const t = lockedAt.get(s.id);
-      return !t || now - t >= THIRTY_DAYS;
-    });
-
-  if (available.length === 0) return null;
-  return available[Math.floor(Math.random() * available.length)];
-}
 
 // Verrou de rejouabilité pour les spots exploit : 30 jours entre deux tentatives.
 export async function getSpotLock(spotId) {

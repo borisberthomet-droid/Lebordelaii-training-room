@@ -56,7 +56,7 @@ const FIELDS = [
 
 const EMPTY_FORM = {
   nom: '', koValue: '', ligne: '', consigne: '', explication: '', gtoWizardLink: '', timer: 30, buyIn: '', format: '', startingStack: '', palier: '',
-  question: '', questionAnswer: '', questionAvis: '', villainInfo: '',
+  question: '', questionAnswer: '', questionAvis: '', villainInfo: '', semaineDu: '',
   board: '', blindLevel: '', averageBB: '', nbInscrits: '', potTotal: '',
   momentTournoi: MOMENT_OPTIONS[0], mode: 'theorique',
   heroCard1: 'Qc', heroCard2: 'Qd', villainCard1: 'As', villainCard2: 'Kd',
@@ -270,6 +270,7 @@ export default function AdminPage() {
       buyIn: form.buyIn, format: form.format, startingStack: form.startingStack, palier: form.palier,
       board: form.board, blindLevel: form.blindLevel, averageBB: form.averageBB, nbInscrits: form.nbInscrits,
       potTotal: form.potTotal, momentTournoi: form.momentTournoi, seats: form.seats, replay: form.replay || null,
+      semaineDu: form.semaineDu || null,
       weights: editWeights, heroWeights: form.mode === 'theorique' ? heroWeights : {},
     };
     try {
@@ -305,6 +306,7 @@ export default function AdminPage() {
       buyIn: spot.buyIn || '', format: spot.format || '', startingStack: spot.startingStack || '', palier: spot.palier || '',
       board: spot.board || '', blindLevel: spot.blindLevel || '', averageBB: spot.averageBB || '', nbInscrits: spot.nbInscrits || '',
       potTotal: spot.potTotal ?? '', momentTournoi: spot.momentTournoi || MOMENT_OPTIONS[0], mode: spot.mode,
+      semaineDu: spot.semaineDu || '',
       heroCard1, heroCard2, villainCard1, villainCard2,
       numPlayers: (spot.seats || []).length || 6, seats: spot.seats && spot.seats.length ? spot.seats : generateSeats(6),
       replay: spot.replay || null,
@@ -324,7 +326,7 @@ export default function AdminPage() {
       <PageHeader subtitle="Éditeur admin" right={
         <span style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <Link href="/admin/joueurs" style={{ fontSize: 12, color: "var(--accent)" }}>Mes joueurs</Link>
-          <Link href="/train" style={{ fontSize: 12, color: "var(--text-muted)" }}>S&apos;entraîner</Link>
+          <Link href="/find-it/semaine" style={{ fontSize: 12, color: "var(--text-muted)" }}>Main de la semaine</Link>
         </span>
       } />
 
@@ -614,6 +616,23 @@ export default function AdminPage() {
                   <button key={n} onClick={() => setForm(f => ({ ...f, nbInscrits: String(n) }))} style={ghostButtonStyle}>{n}</button>
                 ))}
               </div>
+            </div>
+
+            {/* Publication. Une date dans le futur prépare la main sans la sortir : elle apparaît
+                toute seule le jour dit. Un spot sans date ne se joue nulle part — c'est un
+                brouillon, et c'est l'état par défaut. */}
+            <div style={{ marginTop: 12 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
+                Main de la semaine du (lundi) — vide = brouillon, jamais publié
+              </label>
+              <input type="date" value={form.semaineDu}
+                onChange={e => setForm(f => ({ ...f, semaineDu: e.target.value }))}
+                style={{ ...inputStyle, maxWidth: 220 }} />
+              {form.semaineDu && new Date(form.semaineDu + 'T12:00:00').getDay() !== 1 && (
+                <div style={{ fontSize: 11, color: 'var(--attention)', marginTop: 4 }}>
+                  Ce n&apos;est pas un lundi. Ça marche quand même, mais la main sortira ce jour-là.
+                </div>
+              )}
             </div>
 
             <div style={{ marginTop: 12 }}>

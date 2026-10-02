@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getRandomAvailableSpot, getSpot, getSpotLock, insertAttempt, setSpotLock } from "@/lib/supabase/spots";
+import { getSpot, getSpotLock, insertAttempt, setSpotLock } from "@/lib/supabase/spots";
 import { ACCENT } from "@/lib/poker/constants";
 import { comboKey } from "@/lib/poker/combos";
 import { drawRandomHand, drawWeightedCombo, drawWeightedHand, scoreAttempt, knownCards, parseBoardCards } from "@/lib/poker/scoring";
@@ -32,7 +32,6 @@ export default function PlaySpotPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [spot, setSpot] = useState(null);
   const [lockedUntil, setLockedUntil] = useState(null);
-  const [nextLoading, setNextLoading] = useState(false);
 
   const [heroCards, setHeroCards] = useState([]);
   const [villainKey, setVillainKey] = useState(null);
@@ -51,7 +50,11 @@ export default function PlaySpotPage() {
 
         if (loaded.mode === "exploit") {
           const lock = await getSpotLock(loaded.id);
-          if (lock && Date.now() - lock < 30 * 24 * 3600 * 1000) {
+          // La main de la semaine ne se joue qu'une fois, définitivement : c'est tout le principe
+          // du jeu, et un classement où l'on peut retenter n'en est pas un. Les autres spots
+          // exploit se rouvrent au bout de trente jours.
+          const verrou = loaded.semaineDu ? Infinity : 30 * 24 * 3600 * 1000;
+          if (lock && Date.now() - lock < verrou) {
             setLockedUntil(lock);
             setState("locked");
             return;
@@ -92,7 +95,7 @@ export default function PlaySpotPage() {
     const referenceCount = referenceValues.length;
     const referenceWeighted = referenceValues.reduce((sum, w) => sum + w, 0);
     setReveal({ found, score, villainKey, selectedCount: selected.length, referenceCount, referenceWeighted });
-    if (spot.mode === "exploit") await setSpotLock(spot.id);
+    if (spot.mode === "exploit" || spot.semaineDu) await setSpotLock(spot.id);
     try {
       await insertAttempt({ spotId: spot.id, score, found, selectedCount: selected.length, referenceCount });
       // Le score de Find It est deja une note de qualite sur 100 : on la reprend telle quelle.
@@ -105,16 +108,7 @@ export default function PlaySpotPage() {
     }
   };
 
-  const goToNext = async () => {
-    setNextLoading(true);
-    try {
-      const next = await getRandomAvailableSpot(spot?.id);
-      if (next) router.push(`/play/${next.id}?from=train`);
-      else router.push("/train");
-    } finally {
-      setNextLoading(false);
-    }
-  };
+  const retourSemaine = () => router.push("/find-it/semaine");
 
   useEffect(() => {
     if (!running) return;
@@ -133,7 +127,7 @@ export default function PlaySpotPage() {
   if (state === "error") {
     return (
       <div style={{ padding: 20, fontSize: 13, color: "var(--erreur)" }}>
-        {errorMsg} — <Link href="/train" style={{ color: "var(--accent)" }}>essayer un autre spot</Link>
+        {errorMsg} — <Link href="/find-it/semaine" style={{ color: "var(--accent)" }}>retour à la main de la semaine</Link>
       </div>
     );
   }
@@ -142,11 +136,13 @@ export default function PlaySpotPage() {
       <div style={{ padding: 20, maxWidth: 480 }}>
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{spot.nom}</div>
         <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-          Ce spot exploit a déjà été joué. Il sera de nouveau disponible le{" "}
-          <span style={{ color: ACCENT }}>{new Date(lockedUntil + 30 * 24 * 3600 * 1000).toLocaleDateString("fr-FR")}</span>.
+          {spot.semaineDu
+            ? "Tu as déjà joué cette main. Elle ne se joue qu'une fois — c'est ce qui rend le classement honnête."
+            : <>Ce spot exploit a déjà été joué. Il sera de nouveau disponible le{" "}
+                <span style={{ color: ACCENT }}>{new Date(lockedUntil + 30 * 24 * 3600 * 1000).toLocaleDateString("fr-FR")}</span>.</>}
         </div>
-        <button onClick={goToNext} disabled={nextLoading} style={{ display: "inline-block", marginTop: 16, padding: "8px 16px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13, opacity: nextLoading ? 0.6 : 1 }}>
-          {nextLoading ? "…" : "Spot suivant"}
+        <button onClick={retourSemaine} style={{ display: "inline-block", marginTop: 16, padding: "8px 16px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 13 }}>
+          Voir le classement
         </button>
       </div>
     );
@@ -290,8 +286,8 @@ export default function PlaySpotPage() {
             </div>
           </div>
           <div style={{ marginTop: 16, display: "flex", gap: 10, alignItems: "center" }}>
-            <button onClick={goToNext} disabled={nextLoading} style={{ padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, opacity: nextLoading ? 0.6 : 1 }}>
-              {nextLoading ? "…" : "Spot suivant"}
+            <button onClick={retourSemaine} style={{ padding: "9px 18px", background: "var(--accent-gradient)", color: "var(--sur-accent)", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13 }}>
+              Voir le classement
             </button>
             <Link href="/" style={{ fontSize: 12, color: "var(--text-muted)" }}>← Accueil</Link>
           </div>

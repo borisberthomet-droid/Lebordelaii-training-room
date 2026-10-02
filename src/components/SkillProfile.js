@@ -14,7 +14,7 @@ const WHERE = {
   frequence: [{ href: "/range-position", label: "Défendre ma range — Vs AGG" }, { href: "/pot-odds?axe=frequence", label: "Pot Odds — fréquence" }],
   construction: [{ href: "/range-builder", label: "Range Builder" }],
   calcul: [{ href: "/math-trainer", label: "Math Trainer" }],
-  lecture: [{ href: "/train", label: "Find It!" }, { href: "/range-decomposition", label: "Décompose la range" }],
+  lecture: [{ href: "/find-it/sim", label: "Find It!" }, { href: "/range-decomposition", label: "Décompose la range" }],
   pko: [{ href: "/pko-rp/trainer", label: "RP Trainer" }],
   icm: [],
 };
