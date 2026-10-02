@@ -13,7 +13,10 @@
 --
 -- skill_attempts.score va de 0 a 1 : on le ramene sur 100, comme partout ailleurs dans l'appli.
 
-create or replace view find_it_sim_stats as
+-- security_invoker : la vue s’exécute avec les droits de celui qui l’interroge, donc RLS
+-- s’applique. Sans cette option, une vue lit les tables avec les droits de son proprietaire et
+-- montre a un anonyme ce que la table lui refuse (voir supabase/vues-securite.sql).
+create or replace view find_it_sim_stats with (security_invoker = on) as
 select
   p.id                                  as user_id,
   p.pseudo,
