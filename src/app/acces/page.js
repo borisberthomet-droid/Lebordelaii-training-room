@@ -7,8 +7,12 @@ import LogoutButton from "../logout-button";
 import { createClient } from "@/lib/supabase/client";
 import { ACTIVATION_MESSAGES, normalizeCode } from "@/lib/access";
 
-// Page de ceux qui sont connectés mais sans accès actif : compte créé avant les clés, ou accès
-// révoqué. Le proxy les y envoie pour toute autre page. Ils peuvent y activer une nouvelle clé.
+// Page de ceux qui sont connectés mais sans accès actif : compte créé avant les clés, accès
+// révoqué, ou durée arrivée à son terme. Le proxy les y envoie pour toute autre page.
+//
+// Les trois cas ne se racontent pas pareil. « Ton accès a été désactivé » à quelqu'un dont
+// l'abonnement s'est simplement terminé, c'est l'inquiéter pour rien ; l'inverse, lui laisser
+// croire à une fin normale alors que le coach a coupé, c'est lui mentir.
 
 const inputStyle = {
   width: "100%", background: "var(--panel-2)", border: "1px solid var(--border)",
@@ -18,7 +22,8 @@ const inputStyle = {
 
 export default function AccessPage() {
   const router = useRouter();
-  const [state, setState] = useState(null);     // 'actif' | 'revoque' | 'aucun'
+  const [state, setState] = useState(null);     // 'actif' | 'expire' | 'revoque' | 'aucun'
+  const [echeance, setEcheance] = useState(null);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [consent, setConsent] = useState(false);
@@ -27,10 +32,11 @@ export default function AccessPage() {
 
   useEffect(() => {
     const supabase = createClient();
-    Promise.all([supabase.auth.getUser(), supabase.rpc("my_access_state")])
+    Promise.all([supabase.auth.getUser(), supabase.rpc("mon_acces")])
       .then(([{ data: { user } }, { data }]) => {
         setEmail(user?.email || "");
-        setState(data || "aucun");
+        setState(data?.etat || "aucun");
+        setEcheance(data?.expire_le || null);
       })
       .catch(() => setState("aucun"));
   }, []);
@@ -61,14 +67,18 @@ export default function AccessPage() {
         <div style={{ marginBottom: 18 }}><SiteLogo size={20} /></div>
 
         <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
-          {state === "revoque" ? "Ton accès a été désactivé" : "Ton accès n'est pas encore actif"}
+          {state === "revoque" ? "Ton accès a été désactivé"
+            : state === "expire" ? "Ton accès est arrivé à échéance"
+              : "Ton accès n'est pas encore actif"}
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 16 }}>
           {state === "actif"
             ? "Ton accès est actif."
-            : state === "revoque"
-              ? "Pour le réactiver, demande une nouvelle clé à Boris et saisis-la ci-dessous."
-              : "Saisis la clé d'activation que Boris t'a transmise."}
+            : state === "expire"
+              ? `Ta période d'accès s'est terminée${echeance ? " le " + new Date(echeance).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : ""}. Écris à Boris pour la prolonger : tes résultats et ton suivi sont conservés, tu les retrouveras intacts.`
+              : state === "revoque"
+                ? "Pour le réactiver, demande une nouvelle clé à Boris et saisis-la ci-dessous."
+                : "Saisis la clé d'activation que Boris t'a transmise."}
           {email && <> Connecté en tant que <span style={{ color: "var(--text)" }}>{email}</span>.</>}
         </div>
 

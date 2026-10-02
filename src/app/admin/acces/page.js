@@ -3,15 +3,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { generateAccessCode } from "@/lib/access";
+import {
+  DUREES, etatCle, formaterEcheance, generateAccessCode, joursRestants, prolonger,
+} from "@/lib/access";
 
 // Gestion des clés d'activation, réservée au coach. Les règles de sécurité sont en base (RLS :
 // seul un admin lit et écrit access_keys) ; la vérification de rôle ici ne sert qu'à afficher
 // un message clair au lieu d'une liste vide.
 //
-// Pas d'expiration : une clé reste valable tant qu'elle n'est pas révoquée. Le motif de
-// révocation est enregistré pour qu'une fermeture automatique (inactivité, abonnement) puisse
-// s'y brancher plus tard sans changer le modèle.
+// Une clé porte une durée vendue — 1, 3, 6, 12 mois, ou aucune. Le compte à rebours démarre à
+// l'ACTIVATION : une clé remise à l'avance ne doit pas grignoter ce que l'élève a payé. C'est la
+// base qui pose l'échéance (supabase/acces-3-duree.sql) ; ce que cet écran calcule — jours
+// restants, date d'une prolongation — n'est qu'un affichage, jamais une garantie.
 
 const MONO = "var(--font-ibm-plex-mono), monospace";
 const btn = {
@@ -22,16 +25,16 @@ const small = {
   padding: "5px 10px", background: "var(--panel-2)", color: "var(--text)",
   border: "1px solid var(--border)", borderRadius: 7, fontSize: 11, cursor: "pointer",
 };
+const choix = { ...small, padding: "5px 8px", background: "var(--panel)" };
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "");
 
-function statusOf(k) {
-  if (k.revoked_at) return "revoquee";
-  if (k.used_at) return "active";
-  return "libre";
-}
+// « Échue » et « révoquée » restent deux choses différentes : la première est la fin de ce qui a
+// été vendu, la seconde une décision du coach. Les confondre rendrait la liste illisible le jour
+// où un abonnement se termine normalement.
 const STATUS = {
   libre: { label: "Libre", color: "var(--attention)" },
   active: { label: "Active", color: "var(--accent)" },
+  expiree: { label: "Échue", color: "var(--brun)" },
   revoquee: { label: "Révoquée", color: "var(--erreur)" },
 };
 
@@ -40,6 +43,7 @@ export default function AccessKeysAdmin() {
   const [keys, setKeys] = useState([]);
   const [pseudos, setPseudos] = useState({});
   const [label, setLabel] = useState("");
+  const [duree, setDuree] = useState(null);     // mois vendus, null = sans échéance
   const [fresh, setFresh] = useState(null);     // dernière clé générée
   const [filter, setFilter] = useState("tout");
   const [copied, setCopied] = useState("");
@@ -75,8 +79,9 @@ export default function AccessKeysAdmin() {
     // Collision d'un code sur 60 bits : improbable, mais un second essai ne coûte rien.
     for (let attempt = 0; attempt < 2; attempt++) {
       const code = generateAccessCode();
-      const { error: e } = await supabase.from("access_keys").insert({ code, label: label.trim() || null });
-      if (!e) { setFresh({ code, label: label.trim() }); setLabel(""); await load(); return; }
+      const { error: e } = await supabase.from("access_keys")
+        .insert({ code, label: label.trim() || null, duree_mois: duree });
+      if (!e) { setFresh({ code, label: label.trim(), duree }); setLabel(""); await load(); return; }
       if (e.code !== "23505") { setError(e.message); return; }
     }
     setError("Génération impossible, réessaie.");
@@ -98,16 +103,17 @@ export default function AccessKeysAdmin() {
     }
   };
 
-  const message = (code) =>
+  const message = (code, mois) =>
     `Ta clé d'accès à la Lebordelaii Training Room : ${code}\n` +
+    (mois ? `Elle ouvre ${mois} mois d'accès, décomptés à partir du jour où tu l'actives.\n` : "") +
     `Active-la ici : ${window.location.origin}/login?mode=activation`;
 
   const counts = useMemo(() => {
-    const c = { libre: 0, active: 0, revoquee: 0 };
-    for (const k of keys) c[statusOf(k)]++;
+    const c = { libre: 0, active: 0, expiree: 0, revoquee: 0 };
+    for (const k of keys) c[etatCle(k)]++;
     return c;
   }, [keys]);
-  const shown = keys.filter((k) => filter === "tout" || statusOf(k) === filter);
+  const shown = keys.filter((k) => filter === "tout" || etatCle(k) === filter);
 
   if (auth === "loading") return <div style={{ padding: 20, fontSize: 13, color: "var(--text-muted)" }}>Chargement…</div>;
   if (auth === "denied") {
@@ -131,8 +137,9 @@ export default function AccessKeysAdmin() {
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 18, marginBottom: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Nouvelle clé</div>
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12, lineHeight: 1.6 }}>
-          Une clé = un élève. Elle ne sert qu&apos;une fois, n&apos;expire pas, et tu peux la révoquer à tout moment :
-          l&apos;élève perd l&apos;accès dès sa page suivante.
+          Une clé = un élève. Elle ne sert qu&apos;une fois, et tu peux la révoquer à tout moment :
+          l&apos;élève perd l&apos;accès dès sa page suivante. La durée se décompte à partir du jour où
+          il active la clé, pas d&apos;aujourd&apos;hui — une clé donnée en avance ne lui coûte rien.
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Pour qui ? (ex. Thibault — coaching MTT)"
@@ -141,20 +148,29 @@ export default function AccessKeysAdmin() {
               flex: "1 1 260px", background: "var(--panel-2)", border: "1px solid var(--border)",
               color: "var(--text)", borderRadius: 8, padding: "8px 10px", fontSize: 13,
             }} />
+          <select value={duree ?? ""} onChange={(e) => setDuree(e.target.value === "" ? null : Number(e.target.value))}
+            title="Durée vendue, décomptée à partir de l'activation"
+            style={{
+              background: "var(--panel-2)", border: "1px solid var(--border)", color: "var(--text)",
+              borderRadius: 8, padding: "8px 10px", fontSize: 13, cursor: "pointer",
+            }}>
+            {DUREES.map((d) => <option key={d.label} value={d.mois ?? ""}>{d.label}</option>)}
+          </select>
           <button onClick={generate} style={btn}>Générer une clé</button>
         </div>
 
         {fresh && (
           <div style={{ marginTop: 14, background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.25)", borderRadius: 10, padding: 14 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
-              Clé créée{fresh.label ? ` pour ${fresh.label}` : ""}
+              Clé créée{fresh.label ? ` pour ${fresh.label}` : ""} ·{" "}
+              {fresh.duree ? `${fresh.duree} mois à partir de l'activation` : "sans échéance"}
             </div>
             <div style={{ fontSize: 20, fontWeight: 800, fontFamily: MONO, letterSpacing: 1, marginBottom: 10, wordBreak: "break-all" }}>
               {fresh.code}
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button onClick={() => copy(fresh.code, "code")} style={small}>{copied === "code" ? "Copiée" : "Copier la clé"}</button>
-              <button onClick={() => copy(message(fresh.code), "msg")} style={small}>
+              <button onClick={() => copy(message(fresh.code, fresh.duree), "msg")} style={small}>
                 {copied === "msg" ? "Copié" : "Copier le message pour l'élève"}
               </button>
             </div>
@@ -165,7 +181,7 @@ export default function AccessKeysAdmin() {
 
       <div style={{ background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 14, padding: 18 }}>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
-          {[["tout", `Toutes ${keys.length}`], ["active", `Actives ${counts.active}`], ["libre", `Libres ${counts.libre}`], ["revoquee", `Révoquées ${counts.revoquee}`]].map(([id, text]) => (
+          {[["tout", `Toutes ${keys.length}`], ["active", `Actives ${counts.active}`], ["libre", `Libres ${counts.libre}`], ["expiree", `Échues ${counts.expiree}`], ["revoquee", `Révoquées ${counts.revoquee}`]].map(([id, text]) => (
             <button key={id} onClick={() => setFilter(id)} style={{
               ...small, borderRadius: 999,
               border: `1px solid ${filter === id ? "var(--accent)" : "var(--border)"}`,
@@ -178,7 +194,11 @@ export default function AccessKeysAdmin() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {shown.map((k) => {
-            const s = statusOf(k);
+            const s = etatCle(k);
+            const jours = joursRestants(k.expire_le);
+            // Une échéance proche doit sauter aux yeux : c'est le dernier moment où prolonger
+            // coûte un clic, au lieu d'un élève qui se retrouve dehors sans prévenir.
+            const bientot = s === "active" && jours != null && jours <= 15;
             return (
               <div key={k.id} style={{
                 display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
@@ -188,14 +208,45 @@ export default function AccessKeysAdmin() {
                 <div style={{ flex: "1 1 220px", minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{k.label || <span style={{ color: "var(--text-muted)" }}>Sans nom</span>}</div>
                   <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>
-                    {s === "libre" && `Créée le ${fmtDate(k.created_at)}, pas encore activée`}
+                    {s === "libre" && `Créée le ${fmtDate(k.created_at)}, pas encore activée · ${k.duree_mois ? `${k.duree_mois} mois à l'activation` : "sans échéance"}`}
                     {k.used_at && <>Activée le {fmtDate(k.used_at)} par <span style={{ color: "var(--text)" }}>{pseudos[k.used_by] || "compte supprimé"}</span>{k.used_email ? ` (${k.used_email})` : ""}</>}
+                    {k.used_at && !k.revoked_at && (
+                      <> · <span style={{
+                        color: s === "expiree" ? "var(--brun)" : bientot ? "var(--attention)" : "inherit",
+                        fontWeight: s === "expiree" || bientot ? 700 : 400,
+                      }}>{formaterEcheance(k.expire_le)}</span></>
+                    )}
                     {k.revoked_at && <> · révoquée le {fmtDate(k.revoked_at)}{k.revoked_reason ? ` (${k.revoked_reason})` : ""}</>}
                   </div>
                 </div>
                 <button onClick={() => copy(k.code, k.id)} title="Copier la clé" style={{ ...small, fontFamily: MONO }}>
                   {copied === k.id ? "Copiée" : k.code}
                 </button>
+                {/* Sur une clé pas encore activée on change la durée vendue ; sur une clé en cours
+                    ou échue, on prolonge. Une prolongation repart de l'échéance si elle est encore
+                    devant, sinon d'aujourd'hui — prolonger de trois mois un accès terminé depuis
+                    deux doit donner trois mois à venir, pas un. */}
+                {s === "libre" && (
+                  <select value={k.duree_mois ?? ""} title="Durée vendue, décomptée à l'activation" style={choix}
+                    onChange={(e) => update(k.id, { duree_mois: e.target.value === "" ? null : Number(e.target.value) })}>
+                    {DUREES.map((d) => <option key={d.label} value={d.mois ?? ""}>{d.label}</option>)}
+                  </select>
+                )}
+                {!k.revoked_at && k.used_at && (
+                  <select value="__" title="Prolonger l'accès" style={choix}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "__") return;
+                      const mois = v === "" ? null : Number(v);
+                      const fin = prolonger(k.expire_le, mois);
+                      update(k.id, { expire_le: fin ? fin.toISOString() : null, duree_mois: mois });
+                    }}>
+                    <option value="__">Prolonger…</option>
+                    {DUREES.map((d) => (
+                      <option key={d.label} value={d.mois ?? ""}>{d.mois ? `+ ${d.label}` : "Sans échéance"}</option>
+                    ))}
+                  </select>
+                )}
                 {k.revoked_at
                   ? <button onClick={() => update(k.id, { revoked_at: null, revoked_reason: null })} style={small}>Réactiver</button>
                   : <button onClick={() => update(k.id, { revoked_at: new Date().toISOString(), revoked_reason: "manuel" })}
