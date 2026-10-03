@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Onglets from "@/components/carriere/Onglets";
-import { Carte, Compteur, MONO, Pastille, Vide, btnFantome } from "@/components/carriere/Blocs";
+import { Carte, Compteur, MONO, Pastille, Vide, btn, btnFantome, champ } from "@/components/carriere/Blocs";
 import {
-  accepterAction, etatPack, listerCoachings, listerPacks, listerPrestations, majAction, monCompte,
+  accepterAction, creerCoaching, etatPack, listerCoachings, listerPacks, listerPrestations,
+  majAction, monCompte, supprimerCoaching,
 } from "@/lib/supabase/carriere";
 import SuiviPrestation from "@/components/carriere/SuiviPrestation";
 
@@ -25,6 +26,12 @@ const SECTIONS = [
 function dateLongue(iso) {
   return new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "long", year: "numeric" });
 }
+// Un rendez-vous sans heure ne sert à rien : « mardi » ne dit pas s'il faut être libre le matin
+// ou le soir.
+function dateHeure(iso) {
+  const d = new Date(iso);
+  return `${d.toLocaleDateString("fr-FR", { weekday: "long", day: "2-digit", month: "long" })} à ${d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`;
+}
 function duree(min) {
   const h = Math.floor(min / 60);
   const m = min % 60;
@@ -36,6 +43,7 @@ export default function CoachingsPage() {
   const [coachings, setCoachings] = useState([]);
   const [packs, setPacks] = useState([]);
   const [prestations, setPrestations] = useState([]);
+  const [creneau, setCreneau] = useState({ quand: "", duree: "60" });
   const [etat, setEtat] = useState("chargement");
   const [erreur, setErreur] = useState(null);
   const [occupe, setOccupe] = useState(null);
@@ -96,6 +104,55 @@ export default function CoachingsPage() {
               <Compteur valeur={faits.length} libelle="coachings réalisés" />
               <Compteur valeur={duree(minutes)} libelle="heures à vie" />
               {aVenir.length > 0 && <Compteur valeur={aVenir.length} libelle="à venir" couleur="var(--accent)" />}
+            </div>
+          </Carte>
+
+          {/* Le créneau est convenu avec le coach AVANT, par message : cet écran ne demande
+              rien à personne, il enregistre ce qui est déjà décidé. D'où l'absence de bouton
+              « demander » ou d'état « en attente » — ce serait refaire à l'écran un accord
+              déjà pris. La base, elle, empêche d'aller plus loin : un élève ne peut ni passer
+              une séance à « faite », ni la déclarer payée (supabase/carriere-9-creneau-eleve.sql). */}
+          <Carte titre="Mes créneaux" aide="Note ici le rendez-vous convenu avec Boris, pour qu'il apparaisse dans ton suivi.">
+            {aVenir.length > 0 && (
+              <div style={{ display: "grid", gap: 8, marginBottom: 14 }}>
+                {aVenir.map((c) => (
+                  <div key={c.id} style={{
+                    display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
+                    flexWrap: "wrap", background: "var(--panel-2)", borderRadius: 10, padding: "10px 12px",
+                  }}>
+                    <span style={{ fontSize: 13 }}>
+                      <strong>{dateHeure(c.date)}</strong>
+                      <span style={{ color: "var(--text-muted)", fontFamily: MONO }}> · {duree(c.duree_min)}</span>
+                    </span>
+                    <button style={btnFantome} disabled={occupe === c.id}
+                      onClick={() => agir(c.id, () => supprimerCoaching(c.id))}>
+                      {occupe === c.id ? "…" : "Annuler"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+              <input type="datetime-local" value={creneau.quand}
+                onChange={(e) => setCreneau((c) => ({ ...c, quand: e.target.value }))}
+                style={{ ...champ, width: "auto", fontSize: 12, padding: "7px 9px" }} />
+              <select value={creneau.duree} onChange={(e) => setCreneau((c) => ({ ...c, duree: e.target.value }))}
+                style={{ ...champ, width: "auto", fontSize: 12, padding: "7px 9px" }}>
+                <option value="60">1 h</option>
+                <option value="90">1 h 30</option>
+                <option value="120">2 h</option>
+              </select>
+              <button style={btn} disabled={!creneau.quand || occupe === "creneau"}
+                onClick={() => agir("creneau", async () => {
+                  await creerCoaching(compte.id, {
+                    date: new Date(creneau.quand).toISOString(),
+                    duree_min: Number(creneau.duree),
+                  }, compte.id);
+                  setCreneau({ quand: "", duree: "60" });
+                })}>
+                {occupe === "creneau" ? "…" : "Noter mon créneau"}
+              </button>
             </div>
           </Carte>
 
