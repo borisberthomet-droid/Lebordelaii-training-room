@@ -330,6 +330,53 @@ export async function supprimerCapture(capture) {
 
 // --- Coachings et packs ---------------------------------------------------------------------------
 
+// La fiche privee reduite a ce dont la carte mentale a besoin. Une fonction a part plutot que
+// chargerFiche : cette page n’a ni objectifs ni coachings a charger pour afficher une phrase.
+export async function chargerCartePrivee(userId) {
+  const { data, error } = await sb()
+    .from("profile_private").select("mantra, photo_mentale").eq("id", userId).maybeSingle();
+  await jeter(error);
+  return data || {};
+}
+
+// Mantra et photo de la carte mentale. Ils vivent sur la fiche privée et non dans une évaluation
+// datée : ils appartiennent à la personne, ils ne changent pas tous les quinze jours, et il n'y a
+// rien à historiser. L'upsert ne touche que les colonnes passées, le reste de la fiche est intact.
+export async function enregistrerCarteMentale(userId, champs) {
+  const { error } = await sb().from("profile_private")
+    .upsert({ id: userId, ...champs, updated_at: new Date().toISOString() }, { onConflict: "id" });
+  await jeter(error);
+}
+
+export async function envoyerPhotoMentale(userId, fichier) {
+  const supabase = sb();
+  const chemin = `${userId}/${Date.now()}-${fichier.name.replace(/[^\w.-]+/g, "_")}`;
+  const { error } = await supabase.storage.from("mental").upload(chemin, fichier, { upsert: false });
+  if (error) {
+    if (/Bucket not found/i.test(error.message || "")) {
+      throw new Error("Le bucket Storage « mental » n'existe pas encore : exécute supabase/carriere-11-carte-mentale.sql dans l'éditeur SQL Supabase.");
+    }
+    throw error;
+  }
+  await enregistrerCarteMentale(userId, { photo_mentale: chemin });
+  return chemin;
+}
+
+// Lien signé, valable une heure : le bucket est privé, rien n'est servi en clair.
+export async function lienPhotoMentale(chemin) {
+  if (!chemin) return null;
+  const { data, error } = await sb().storage.from("mental").createSignedUrl(chemin, 3600);
+  if (error) return null;
+  return data?.signedUrl || null;
+}
+
+export async function retirerPhotoMentale(userId, chemin) {
+  // On efface le fichier avant d'oublier son chemin : dans l'autre sens, une erreur laisserait
+  // une image orpheline que plus personne ne saurait retrouver pour la supprimer.
+  if (chemin) await sb().storage.from("mental").remove([chemin]);
+  await enregistrerCarteMentale(userId, { photo_mentale: null });
+}
+
 export async function listerMental(userId) {
   const { data, error } = await sb()
     .from("mental_checkins").select("*").eq("user_id", userId).order("fait_le", { ascending: false });

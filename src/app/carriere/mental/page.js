@@ -5,7 +5,10 @@ import Link from "next/link";
 import Onglets from "@/components/carriere/Onglets";
 import { Carte, MONO, Vide, btn, btnFantome, champ } from "@/components/carriere/Blocs";
 import CourbeMental from "@/components/carriere/CourbeMental";
-import { enregistrerMental, listerMental, monCompte, supprimerMental } from "@/lib/supabase/carriere";
+import {
+  chargerCartePrivee, enregistrerCarteMentale, enregistrerMental, envoyerPhotoMentale,
+  lienPhotoMentale, listerMental, monCompte, retirerPhotoMentale, supprimerMental,
+} from "@/lib/supabase/carriere";
 import {
   AXES, CADENCE_JOURS, dernier, iso, moyenne, note, prochaineEcheance, retardJours,
   serie, variation,
@@ -35,6 +38,9 @@ export default function MentalPage() {
   const [occupe, setOccupe] = useState(null);
   const [scores, setScores] = useState(() => Object.fromEntries(AXES.map((a) => [a.id, DEFAUT])));
   const [commentaire, setCommentaire] = useState("");
+  const [prive, setPrive] = useState({});
+  const [mantra, setMantra] = useState("");
+  const [photoUrl, setPhotoUrl] = useState(null);
 
   const aujourdhui = iso();
 
@@ -44,8 +50,11 @@ export default function MentalPage() {
         const c = await monCompte();
         if (!c) { setEtat("horsligne"); return; }
         setCompte(c);
-        const liste = await listerMental(c.id);
+        const [liste, fichePrivee] = await Promise.all([listerMental(c.id), chargerCartePrivee(c.id)]);
         setCheckins(liste);
+        setPrive(fichePrivee);
+        setMantra(fichePrivee.mantra || "");
+        setPhotoUrl(await lienPhotoMentale(fichePrivee.photo_mentale));
         // Seule exception à la règle « pas de pré-remplissage » : l'évaluation du jour, qu'on
         // vient corriger. Là, repartir de zéro ferait perdre ce qui vient d'être saisi.
         const duJour = liste.find((x) => x.fait_le === iso());
@@ -58,7 +67,12 @@ export default function MentalPage() {
     })();
   }, []);
 
-  const recharger = async () => setCheckins(await listerMental(compte.id));
+  const recharger = async () => {
+    const [liste, fichePrivee] = await Promise.all([listerMental(compte.id), chargerCartePrivee(compte.id)]);
+    setCheckins(liste);
+    setPrive(fichePrivee);
+    setPhotoUrl(await lienPhotoMentale(fichePrivee.photo_mentale));
+  };
   const agir = async (cle, fn) => {
     setOccupe(cle); setErreur(null);
     try { await fn(); await recharger(); }
@@ -109,6 +123,47 @@ export default function MentalPage() {
                 : `Ton évaluation a ${retard} jour${retard > 1 ? "s" : ""} de retard. Note-la maintenant, même approximative — une mesure sautée fait un trou dans la courbe.`}
             </div>
           )}
+
+          {/* Le mantra et la photo passent avant les curseurs : on regarde d'abord pourquoi on
+              joue, ensuite comment on va. Ils n'ont pas de rythme, pas d'historique — ce ne sont
+              pas des mesures. */}
+          <Carte titre="Mon mantra et ma photo" aide="Ce qui s'affiche en haut de ton tableau de bord.">
+            <label style={{ fontSize: 11.5, color: "var(--text-muted)", display: "block", marginBottom: 5 }}>
+              La phrase que tu te répètes
+            </label>
+            <input value={mantra} onChange={(e) => setMantra(e.target.value)} maxLength={140}
+              placeholder="Ex : je joue mes décisions, pas mes résultats."
+              style={{ ...champ, fontSize: 13.5 }} />
+
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
+              <label style={{ ...btnFantome, display: "inline-block" }}>
+                {photoUrl ? "Changer la photo" : "Choisir une photo"}
+                <input type="file" accept="image/*" style={{ display: "none" }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    e.target.value = "";
+                    if (f) agir("photo", () => envoyerPhotoMentale(compte.id, f));
+                  }} />
+              </label>
+              {prive.photo_mentale && (
+                <button style={btnFantome} disabled={occupe === "retrait"}
+                  onClick={() => agir("retrait", () => retirerPhotoMentale(compte.id, prive.photo_mentale))}>
+                  Retirer
+                </button>
+              )}
+              <button style={btn} disabled={occupe === "mantra"}
+                onClick={() => agir("mantra", () => enregistrerCarteMentale(compte.id, { mantra: mantra.trim() || null }))}>
+                {occupe === "mantra" ? "…" : "Enregistrer la phrase"}
+              </button>
+            </div>
+
+            {photoUrl && (
+              <div style={{
+                marginTop: 12, borderRadius: 10, overflow: "hidden", height: 130,
+                background: `url(${photoUrl}) center/cover no-repeat`,
+              }} />
+            )}
+          </Carte>
 
           <Carte
             titre={dejaFaitAujourdhui ? "Corriger l'évaluation du jour" : "Noter aujourd'hui"}

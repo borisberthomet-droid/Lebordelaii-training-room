@@ -7,6 +7,7 @@ import {
   STATUT_AXE, HORIZONS, btnFantome,
 } from "./Blocs";
 import CarteJoueur from "./CarteJoueur";
+import CarteMentale from "./CarteMentale";
 import { accepterAction, majAction, majAxe, majTache, packActif } from "@/lib/supabase/carriere";
 import { aujourdhui, enRetard, libelleJour, tauxAccomplissement } from "@/lib/carriere/semaine";
 
@@ -280,6 +281,8 @@ export default function FicheJoueur({ fiche, compte, mode = "joueur", onRafraich
 
         {/* La carte du joueur, avec son radar : c'est la reponse a « est-ce que je progresse ? ». */}
         <CarteJoueur competences={fiche.competences || []} evaluations={evaluations} />
+
+        {joueur && <CarteMentale fiche={fiche} />}
       </div>
     </div>
   );
