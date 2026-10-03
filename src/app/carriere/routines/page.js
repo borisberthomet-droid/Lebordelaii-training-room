@@ -68,7 +68,8 @@ function Grille({ routines, parRoutine, lundi, jour, onBasculer, onQuantite, occ
                 <td style={{ padding: "7px 10px 7px 0" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ width: 9, height: 9, borderRadius: "50%", background: couleur, flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, fontWeight: 600 }}>{r.titre}</span>
+                    <TitreEditable valeur={r.titre} onEnregistrer={(t) => renommer(r, t)}
+                      style={{ fontSize: 12, fontWeight: 600 }} />
                     {r.unite && <span style={{ fontSize: 10, color: "var(--text-muted)" }}>({r.unite})</span>}
                   </div>
                 </td>
@@ -125,6 +126,61 @@ function Grille({ routines, parRoutine, lundi, jour, onBasculer, onQuantite, occ
         </tbody>
       </table>
     </div>
+  );
+}
+
+// Un intitulé qu'on modifie en cliquant dessus.
+//
+// Pas de bouton « modifier » : la cible du clic EST le texte qu'on veut changer, ce qui se devine
+// sans qu'on l'explique. Le survol souligne en pointillé pour que ce soit malgré tout visible.
+//
+// Entrée ou sortie du champ enregistrent, Échap annule. Un titre vidé n'enregistre pas : une
+// routine sans nom n'est plus repérable dans la grille, et rien ne permettrait de la retrouver
+// pour la renommer.
+function TitreEditable({ valeur, onEnregistrer, style }) {
+  const [edition, setEdition] = useState(false);
+  const [texte, setTexte] = useState(valeur);
+
+  const ouvrir = () => { setTexte(valeur); setEdition(true); };
+  const fermer = (garder) => {
+    setEdition(false);
+    const propre = texte.trim();
+    if (garder && propre && propre !== valeur) onEnregistrer(propre);
+  };
+
+  if (!edition) {
+    return (
+      <span
+        role="button" tabIndex={0}
+        onClick={ouvrir}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ouvrir(); } }}
+        title="Cliquer pour renommer"
+        style={{ cursor: "text", textDecoration: "underline dotted transparent", ...style }}
+        onMouseEnter={(e) => { e.currentTarget.style.textDecoration = "underline dotted var(--text-muted)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.textDecoration = "underline dotted transparent"; }}
+      >
+        {valeur}
+      </span>
+    );
+  }
+
+  return (
+    <input
+      autoFocus
+      value={texte}
+      onChange={(e) => setTexte(e.target.value)}
+      onBlur={() => fermer(true)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") { e.preventDefault(); fermer(true); }
+        if (e.key === "Escape") { e.preventDefault(); fermer(false); }
+      }}
+      aria-label="Intitulé de la routine"
+      style={{
+        width: "100%", minWidth: 120, padding: "2px 6px",
+        background: "var(--panel-2)", color: "var(--text)",
+        border: "1px solid var(--accent)", borderRadius: 6, ...style,
+      }}
+    />
   );
 }
 
@@ -195,6 +251,14 @@ export default function RoutinesPage() {
       setForm({ titre: "", unite: "", jours: [] });
     } catch (e) { setErreur(e.message); }
     finally { setOccupe(null); }
+  };
+
+  const renommer = async (r, titre) => {
+    setErreur(null);
+    try {
+      await majRoutine(r.id, { titre });
+      setRoutines((l) => l.map((x) => (x.id === r.id ? { ...x, titre } : x)));
+    } catch (e) { setErreur(e.message); }
   };
 
   // Poser une unite sur une routine existante : c'est elle qui fait apparaitre la saisie du
@@ -303,7 +367,10 @@ export default function RoutinesPage() {
                       return (
                         <tr key={r.id} style={{ borderTop: "1px solid var(--border)" }}>
                           <td style={{ padding: "7px 8px" }}>
-                            <div style={{ fontWeight: 600 }}>{r.titre}</div>
+                            <div>
+                              <TitreEditable valeur={r.titre} onEnregistrer={(t) => renommer(r, t)}
+                                style={{ fontWeight: 600 }} />
+                            </div>
                             <input
                               defaultValue={r.unite || ""}
                               onBlur={(e) => changerUnite(r, e.target.value)}
