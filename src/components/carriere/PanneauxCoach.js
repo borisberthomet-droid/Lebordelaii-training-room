@@ -5,10 +5,16 @@ import {
   Carte, MONO, Pastille, STATUT_AXE, Vide, btn, btnFantome, champ, libelleTarget,
 } from "./Blocs";
 import {
-  ajouterNote, chargerBrouillon, creerActions, creerAxe, creerCoaching, creerPack, creerStat,
-  enregistrerBrouillon, envoyerCapture, etatPack, majAxe, majCoaching, majStat, supprimerAxe,
-  supprimerCapture, supprimerCoaching, supprimerPack, supprimerStat, validerStat, validerSynthese,
+  ajouterNote, chargerBrouillon, creerActions, creerAxe, creerCoaching, creerPack, creerPrestation,
+  creerStat, enregistrerBrouillon, envoyerCapture, etatPack, majAxe, majCoaching, majPrestation,
+  majStat, supprimerAxe, supprimerCapture, supprimerCoaching, supprimerPack, supprimerPrestation,
+  supprimerStat, validerStat, validerSynthese,
 } from "@/lib/supabase/carriere";
+import {
+  avancer, encaisse, estTerminee, etapesFranchies, PAIEMENTS, prochaineEtape, reculer,
+  resteAEncaisser, STATUTS, TYPES,
+} from "@/lib/carriere/prestations";
+import SuiviPrestation from "./SuiviPrestation";
 
 // Les écrans du coach. Ils sont regroupés ici parce qu'ils partagent la même mécanique : un
 // formulaire court, une liste, et un bouton qui recharge la fiche. Le joueur ne voit jamais ces
@@ -297,6 +303,144 @@ const SECTIONS = [
   ["plan", "Plan de travail"],
   ["actions", "Avant le prochain coaching"],
 ];
+
+// Prestations vendues : ce que l'élève a commandé, s'il a payé, et où ça en est.
+//
+// L'avancement se fait étape par étape, dans l'ordre, avec un bouton pour revenir sur un clic de
+// trop. Pas de case à cocher libre : une prestation qui serait « à l'étape 3 sans être passée par
+// la 2 » ne veut rien dire pour l'élève qui suit sa commande, et c'est lui le destinataire.
+export function PanneauPrestations({ fiche, coachId, onRafraichir }) {
+  const { occupe, erreur, agir } = useAction(onRafraichir);
+  const [form, setForm] = useState({ type: "leakfinder", libelle: "", montant: "", commandee_le: "" });
+
+  const prestations = fiche.prestations || [];
+  const du = resteAEncaisser(prestations);
+  const encaissé = encaisse(prestations);
+
+  const ajouter = () => agir("ajout", async () => {
+    const jour = form.commandee_le || new Date().toISOString().slice(0, 10);
+    await creerPrestation(fiche.userId, {
+      type: form.type,
+      libelle: form.libelle.trim() || null,
+      montant: form.montant === "" ? null : Number(form.montant),
+      commandee_le: jour,
+      // L'étape 1 est franchie par la commande elle-même : une prestation qui vient d'être vendue
+      // n'est pas « à l'étape zéro », elle est commandée. Le suivi démarre donc à 1/4.
+      jalons: { "1": jour },
+    }, coachId);
+    setForm({ type: "leakfinder", libelle: "", montant: "", commandee_le: "" });
+  });
+
+  const avancerDe = (p) => agir(p.id + "-av", async () => {
+    const jalons = avancer(p);
+    const finie = estTerminee({ ...p, jalons });
+    await majPrestation(p.id, { jalons, statut: finie ? "terminee" : "en_cours" });
+  });
+
+  const reculerDe = (p) => agir(p.id + "-re", () =>
+    majPrestation(p.id, { jalons: reculer(p), statut: "en_cours" }));
+
+  return (
+    <Carte titre="Prestations" aide="Ce que l'élève a commandé. Il voit ce suivi depuis son espace.">
+      {prestations.length > 0 && (
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14, fontSize: 12, fontFamily: MONO }}>
+          <span style={{ color: "var(--accent)" }}>{encaissé.toLocaleString("fr-FR")} € encaissés</span>
+          {du > 0 && <span style={{ color: "var(--attention)" }}>{du.toLocaleString("fr-FR")} € en attente</span>}
+        </div>
+      )}
+
+      <div style={{ display: "grid", gap: 14 }}>
+        {prestations.length === 0 && <Vide>Aucune prestation enregistrée.</Vide>}
+
+        {prestations.map((p) => {
+          const statut = STATUTS[p.statut] || STATUTS.en_cours;
+          const suivante = prochaineEtape(p);
+          return (
+            <div key={p.id} style={{ background: "var(--panel-2)", borderRadius: 12, padding: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+                <Pastille couleur={statut.couleur}>{statut.label}</Pastille>
+                <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: MONO }}>
+                  commandée le {dateCourte(p.commandee_le)}
+                </span>
+              </div>
+
+              <SuiviPrestation prestation={p} />
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+                {suivante && p.statut !== "annulee" && (
+                  <button style={btn} disabled={occupe === p.id + "-av"} onClick={() => avancerDe(p)}>
+                    {occupe === p.id + "-av" ? "…" : `Passer à « ${suivante.titre} »`}
+                  </button>
+                )}
+                {etapesFranchies(p) > 0 && (
+                  <button style={btnFantome} disabled={occupe === p.id + "-re"} onClick={() => reculerDe(p)}>
+                    Revenir
+                  </button>
+                )}
+
+                <select value={p.paiement} style={{ ...petit, width: "auto" }}
+                  onChange={(e) => agir(p.id + "-pay", () => majPrestation(p.id, {
+                    paiement: e.target.value,
+                    // La date d'encaissement se pose toute seule : c'est l'information que le
+                    // coach cherchera dans six mois, et personne ne pense à la saisir.
+                    paye_le: e.target.value === "recu" ? new Date().toISOString().slice(0, 10) : null,
+                  }))}>
+                  {Object.entries(PAIEMENTS).map(([cle, v]) => (
+                    <option key={cle} value={cle}>{v.label}</option>
+                  ))}
+                </select>
+
+                <input type="number" min="0" step="5" defaultValue={p.montant ?? ""} placeholder="€"
+                  style={{ ...petit, width: 90 }}
+                  onBlur={(e) => {
+                    const v = e.target.value === "" ? null : Number(e.target.value);
+                    if (v !== (p.montant == null ? null : Number(p.montant))) {
+                      agir(p.id + "-montant", () => majPrestation(p.id, { montant: v }));
+                    }
+                  }} />
+
+                <select value={p.statut} style={{ ...petit, width: "auto" }}
+                  onChange={(e) => agir(p.id + "-st", () => majPrestation(p.id, { statut: e.target.value }))}>
+                  {Object.entries(STATUTS).map(([cle, v]) => (
+                    <option key={cle} value={cle}>{v.label}</option>
+                  ))}
+                </select>
+
+                <button style={{ ...btnFantome, marginLeft: "auto" }} disabled={occupe === p.id + "-sup"}
+                  onClick={() => agir(p.id + "-sup", () => supprimerPrestation(p.id))}>Supprimer</button>
+              </div>
+
+              <textarea defaultValue={p.note || ""} rows={2} placeholder="Mot pour l'élève (il le verra sous le suivi)"
+                style={{ ...petit, marginTop: 10, resize: "vertical" }}
+                onBlur={(e) => {
+                  const v = e.target.value.trim() || null;
+                  if (v !== (p.note || null)) agir(p.id + "-note", () => majPrestation(p.id, { note: v }));
+                }} />
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
+        <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+          style={{ ...petit, width: "auto" }}>
+          {Object.entries(TYPES).map(([cle, v]) => <option key={cle} value={cle}>{v.label}</option>)}
+        </select>
+        <input value={form.libelle} placeholder="précision (facultatif)"
+          onChange={(e) => setForm((f) => ({ ...f, libelle: e.target.value }))} style={{ ...petit, flex: "1 1 160px" }} />
+        <input type="number" min="0" step="5" value={form.montant} placeholder="€"
+          onChange={(e) => setForm((f) => ({ ...f, montant: e.target.value }))} style={{ ...petit, width: 90 }} />
+        <input type="date" value={form.commandee_le} title="date de commande, aujourd'hui par défaut"
+          onChange={(e) => setForm((f) => ({ ...f, commandee_le: e.target.value }))} style={{ ...petit, width: "auto" }} />
+        <button style={btn} disabled={occupe === "ajout"} onClick={ajouter}>
+          {occupe === "ajout" ? "…" : "Ajouter"}
+        </button>
+      </div>
+
+      <Erreur message={erreur} />
+    </Carte>
+  );
+}
 
 export function PanneauCoachings({ fiche, coachId, onRafraichir }) {
   const { occupe, erreur, agir } = useAction(onRafraichir);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Carte, MONO, Pastille, Vide, btnFantome, champ } from "@/components/carriere/Blocs";
 import { listerJoueurs, monCompte } from "@/lib/supabase/carriere";
+import { etapesDe, etapesFranchies, libelleType } from "@/lib/carriere/prestations";
 
 // Vue coach : une ligne par joueur, et rien d'autre. C'est un tableau de suivi administratif —
 // combien de coachings, combien d'heures, qui doit payer, quel pack expire. Les axes de travail et
@@ -22,6 +23,17 @@ function estActif(j) {
 function dateCourte(iso) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" });
+}
+
+// Un rendez-vous sans heure ne sert à rien : « mardi » ne dit pas s'il faut être disponible le
+// matin ou le soir. Le jour de la semaine est là pour la même raison — personne ne sait de tête
+// que le 14/10 est un mardi.
+function dateHeure(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  const jour = d.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit" });
+  const heure = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return `${jour} · ${heure}`;
 }
 
 const th = { padding: "8px 10px", fontWeight: 500, textAlign: "left", whiteSpace: "nowrap" };
@@ -55,7 +67,8 @@ export default function JoueursPage() {
       .filter((j) => {
         if (filtre === "tous") return true;
         if (filtre === "actifs") return estActif(j);
-        if (filtre === "impayes") return j.impayes > 0;
+        if (filtre === "impayes") return j.impayes > 0 || j.duPrestations > 0;
+        if (filtre === "sansrdv") return estActif(j) && !j.prochain;
         if (filtre === "packs") return !!j.pack;
         return true;
       })
@@ -88,11 +101,11 @@ export default function JoueursPage() {
           <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap", alignItems: "center" }}>
             <input value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Chercher un joueur"
               style={{ ...champ, maxWidth: 240, fontSize: 12, padding: "7px 9px" }} />
-            {[["actifs", "Actifs"], ["tous", "Tous"], ["impayes", "Impayés"], ["packs", "Avec pack"]].map(([id, label]) => (
+            {[["actifs", "Actifs"], ["tous", "Tous"], ["sansrdv", "Sans réservation"], ["impayes", "Impayés"], ["packs", "Avec pack"]].map(([id, label]) => (
               <button key={id} onClick={() => setFiltre(id)} style={{
                 padding: "6px 12px", borderRadius: 999, fontSize: 12, cursor: "pointer",
                 border: `1px solid ${filtre === id ? "var(--accent)" : "var(--border)"}`,
-                background: filtre === id ? "rgba(52,211,153,0.14)" : "var(--panel-2)",
+                background: filtre === id ? "color-mix(in srgb, var(--accent) 14%, transparent)" : "var(--panel-2)",
                 color: filtre === id ? "var(--accent)" : "var(--text-muted)",
               }}>{label}</button>
             ))}
@@ -110,7 +123,8 @@ export default function JoueursPage() {
                   <th style={th}>Coachings</th>
                   <th style={th}>Heures</th>
                   <th style={th}>Dernier</th>
-                  <th style={th}>Prochain</th>
+                  <th style={th}>Prochain coaching</th>
+                  <th style={th}>Prestation en cours</th>
                   <th style={th}>Formule</th>
                   <th style={th}>Restant</th>
                   <th style={th}>Expire</th>
@@ -131,8 +145,20 @@ export default function JoueursPage() {
                       <td style={{ ...td, fontFamily: MONO }}>{j.nbCoachings}</td>
                       <td style={{ ...td, fontFamily: MONO }}>{j.heures} h</td>
                       <td style={{ ...td, fontFamily: MONO }}>{dateCourte(j.dernier)}</td>
-                      <td style={{ ...td, fontFamily: MONO, color: j.prochain ? "var(--accent)" : "var(--text-muted)" }}>
-                        {dateCourte(j.prochain)}
+                      <td style={td}>
+                        {j.prochain
+                          ? <span style={{ fontFamily: MONO, color: "var(--accent)" }}>{dateHeure(j.prochain)}</span>
+                          : <span style={{ color: actif ? "var(--attention)" : "var(--text-muted)" }}>rien de réservé</span>}
+                      </td>
+                      <td style={td}>
+                        {j.prestation
+                          ? <span>
+                              {libelleType(j.prestation)}{" "}
+                              <span style={{ fontFamily: MONO, color: "var(--text-muted)" }}>
+                                {etapesFranchies(j.prestation)}/{etapesDe(j.prestation).length}
+                              </span>
+                            </span>
+                          : <span style={{ color: "var(--text-muted)" }}>—</span>}
                       </td>
                       <td style={td}>{j.pack ? "pack" : j.nbCoachings ? "unité" : "—"}</td>
                       <td style={{ ...td, fontFamily: MONO }}>{j.pack ? `${j.pack.etat.restantes} h` : "—"}</td>
@@ -140,8 +166,12 @@ export default function JoueursPage() {
                         {j.pack?.etat.expire ? dateCourte(j.pack.etat.expire) : "—"}
                       </td>
                       <td style={td}>
-                        {j.impayes > 0
-                          ? <Pastille couleur="var(--attention)">{j.impayes} à payer</Pastille>
+                        {j.impayes > 0 || j.duPrestations > 0
+                          ? <Pastille couleur="var(--attention)">
+                              {[j.impayes > 0 ? `${j.impayes} séance${j.impayes > 1 ? "s" : ""}` : null,
+                                j.duPrestations > 0 ? `${j.duPrestations.toLocaleString("fr-FR")} €` : null]
+                                .filter(Boolean).join(" + ")}
+                            </Pastille>
                           : <span style={{ color: "var(--text-muted)" }}>à jour</span>}
                       </td>
                     </tr>

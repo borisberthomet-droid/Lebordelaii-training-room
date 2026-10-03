@@ -5,8 +5,9 @@ import Link from "next/link";
 import Onglets from "@/components/carriere/Onglets";
 import { Carte, Compteur, MONO, Pastille, Vide, btnFantome } from "@/components/carriere/Blocs";
 import {
-  accepterAction, etatPack, listerCoachings, listerPacks, majAction, monCompte,
+  accepterAction, etatPack, listerCoachings, listerPacks, listerPrestations, majAction, monCompte,
 } from "@/lib/supabase/carriere";
+import SuiviPrestation from "@/components/carriere/SuiviPrestation";
 
 // Historique des coachings, côté joueur : ce qui a été travaillé, les actions proposées, l'état du
 // pack d'heures. Une synthèse n'apparaît ici qu'une fois validée par le coach — un brouillon est
@@ -34,6 +35,7 @@ export default function CoachingsPage() {
   const [compte, setCompte] = useState(null);
   const [coachings, setCoachings] = useState([]);
   const [packs, setPacks] = useState([]);
+  const [prestations, setPrestations] = useState([]);
   const [etat, setEtat] = useState("chargement");
   const [erreur, setErreur] = useState(null);
   const [occupe, setOccupe] = useState(null);
@@ -45,9 +47,12 @@ export default function CoachingsPage() {
         const c = await monCompte();
         if (!c) { setEtat("horsligne"); return; }
         setCompte(c);
-        const [liste, ps] = await Promise.all([listerCoachings(c.id), listerPacks(c.id)]);
+        const [liste, ps, prs] = await Promise.all([
+          listerCoachings(c.id), listerPacks(c.id), listerPrestations(c.id),
+        ]);
         setCoachings(liste);
         setPacks(ps);
+        setPrestations(prs);
         setEtat("pret");
       } catch (e) { setErreur(e.message); setEtat("erreur"); }
     })();
@@ -93,6 +98,16 @@ export default function CoachingsPage() {
               {aVenir.length > 0 && <Compteur valeur={aVenir.length} libelle="à venir" couleur="var(--accent)" />}
             </div>
           </Carte>
+
+          {prestations.filter((p) => p.statut !== "annulee").length > 0 && (
+            <Carte titre="Mes prestations" aide="Où en est ce que tu as commandé.">
+              <div style={{ display: "grid", gap: 18 }}>
+                {prestations.filter((p) => p.statut !== "annulee").map((p) => (
+                  <SuiviPrestation key={p.id} prestation={p} />
+                ))}
+              </div>
+            </Carte>
+          )}
 
           {packs.length > 0 && (
             <Carte titre="Mes packs d'heures">

@@ -1,5 +1,6 @@
 import { createClient } from "./client";
 import { decalerJours, joursDeSemaine, lundiDe, numeroJour } from "@/lib/carriere/semaine";
+import { resteAEncaisser } from "@/lib/carriere/prestations";
 
 // Accès aux données de la Gestion de carrière. Tout passe par les policies : un élève ne voit que
 // ses lignes, le coach voit tout. Aucune fonction ici ne filtre « pour faire joli » — si une
@@ -329,6 +330,27 @@ export async function supprimerCapture(capture) {
 
 // --- Coachings et packs ---------------------------------------------------------------------------
 
+export async function listerPrestations(userId) {
+  const { data, error } = await sb()
+    .from("prestations").select("*").eq("user_id", userId).order("commandee_le", { ascending: false });
+  await jeter(error);
+  return data || [];
+}
+export async function creerPrestation(userId, prestation, parId) {
+  const { data, error } = await sb()
+    .from("prestations").insert({ ...prestation, user_id: userId, created_by: parId }).select("*").single();
+  await jeter(error);
+  return data;
+}
+export async function majPrestation(id, champs) {
+  const { error } = await sb().from("prestations").update(champs).eq("id", id);
+  await jeter(error);
+}
+export async function supprimerPrestation(id) {
+  const { error } = await sb().from("prestations").delete().eq("id", id);
+  await jeter(error);
+}
+
 export async function listerCoachings(userId) {
   const { data, error } = await sb()
     .from("coachings").select("*, coaching_actions(*)").eq("user_id", userId).order("date", { ascending: false });
@@ -456,16 +478,18 @@ export function packActif(packs, coachings) {
 // sont recomposés ici parce que leur consommation dépend des coachings.
 export async function listerJoueurs() {
   const supabase = sb();
-  const [profils, totaux, packs, coachings] = await Promise.all([
+  const [profils, totaux, packs, coachings, prestations] = await Promise.all([
     supabase.from("profiles").select("id, pseudo, role, created_at").order("pseudo"),
     supabase.from("coaching_totals").select("*"),
     supabase.from("coaching_packs").select("*"),
     supabase.from("coachings").select("id, user_id, pack_id, statut, duree_min, date, paiement"),
+    supabase.from("prestations").select("*").order("commandee_le", { ascending: false }),
   ]);
   await jeter(profils.error);
   await jeter(totaux.error);
   await jeter(packs.error);
   await jeter(coachings.error);
+  await jeter(prestations.error);
 
   const parJoueur = (liste, id) => liste.filter((x) => x.user_id === id);
   return (profils.data || []).map((p) => {
@@ -473,8 +497,15 @@ export async function listerJoueurs() {
     const sesCoachings = parJoueur(coachings.data || [], p.id);
     const actif = packActif(parJoueur(packs.data || [], p.id), sesCoachings);
     const impayes = sesCoachings.filter((c) => c.statut === "fait" && c.paiement === "a_payer").length;
+    // La prestation qui compte dans un tableau de suivi est celle qui est EN COURS : une
+    // prestation terminée n'appelle aucune action, elle n'a rien à faire dans une colonne qu'on
+    // balaie du regard. La liste étant déjà triée par date, la première est la plus récente.
+    const sesPrestations = parJoueur(prestations.data || [], p.id);
     return {
       ...p,
+      prestations: sesPrestations,
+      prestation: sesPrestations.find((x) => x.statut === "en_cours") || null,
+      duPrestations: resteAEncaisser(sesPrestations),
       nbCoachings: t?.nb_faits || 0,
       heures: +(((t?.minutes_faites || 0) / 60).toFixed(2)),
       dernier: t?.dernier || null,
@@ -490,7 +521,7 @@ export async function listerJoueurs() {
 export async function chargerFiche(userId) {
   const supabase = sb();
   const lundi = lundiDe();
-  const [axes, objectifs, stats, coachings, packs, evals, taches, prive, competences] = await Promise.all([
+  const [axes, objectifs, stats, coachings, packs, evals, taches, prive, competences, prestations] = await Promise.all([
     listerAxes(userId),
     listerObjectifs(userId),
     listerStats(userId),
@@ -501,6 +532,7 @@ export async function chargerFiche(userId) {
       .gte("jour", lundi).lte("jour", decalerJours(lundi, 6)),
     supabase.from("profile_private").select("*").eq("id", userId).maybeSingle(),
     listerCompetences(),
+    listerPrestations(userId),
   ]);
   await jeter(taches.error);
   return {
@@ -510,6 +542,7 @@ export async function chargerFiche(userId) {
     stats,
     coachings,
     packs,
+    prestations,
     evaluations: evals,
     competences,
     tachesSemaine: taches.data || [],
