@@ -330,6 +330,24 @@ export async function supprimerCapture(capture) {
 
 // --- Coachings et packs ---------------------------------------------------------------------------
 
+export async function listerMental(userId) {
+  const { data, error } = await sb()
+    .from("mental_checkins").select("*").eq("user_id", userId).order("fait_le", { ascending: false });
+  await jeter(error);
+  return data || [];
+}
+// Une évaluation par jour : revenir le même jour corrige celle du jour plutôt que d'en empiler
+// une seconde, ce qui ferait un pic sur la courbe là où il n'y a eu qu'une hésitation.
+export async function enregistrerMental(userId, { fait_le, scores, note }) {
+  const { error } = await sb().from("mental_checkins")
+    .upsert({ user_id: userId, fait_le, scores, note }, { onConflict: "user_id,fait_le" });
+  await jeter(error);
+}
+export async function supprimerMental(id) {
+  const { error } = await sb().from("mental_checkins").delete().eq("id", id);
+  await jeter(error);
+}
+
 export async function listerPrestations(userId) {
   const { data, error } = await sb()
     .from("prestations").select("*").eq("user_id", userId).order("commandee_le", { ascending: false });
@@ -521,7 +539,8 @@ export async function listerJoueurs() {
 export async function chargerFiche(userId) {
   const supabase = sb();
   const lundi = lundiDe();
-  const [axes, objectifs, stats, coachings, packs, evals, taches, prive, competences, prestations] = await Promise.all([
+  const [axes, objectifs, stats, coachings, packs, evals, taches, prive, competences, prestations,
+         mental] = await Promise.all([
     listerAxes(userId),
     listerObjectifs(userId),
     listerStats(userId),
@@ -533,6 +552,7 @@ export async function chargerFiche(userId) {
     supabase.from("profile_private").select("*").eq("id", userId).maybeSingle(),
     listerCompetences(),
     listerPrestations(userId),
+    listerMental(userId),
   ]);
   await jeter(taches.error);
   return {
@@ -543,6 +563,7 @@ export async function chargerFiche(userId) {
     coachings,
     packs,
     prestations,
+    mental,
     evaluations: evals,
     competences,
     tachesSemaine: taches.data || [],

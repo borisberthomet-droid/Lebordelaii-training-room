@@ -15,6 +15,11 @@ import {
   resteAEncaisser, STATUTS, TYPES,
 } from "@/lib/carriere/prestations";
 import SuiviPrestation from "./SuiviPrestation";
+import CourbeMental from "./CourbeMental";
+import {
+  AXES as AXES_MENTAL, dernier as dernierMental, retardJours, serie as serieMentale,
+  variation as variationMentale,
+} from "@/lib/carriere/mental";
 
 // Les écrans du coach. Ils sont regroupés ici parce qu'ils partagent la même mécanique : un
 // formulaire court, une liste, et un bouton qui recharge la fiche. Le joueur ne voit jamais ces
@@ -438,6 +443,69 @@ export function PanneauPrestations({ fiche, coachId, onRafraichir }) {
       </div>
 
       <Erreur message={erreur} />
+    </Carte>
+  );
+}
+
+// Évaluation mentale de l'élève, en lecture seule.
+//
+// Le coach ne peut pas la remplir à sa place, et ce n'est pas un oubli : une auto-évaluation que
+// l'on n'a pas écrite soi-même ne mesure plus rien. La base applique la même règle (policy
+// « mental ecrit par son auteur »), donc l'écran ne fait que refléter ce qui est déjà vrai.
+export function PanneauMental({ fiche }) {
+  const checkins = fiche.mental || [];
+  const retard = retardJours(checkins);
+  const dernierCheckin = dernierMental(checkins);
+
+  return (
+    <Carte titre="Évaluation mentale" aide="Rempli par l'élève seul, tous les quinze jours.">
+      {checkins.length === 0 ? (
+        <Vide>Aucune évaluation pour le moment.</Vide>
+      ) : (
+        <>
+          {retard != null && retard > 0 && (
+            <div style={{ fontSize: 12, color: "var(--attention)", marginBottom: 12, lineHeight: 1.6 }}>
+              {retard} jour{retard > 1 ? "s" : ""} de retard sur la prochaine évaluation.
+            </div>
+          )}
+
+          <div style={{ display: "grid", gap: 16 }}>
+            {AXES_MENTAL.map((a) => {
+              const points = serieMentale(checkins, a.id);
+              const delta = variationMentale(checkins, a.id);
+              const actuel = points.length ? points[points.length - 1].valeur : null;
+              return (
+                <div key={a.id} style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+                  <div style={{ minWidth: 140 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: a.couleur }}>{a.label}</div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
+                      <span style={{ fontSize: 18, fontWeight: 800, fontFamily: MONO }}>{actuel ?? "—"}</span>
+                      {delta != null && (
+                        <span style={{
+                          fontSize: 11, fontFamily: MONO,
+                          color: delta > 0 ? "var(--accent)" : delta < 0 ? "var(--erreur)" : "var(--text-muted)",
+                        }}>{delta > 0 ? "+" : ""}{delta}</span>
+                      )}
+                    </div>
+                  </div>
+                  <CourbeMental points={points} couleur={a.couleur} largeur={190} hauteur={46} />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Le commentaire de la dernière évaluation : c'est lui qui donne la matière d'une
+              séance, pas les trois chiffres. */}
+          {dernierCheckin?.note && (
+            <div style={{ marginTop: 14, padding: "10px 12px", borderRadius: 10, background: "var(--panel-2)", fontSize: 12, lineHeight: 1.7 }}>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>
+                Le {dateCourte(dernierCheckin.fait_le)}, il écrit :
+              </div>
+              {dernierCheckin.note}
+            </div>
+          )}
+        </>
+      )}
     </Carte>
   );
 }

@@ -4,7 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import FicheJoueur from "@/components/carriere/FicheJoueur";
-import { PanneauAxes, PanneauCoachings, PanneauLeak, PanneauPrestations } from "@/components/carriere/PanneauxCoach";
+import {
+  PanneauAxes, PanneauCoachings, PanneauLeak, PanneauMental, PanneauPrestations,
+} from "@/components/carriere/PanneauxCoach";
 import { Carte, MONO, Vide } from "@/components/carriere/Blocs";
 import { chargerFiche, lienCapture, listerCaptures, monCompte } from "@/lib/supabase/carriere";
 import { createClient } from "@/lib/supabase/client";
@@ -105,6 +107,7 @@ export default function FicheCoachPage() {
               ))}
             </div>
             <div id="prestations"><PanneauPrestations fiche={fiche} coachId={compte.id} onRafraichir={rafraichir} /></div>
+            <div id="mental"><PanneauMental fiche={fiche} /></div>
             <div id="axes"><PanneauAxes fiche={fiche} coachId={compte.id} onRafraichir={rafraichir} /></div>
             <div id="leak">
               <PanneauLeak fiche={fiche} coachId={compte.id} captures={captures} liens={liens} onRafraichir={rafraichir} />

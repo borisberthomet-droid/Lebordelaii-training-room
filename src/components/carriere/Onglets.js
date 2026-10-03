@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 export const ONGLETS = [
   { href: "/carriere", label: "Tableau de bord", couleur: "#5F6127" },
   { href: "/carriere/auto-evaluation", label: "Auto-évaluation", couleur: "#3A6851" },
+  { href: "/carriere/mental", label: "Mental", couleur: "#5A6B8C" },
   { href: "/carriere/objectifs", label: "Objectifs", couleur: "#4E3E66" },
   { href: "/carriere/routines", label: "Mes routines", couleur: "#7A4E12" },
   { href: "/carriere/semaine", label: "Ma semaine", couleur: "#8A6A1E" },
