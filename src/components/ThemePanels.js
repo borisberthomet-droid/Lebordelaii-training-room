@@ -23,6 +23,7 @@ const THEMES = [
     desc: "Estimer sa force brute face à une range",
     tools: [
       { href: "/value-equity", label: "Quelle est ton équité ?" },
+      { href: "/equite-preflop", label: "Équité préflop — main vs range" },
       { href: "/pot-odds?axe=equite", label: "Pot Odds — équité" },
     ],
   },

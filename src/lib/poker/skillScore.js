@@ -33,13 +33,19 @@ export const AXES = [
 //                          des 4 textures (l'exercice ne porte que sur elles). Meilleure
 //                          décomposition constante, affinée point par point : 31% d'Air, 17% de
 //                          DP+, 0% d'overpair.
-const REF_ERROR = { equite: 26.9, rp: 4.6, decomposition: 30.9 };
+//   equite preflop 7.6 points — mesure sur les 1 014 valeurs du classeur de Boris (169 mains x 6
+//                          scenarios). Repondre « 35 % » partout se trompe de 7.6 points en
+//                          moyenne. Bande bien plus serree qu’en postflop, ou la meme reponse
+//                          constante se trompe de 26.9 : trois points d’erreur preflop valent
+//                          donc beaucoup plus que trois points sur un spot de river.
+const REF_ERROR = { equite: 26.9, equitePreflop: 7.6, rp: 4.6, decomposition: 30.9 };
 
 // --- Un exercice, son axe, sa façon d'être noté ------------------------------------------------
 // `chance` = score qu'obtient le hasard pur. 0.20 pour un choix parmi 5 quintiles (vérifié : les
 // cinq tranches pèsent exactement 20% chacune). ~0 quand il faut taper un nombre.
 export const SKILLS = {
   "value-equity": { axis: "equite", kind: "estimate", refError: REF_ERROR.equite, chance: 0 },
+  "equite-preflop": { axis: "equite", kind: "estimate", refError: REF_ERROR.equitePreflop, chance: 0 },
   "range-position": { axis: "frequence", kind: "choice", chance: 0.20 },
   "math-trainer": { axis: "calcul", kind: "binary", chance: 0 },
   "find-it": { axis: "lecture", kind: "ratio", chance: 0 },
