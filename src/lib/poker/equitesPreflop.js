@@ -8,18 +8,22 @@
 // Les scénarios portent un identifiant court et stable : reformuler un libellé ne doit pas
 // changer le sens des tentatives déjà enregistrées.
 
+// `range` est la TAILLE de la range adverse, relevée à côté de chaque grille du classeur. Le
+// classeur ne contient pas les mains elles-mêmes : impossible d'en dessiner la grille sans
+// l'inventer. Annoncer « contre 46 % cappée » est déjà l'essentiel — c'est ce qui explique
+// pourquoi la même main ne vaut pas la même chose d'un scénario à l'autre.
 export const SCENARIOS = [
-  { id: "jam-sb-10", index: 0, label: "Jam SB 10bb",
+  { id: "jam-sb-10", index: 0, label: "Jam SB 10bb", range: "54 %",
     detail: "Tu pousses tapis du SB à 10bb. Équité contre la range de call du BB." },
-  { id: "jam-sb-10-ko", index: 1, label: "Jam SB 10bb — PKO",
-    detail: "Même spot en PKO : la prime élargit sa range de call." },
-  { id: "jam-bu-15-ko", index: 2, label: "Jam BU 15bb — PKO",
+  { id: "jam-sb-10-ko", index: 1, label: "Jam SB 10bb — PKO", range: "46 % cappée",
+    detail: "Même spot en PKO : la prime change sa range de call." },
+  { id: "jam-bu-15-ko", index: 2, label: "Jam BU 15bb — PKO", range: "24 % cappée (top 27)",
     detail: "Tu pousses tapis du bouton à 15bb en PKO. Équité contre les calls des blindes." },
-  { id: "resteal-co-20", index: 3, label: "Resteal 20bb vs CO",
+  { id: "resteal-co-20", index: 3, label: "Resteal 20bb vs CO", range: "13,4 % cappée",
     detail: "Tu repousses tapis sur une ouverture du CO à 20bb. Équité contre sa range de call." },
-  { id: "resteal-ep-20", index: 4, label: "Resteal 20bb vs EP",
+  { id: "resteal-ep-20", index: 4, label: "Resteal 20bb vs EP", range: "6,6 % cappée",
     detail: "Même resteal contre une ouverture de début de parole : sa range est plus forte." },
-  { id: "vs-4bet-jam", index: 5, label: "Face à un 4-bet tapis",
+  { id: "vs-4bet-jam", index: 5, label: "Face à un 4-bet tapis", range: "3,8 %",
     detail: "Tu as 3-bet, il repousse tapis. Équité contre sa range de 4-bet." },
 ];
 

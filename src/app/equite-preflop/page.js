@@ -121,8 +121,15 @@ export default function EquitePreflopPage() {
             <div style={{
               background: "var(--panel-2)", borderRadius: 12, padding: 14, marginBottom: 16,
             }}>
-              <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 4 }}>{q.scenario.label}</div>
-              <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6 }}>{q.scenario.detail}</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 13.5, fontWeight: 700 }}>{q.scenario.label}</span>
+                {/* La taille de sa range est l'information qui rend la question jouable : la même
+                    main ne vaut pas la même chose contre 54 % et contre 3,8 %. */}
+                <span style={{ fontSize: 12, fontFamily: MONO, color: "var(--accent)" }}>
+                  sa range : {q.scenario.range}
+                </span>
+              </div>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6, marginTop: 4 }}>{q.scenario.detail}</div>
             </div>
 
             <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>

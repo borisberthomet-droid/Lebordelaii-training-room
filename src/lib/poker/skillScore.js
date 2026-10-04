@@ -38,7 +38,10 @@ export const AXES = [
 //                          moyenne. Bande bien plus serree qu’en postflop, ou la meme reponse
 //                          constante se trompe de 26.9 : trois points d’erreur preflop valent
 //                          donc beaucoup plus que trois points sur un spot de river.
-const REF_ERROR = { equite: 26.9, equitePreflop: 7.6, rp: 4.6, decomposition: 30.9 };
+//   cote preflop   3.5 points — mesure sur les 13 seuils du classeur. La bande utile ne fait que
+//                          quatorze points de large (33,5 a 47,5), d'ou un repere tres serre :
+//                          deux points d'erreur, c'est payer au lieu de se coucher.
+const REF_ERROR = { equite: 26.9, equitePreflop: 7.6, cotePreflop: 3.5, rp: 4.6, decomposition: 30.9 };
 
 // --- Un exercice, son axe, sa façon d'être noté ------------------------------------------------
 // `chance` = score qu'obtient le hasard pur. 0.20 pour un choix parmi 5 quintiles (vérifié : les
@@ -46,6 +49,7 @@ const REF_ERROR = { equite: 26.9, equitePreflop: 7.6, rp: 4.6, decomposition: 30
 export const SKILLS = {
   "value-equity": { axis: "equite", kind: "estimate", refError: REF_ERROR.equite, chance: 0 },
   "equite-preflop": { axis: "equite", kind: "estimate", refError: REF_ERROR.equitePreflop, chance: 0 },
+  "equite-necessaire": { axis: "equite", kind: "estimate", refError: REF_ERROR.cotePreflop, chance: 0 },
   "range-position": { axis: "frequence", kind: "choice", chance: 0.20 },
   "math-trainer": { axis: "calcul", kind: "binary", chance: 0 },
   "find-it": { axis: "lecture", kind: "ratio", chance: 0 },

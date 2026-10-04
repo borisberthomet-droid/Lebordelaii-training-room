@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { loadMySkillRows } from "@/lib/supabase/skillAttempts";
 import { buildProfile } from "@/lib/poker/skillScore";
@@ -22,9 +22,10 @@ const THEMES = [
     axis: "equite", color2: "#8A8C43", label: "Équité", color: "#4F5220",
     desc: "Estimer sa force brute face à une range",
     tools: [
-      { href: "/value-equity", label: "Quelle est ton équité ?" },
-      { href: "/equite-preflop", label: "Équité préflop — main vs range" },
-      { href: "/pot-odds?axe=equite", label: "Pot Odds — équité" },
+      { href: "/equite-preflop", label: "Mon équité vs sa range", groupe: "Préflop" },
+      { href: "/equite-necessaire", label: "Quelle équité me faut-il ?", groupe: "Préflop" },
+      { href: "/value-equity", label: "Quelle est ton équité ?", groupe: "Postflop" },
+      { href: "/pot-odds?axe=equite", label: "Pot Odds — équité", groupe: "Postflop" },
     ],
   },
   {
@@ -101,14 +102,26 @@ export default function ThemePanels() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {theme.tools.map((t) => (
-                <Link key={t.href + t.label} href={t.href} className="tool-link" style={{
-                  display: "block", fontSize: 13, fontWeight: 600, color: "var(--text)",
-                  background: "var(--panel-2)", border: "1px solid var(--border)",
-                  borderRadius: 9, padding: "9px 11px",
-                }}>
-                  {t.label}
-                </Link>
+              {/* Un intertitre n'apparaît que quand un outil change de groupe : une compétence
+                  qui n'en a qu'un seul reste une simple liste, sans en-tête inutile. */}
+              {theme.tools.map((t, i) => (
+                <Fragment key={t.href + t.label}>
+                  {t.groupe && t.groupe !== theme.tools[i - 1]?.groupe && (
+                    <div style={{
+                      fontSize: 10, fontWeight: 700, letterSpacing: 0.7, textTransform: "uppercase",
+                      color: theme.color, marginTop: i ? 7 : 0, marginBottom: -1,
+                    }}>
+                      {t.groupe}
+                    </div>
+                  )}
+                  <Link href={t.href} className="tool-link" style={{
+                    display: "block", fontSize: 13, fontWeight: 600, color: "var(--text)",
+                    background: "var(--panel-2)", border: "1px solid var(--border)",
+                    borderRadius: 9, padding: "9px 11px",
+                  }}>
+                    {t.label}
+                  </Link>
+                </Fragment>
               ))}
             </div>
           </div>
