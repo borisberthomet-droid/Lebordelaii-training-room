@@ -28,7 +28,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata = {
   title: "Lebordelaii Training Room",
   description: "Outils d'entraînement poker MTT/PKO — lecture de range, pot odds, analyse de leaks",
-  icons: { icon: "/marque/logo-64.png", apple: "/marque/logo-192.png" },
+  icons: { icon: "/marque/app-64.png", apple: "/marque/app-192.png" },
 };
 
 export default function RootLayout({ children }) {

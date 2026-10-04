@@ -12,6 +12,10 @@ import { updateSession } from '@/lib/supabase/proxy';
 const OPEN = [
   '/login', '/signup', '/forgot-password', '/auth/confirm',
   '/mentions-legales', '/confidentialite', '/cgv',
+  // Le manifeste doit etre lisible sans compte : le navigateur le lit pour proposer
+  // l'installation et pour rafraichir l'icone. Il ne contient qu'un nom et des chemins
+  // d'images, et les images sortent deja du filtre (le matcher exclut les .png).
+  '/manifest.webmanifest',
 ];
 // Session exigée, accès non : la page qui explique que l'accès n'est pas actif, et le
 // changement de mot de passe après un lien de récupération.
