@@ -5,6 +5,8 @@ import Link from "next/link";
 import MiniCard from "@/components/MiniCard";
 import { recordSkillAttempt } from "@/lib/supabase/skillAttempts";
 import { EQUITES, MAINS, SCENARIOS, equiteDe, rangDe } from "@/lib/poker/equitesPreflop";
+import { RANGES } from "@/lib/poker/rangesPreflop";
+import GrilleRange from "@/components/GrilleRange";
 
 // « Ton équité préflop » — une main, un scénario de tapis, estime ton équité contre la range
 // adverse. Les chiffres sont ceux du classeur de Boris, pas un recalcul maison : l'élève est
@@ -57,11 +59,16 @@ export default function EquitePreflopPage() {
   const [reponse, setReponse] = useState("");
   const [resultat, setResultat] = useState(null);
   const [stats, setStats] = useState({ total: 0, exact: 0, proche: 0, somme: 0 });
+  // La grille reste cachée avant la réponse : la montrer d'office transforme l'estimation en
+  // lecture. Elle s'ouvre à la demande — c'est utile en séance, quand le coach veut la commenter
+  // — et s'affiche de toute façon une fois la réponse donnée.
+  const [grilleOuverte, setGrilleOuverte] = useState(false);
 
   const poser = (id = scenarioId) => {
     setQ(tirage(listeDe(id)));
     setReponse("");
     setResultat(null);
+    setGrilleOuverte(false);
   };
 
   // Changer de scénario tire aussitôt une main dedans : rester sur la question précédente, qui
@@ -125,11 +132,27 @@ export default function EquitePreflopPage() {
                 <span style={{ fontSize: 13.5, fontWeight: 700 }}>{q.scenario.label}</span>
                 {/* La taille de sa range est l'information qui rend la question jouable : la même
                     main ne vaut pas la même chose contre 54 % et contre 3,8 %. */}
-                <span style={{ fontSize: 12, fontFamily: MONO, color: "var(--accent)" }}>
-                  sa range : {q.scenario.range}
-                </span>
+                <button
+                  onClick={() => setGrilleOuverte((v) => !v)}
+                  style={{
+                    fontSize: 12, fontFamily: MONO, color: "var(--accent)", background: "none",
+                    border: "none", padding: 0, cursor: "pointer", textDecoration: "underline dotted",
+                  }}
+                >
+                  sa range : {q.scenario.range} {grilleOuverte || resultat ? "▴" : "▾"}
+                </button>
               </div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6, marginTop: 4 }}>{q.scenario.detail}</div>
+
+              {(grilleOuverte || resultat) && RANGES[q.scenario.id] && (
+                <div style={{ marginTop: 12 }}>
+                  <GrilleRange mains={RANGES[q.scenario.id].mains} surligner={q.main} />
+                  <div style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 7, lineHeight: 1.6 }}>
+                    {RANGES[q.scenario.id].pct} % des combos. Une case à moitié pleine se joue une
+                    fois sur deux. Ta main est encadrée quand elle figure dans la grille.
+                  </div>
+                </div>
+              )}
             </div>
 
             <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
